@@ -62,9 +62,9 @@ TASSIGN : '=';
 
 ////Other ops
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines, \r (Windows)
-ID : [a-zA-Z][a-zA-Z0-9_]*;
-INTLIT : [1-9][0-9]*;
 COMMENT : '/*'[a-zA-Z0-9 \t\r\n]*'*/' -> skip;
+ID : [a-zA-Z][a-zA-Z0-9_]*;
+INTLIT : ([1-9][0-9]*|[0]);
 
 
 

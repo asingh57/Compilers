@@ -1,6 +1,7 @@
 JAVA=/usr/bin/java
 OUTPUT=output
 GENERATED=generated
+TESTRIG=testrig
 GRAMMAR=Tiger.g4
 
 # here is where you plug in the runtime for your OS
@@ -9,6 +10,14 @@ CC=g++
 CCARGS=-c -I $(LOCAL)/include/antlr4-runtime/ -I $(GENERATED)	
 LDARGS=-g
 LIBS=$(LOCAL)/lib/libantlr4-runtime.a
+
+
+testrig: clean
+	antlr -o $(TESTRIG) $(GRAMMAR)
+	cp $(GRAMMAR) $(TESTRIG)/
+	javac -cp /usr/local/lib/antlr-4.9.1-complete.jar $(TESTRIG)/*.java
+
+
 
 all: clean tiger
 
@@ -24,10 +33,12 @@ antlr4: $(GRAMMAR)
 	antlr -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)
 
 dirs:
-	mkdir -p $(OUTPUT) 
-	mkdir -p $(GENERATED) 
+	mkdir -p $(OUTPUT)/* 
+	mkdir -p $(GENERATED)/* 
+	mkdir -p $(TESTRIG)/*
 
 clean:
 	rm -rf $(OUTPUT)
 	rm -rf $(GENERATED)
+	rm -rf $(TESTRIG)
 	rm -f tigerc
