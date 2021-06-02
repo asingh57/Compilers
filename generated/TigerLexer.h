@@ -12,7 +12,15 @@
 class  TigerLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, ID = 2, WS = 3
+    ARRAY = 1, BEGIN = 2, BREAK = 3, DO = 4, ELSE = 5, END = 6, ENDDO = 7, 
+    ENDIF = 8, FOR = 9, FUNCTION = 10, IF = 11, INT = 12, LET = 13, OF = 14, 
+    PROGRAM = 15, RETURN = 16, STATIC = 17, THEN = 18, TO = 19, TYPE = 20, 
+    VAR = 21, WHILE = 22, COMMA = 23, DOT = 24, COLON = 25, SEMICOLON = 26, 
+    OPENPAREN = 27, CLOSEPAREN = 28, OPENBRACK = 29, CLOSEBRACK = 30, OPENCURLY = 31, 
+    CLOSECURLY = 32, PLUS = 33, MINUS = 34, MULT = 35, DIV = 36, POW = 37, 
+    EQUAL = 38, NEQUAL = 39, LESS = 40, GREAT = 41, LESSEQ = 42, GREATEQ = 43, 
+    AND = 44, OR = 45, ASSIGN = 46, TASSIGN = 47, WS = 48, ID = 49, INTLIT = 50, 
+    COMMENT = 51
   };
 
   explicit TigerLexer(antlr4::CharStream *input);

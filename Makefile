@@ -30,4 +30,4 @@ dirs:
 clean:
 	rm -rf $(OUTPUT)
 	rm -rf $(GENERATED)
-	rm tigerc
+	rm -f tigerc
