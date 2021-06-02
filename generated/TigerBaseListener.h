@@ -1,23 +1,23 @@
 
-// Generated from Hello.g4 by ANTLR 4.9.1
+// Generated from Tiger.g4 by ANTLR 4.9.1
 
 #pragma once
 
 
 #include "antlr4-runtime.h"
-#include "HelloListener.h"
+#include "TigerListener.h"
 
 
 /**
- * This class provides an empty implementation of HelloListener,
+ * This class provides an empty implementation of TigerListener,
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-class  HelloBaseListener : public HelloListener {
+class  TigerBaseListener : public TigerListener {
 public:
 
-  virtual void enterR(HelloParser::RContext * /*ctx*/) override { }
-  virtual void exitR(HelloParser::RContext * /*ctx*/) override { }
+  virtual void enterR(TigerParser::RContext * /*ctx*/) override { }
+  virtual void exitR(TigerParser::RContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }

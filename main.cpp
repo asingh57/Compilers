@@ -3,8 +3,8 @@
 #include <fstream>
 #include <string>
 #include "antlr4-runtime.h"
-#include "HelloLexer.h"
-#include "HelloParser.h"
+#include "TigerLexer.h"
+#include "TigerParser.h"
 
 using namespace antlr4;
 using namespace std;

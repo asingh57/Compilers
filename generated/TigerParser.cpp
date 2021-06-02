@@ -1,66 +1,66 @@
 
-// Generated from Hello.g4 by ANTLR 4.9.1
+// Generated from Tiger.g4 by ANTLR 4.9.1
 
 
-#include "HelloListener.h"
+#include "TigerListener.h"
 
-#include "HelloParser.h"
+#include "TigerParser.h"
 
 
 using namespace antlrcpp;
 using namespace antlr4;
 
-HelloParser::HelloParser(TokenStream *input) : Parser(input) {
+TigerParser::TigerParser(TokenStream *input) : Parser(input) {
   _interpreter = new atn::ParserATNSimulator(this, _atn, _decisionToDFA, _sharedContextCache);
 }
 
-HelloParser::~HelloParser() {
+TigerParser::~TigerParser() {
   delete _interpreter;
 }
 
-std::string HelloParser::getGrammarFileName() const {
-  return "Hello.g4";
+std::string TigerParser::getGrammarFileName() const {
+  return "Tiger.g4";
 }
 
-const std::vector<std::string>& HelloParser::getRuleNames() const {
+const std::vector<std::string>& TigerParser::getRuleNames() const {
   return _ruleNames;
 }
 
-dfa::Vocabulary& HelloParser::getVocabulary() const {
+dfa::Vocabulary& TigerParser::getVocabulary() const {
   return _vocabulary;
 }
 
 
 //----------------- RContext ------------------------------------------------------------------
 
-HelloParser::RContext::RContext(ParserRuleContext *parent, size_t invokingState)
+TigerParser::RContext::RContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* HelloParser::RContext::ID() {
-  return getToken(HelloParser::ID, 0);
+tree::TerminalNode* TigerParser::RContext::ID() {
+  return getToken(TigerParser::ID, 0);
 }
 
 
-size_t HelloParser::RContext::getRuleIndex() const {
-  return HelloParser::RuleR;
+size_t TigerParser::RContext::getRuleIndex() const {
+  return TigerParser::RuleR;
 }
 
-void HelloParser::RContext::enterRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<HelloListener *>(listener);
+void TigerParser::RContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TigerListener *>(listener);
   if (parserListener != nullptr)
     parserListener->enterR(this);
 }
 
-void HelloParser::RContext::exitRule(tree::ParseTreeListener *listener) {
-  auto parserListener = dynamic_cast<HelloListener *>(listener);
+void TigerParser::RContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TigerListener *>(listener);
   if (parserListener != nullptr)
     parserListener->exitR(this);
 }
 
-HelloParser::RContext* HelloParser::r() {
+TigerParser::RContext* TigerParser::r() {
   RContext *_localctx = _tracker.createInstance<RContext>(_ctx, getState());
-  enterRule(_localctx, 0, HelloParser::RuleR);
+  enterRule(_localctx, 0, TigerParser::RuleR);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -72,9 +72,9 @@ HelloParser::RContext* HelloParser::r() {
   try {
     enterOuterAlt(_localctx, 1);
     setState(2);
-    match(HelloParser::T__0);
+    match(TigerParser::T__0);
     setState(3);
-    match(HelloParser::ID);
+    match(TigerParser::ID);
    
   }
   catch (RecognitionException &e) {
@@ -87,30 +87,30 @@ HelloParser::RContext* HelloParser::r() {
 }
 
 // Static vars and initialization.
-std::vector<dfa::DFA> HelloParser::_decisionToDFA;
-atn::PredictionContextCache HelloParser::_sharedContextCache;
+std::vector<dfa::DFA> TigerParser::_decisionToDFA;
+atn::PredictionContextCache TigerParser::_sharedContextCache;
 
 // We own the ATN which in turn owns the ATN states.
-atn::ATN HelloParser::_atn;
-std::vector<uint16_t> HelloParser::_serializedATN;
+atn::ATN TigerParser::_atn;
+std::vector<uint16_t> TigerParser::_serializedATN;
 
-std::vector<std::string> HelloParser::_ruleNames = {
+std::vector<std::string> TigerParser::_ruleNames = {
   "r"
 };
 
-std::vector<std::string> HelloParser::_literalNames = {
+std::vector<std::string> TigerParser::_literalNames = {
   "", "'hello'"
 };
 
-std::vector<std::string> HelloParser::_symbolicNames = {
+std::vector<std::string> TigerParser::_symbolicNames = {
   "", "", "ID", "WS"
 };
 
-dfa::Vocabulary HelloParser::_vocabulary(_literalNames, _symbolicNames);
+dfa::Vocabulary TigerParser::_vocabulary(_literalNames, _symbolicNames);
 
-std::vector<std::string> HelloParser::_tokenNames;
+std::vector<std::string> TigerParser::_tokenNames;
 
-HelloParser::Initializer::Initializer() {
+TigerParser::Initializer::Initializer() {
 	for (size_t i = 0; i < _symbolicNames.size(); ++i) {
 		std::string name = _vocabulary.getLiteralName(i);
 		if (name.empty()) {
@@ -142,4 +142,4 @@ HelloParser::Initializer::Initializer() {
   }
 }
 
-HelloParser::Initializer HelloParser::_init;
+TigerParser::Initializer TigerParser::_init;

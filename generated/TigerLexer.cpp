@@ -1,50 +1,50 @@
 
-// Generated from Hello.g4 by ANTLR 4.9.1
+// Generated from Tiger.g4 by ANTLR 4.9.1
 
 
-#include "HelloLexer.h"
+#include "TigerLexer.h"
 
 
 using namespace antlr4;
 
 
-HelloLexer::HelloLexer(CharStream *input) : Lexer(input) {
+TigerLexer::TigerLexer(CharStream *input) : Lexer(input) {
   _interpreter = new atn::LexerATNSimulator(this, _atn, _decisionToDFA, _sharedContextCache);
 }
 
-HelloLexer::~HelloLexer() {
+TigerLexer::~TigerLexer() {
   delete _interpreter;
 }
 
-std::string HelloLexer::getGrammarFileName() const {
-  return "Hello.g4";
+std::string TigerLexer::getGrammarFileName() const {
+  return "Tiger.g4";
 }
 
-const std::vector<std::string>& HelloLexer::getRuleNames() const {
+const std::vector<std::string>& TigerLexer::getRuleNames() const {
   return _ruleNames;
 }
 
-const std::vector<std::string>& HelloLexer::getChannelNames() const {
+const std::vector<std::string>& TigerLexer::getChannelNames() const {
   return _channelNames;
 }
 
-const std::vector<std::string>& HelloLexer::getModeNames() const {
+const std::vector<std::string>& TigerLexer::getModeNames() const {
   return _modeNames;
 }
 
-const std::vector<std::string>& HelloLexer::getTokenNames() const {
+const std::vector<std::string>& TigerLexer::getTokenNames() const {
   return _tokenNames;
 }
 
-dfa::Vocabulary& HelloLexer::getVocabulary() const {
+dfa::Vocabulary& TigerLexer::getVocabulary() const {
   return _vocabulary;
 }
 
-const std::vector<uint16_t> HelloLexer::getSerializedATN() const {
+const std::vector<uint16_t> TigerLexer::getSerializedATN() const {
   return _serializedATN;
 }
 
-const atn::ATN& HelloLexer::getATN() const {
+const atn::ATN& TigerLexer::getATN() const {
   return _atn;
 }
 
@@ -52,38 +52,38 @@ const atn::ATN& HelloLexer::getATN() const {
 
 
 // Static vars and initialization.
-std::vector<dfa::DFA> HelloLexer::_decisionToDFA;
-atn::PredictionContextCache HelloLexer::_sharedContextCache;
+std::vector<dfa::DFA> TigerLexer::_decisionToDFA;
+atn::PredictionContextCache TigerLexer::_sharedContextCache;
 
 // We own the ATN which in turn owns the ATN states.
-atn::ATN HelloLexer::_atn;
-std::vector<uint16_t> HelloLexer::_serializedATN;
+atn::ATN TigerLexer::_atn;
+std::vector<uint16_t> TigerLexer::_serializedATN;
 
-std::vector<std::string> HelloLexer::_ruleNames = {
+std::vector<std::string> TigerLexer::_ruleNames = {
   "T__0", "ID", "WS"
 };
 
-std::vector<std::string> HelloLexer::_channelNames = {
+std::vector<std::string> TigerLexer::_channelNames = {
   "DEFAULT_TOKEN_CHANNEL", "HIDDEN"
 };
 
-std::vector<std::string> HelloLexer::_modeNames = {
+std::vector<std::string> TigerLexer::_modeNames = {
   "DEFAULT_MODE"
 };
 
-std::vector<std::string> HelloLexer::_literalNames = {
+std::vector<std::string> TigerLexer::_literalNames = {
   "", "'hello'"
 };
 
-std::vector<std::string> HelloLexer::_symbolicNames = {
+std::vector<std::string> TigerLexer::_symbolicNames = {
   "", "", "ID", "WS"
 };
 
-dfa::Vocabulary HelloLexer::_vocabulary(_literalNames, _symbolicNames);
+dfa::Vocabulary TigerLexer::_vocabulary(_literalNames, _symbolicNames);
 
-std::vector<std::string> HelloLexer::_tokenNames;
+std::vector<std::string> TigerLexer::_tokenNames;
 
-HelloLexer::Initializer::Initializer() {
+TigerLexer::Initializer::Initializer() {
   // This code could be in a static initializer lambda, but VS doesn't allow access to private class members from there.
 	for (size_t i = 0; i < _symbolicNames.size(); ++i) {
 		std::string name = _vocabulary.getLiteralName(i);
@@ -131,4 +131,4 @@ HelloLexer::Initializer::Initializer() {
   }
 }
 
-HelloLexer::Initializer HelloLexer::_init;
+TigerLexer::Initializer TigerLexer::_init;

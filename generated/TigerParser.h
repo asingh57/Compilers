@@ -1,5 +1,5 @@
 
-// Generated from Hello.g4 by ANTLR 4.9.1
+// Generated from Tiger.g4 by ANTLR 4.9.1
 
 #pragma once
 
@@ -9,7 +9,7 @@
 
 
 
-class  HelloParser : public antlr4::Parser {
+class  TigerParser : public antlr4::Parser {
 public:
   enum {
     T__0 = 1, ID = 2, WS = 3
@@ -19,8 +19,8 @@ public:
     RuleR = 0
   };
 
-  explicit HelloParser(antlr4::TokenStream *input);
-  ~HelloParser();
+  explicit TigerParser(antlr4::TokenStream *input);
+  ~TigerParser();
 
   virtual std::string getGrammarFileName() const override;
   virtual const antlr4::atn::ATN& getATN() const override { return _atn; };

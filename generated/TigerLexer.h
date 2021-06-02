@@ -1,5 +1,5 @@
 
-// Generated from Hello.g4 by ANTLR 4.9.1
+// Generated from Tiger.g4 by ANTLR 4.9.1
 
 #pragma once
 
@@ -9,14 +9,14 @@
 
 
 
-class  HelloLexer : public antlr4::Lexer {
+class  TigerLexer : public antlr4::Lexer {
 public:
   enum {
     T__0 = 1, ID = 2, WS = 3
   };
 
-  explicit HelloLexer(antlr4::CharStream *input);
-  ~HelloLexer();
+  explicit TigerLexer(antlr4::CharStream *input);
+  ~TigerLexer();
 
   virtual std::string getGrammarFileName() const override;
   virtual const std::vector<std::string>& getRuleNames() const override;
