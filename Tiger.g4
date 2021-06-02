@@ -68,11 +68,6 @@ COMMENT : '/*'[a-zA-Z0-9 \t\r\n]*'*/' -> skip;
 
 
 
-
-
-
-
-
 //The Grammar
 tiger_program : PROGRAM ID LET declaration_segment BEGIN funct_list END;
 declaration_segment : type_declaration_list var_declaration_list;
@@ -106,6 +101,9 @@ opt_prefix : lvalue ASSIGN | /*empty*/;
 l_tail : ASSIGN lvalue l_tail | /*empty*/;
 expr : constant | lvalue | expr binary_operator expr | OPENPAREN expr CLOSEPAREN;
 constant : INTLIT;
+
+//TODO fix binary operator ambiguity
+
 binary_operator : PLUS | MINUS | MULT | DIV | POW  | EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ | AND | OR;
 expr_list : expr expr_list_tail | /*empty*/;
 expr_list_tail : COMMA expr expr_list_tail | /*empty*/;
