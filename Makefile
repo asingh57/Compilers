@@ -33,12 +33,12 @@ antlr4: $(GRAMMAR)
 	antlr -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)
 
 dirs:
-	mkdir -p $(OUTPUT)/* 
-	mkdir -p $(GENERATED)/* 
-	mkdir -p $(TESTRIG)/*
+	mkdir -p $(OUTPUT)
+	mkdir -p $(GENERATED) 
+	mkdir -p $(TESTRIG)
 
 clean:
-	rm -rf $(OUTPUT)
-	rm -rf $(GENERATED)
-	rm -rf $(TESTRIG)
+	rm -rf $(OUTPUT)/*
+	rm -rf $(GENERATED)/*
+	rm -rf $(TESTRIG)/*
 	rm -f tigerc

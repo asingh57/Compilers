@@ -99,12 +99,22 @@ stat : lvalue l_tail ASSIGN expr SEMICOLON |
 opt_return : expr | /*empty*/;
 opt_prefix : lvalue ASSIGN | /*empty*/;
 l_tail : ASSIGN lvalue l_tail | /*empty*/;
-expr : constant | lvalue | expr binary_operator expr | OPENPAREN expr CLOSEPAREN;
+expr : constant | lvalue | unambiguous_expr | OPENPAREN expr CLOSEPAREN;
+
+
+//fix binary operator ambiguity by putting low priority things first in the recursion
+
+unambiguous_expr: logical_op_expr;
+logical_op_expr: compare_op_expr ( ( AND | OR ) compare_op_expr)?; //there cannot be more than one AND/OR in a row
+compare_op_expr: add_op_expr ( ( EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ ) add_op_expr )*;
+add_op_expr: mult_op_expr ( ( PLUS | MINUS ) mult_op_expr )*;
+mult_op_expr: pow_op_expr ( ( MULT | DIV ) pow_op_expr )*;
+pow_op_expr: expr_no_op ( ( POW ) expr_no_op )*;
+
+expr_no_op: constant | lvalue | OPENPAREN expr CLOSEPAREN;
+
+
 constant : INTLIT;
-
-//TODO fix binary operator ambiguity
-
-binary_operator : PLUS | MINUS | MULT | DIV | POW  | EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ | AND | OR;
 expr_list : expr expr_list_tail | /*empty*/;
 expr_list_tail : COMMA expr expr_list_tail | /*empty*/;
 lvalue : ID lvalue_tail;
