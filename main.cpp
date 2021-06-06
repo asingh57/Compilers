@@ -57,14 +57,50 @@ public:
 
 int main(int argc, char *argv[]){
 
+
+	bool hasParseError=false;
+	bool hasLexError=false;
+	if(argc < 3){
+		//cout << "argc ==" << argc << endl;
+		return LEXPARSE_ERROR_IN_PROG_ARGS;
+	}
+	string inputFileName="";
+	bool printTokens=false;
+	bool printParseTree=false;
+	for(int i = 1; i <argc ; i++){
+		string arg = argv[i];
+		if(arg == "-i"){
+			if(++i>=argc){
+				return LEXPARSE_ERROR_IN_PROG_ARGS;
+			}
+			inputFileName = argv[i];
+		}
+		else if(arg == "-l"){
+			printTokens= true;
+		}
+		else if(arg == "-p"){
+			printParseTree= true;
+		}
+		else {
+			return LEXPARSE_ERROR_IN_PROG_ARGS;
+		}
+	}
+	
+	if(inputFileName==""){
+		return LEXPARSE_ERROR_IN_PROG_ARGS;
+	}
+	else{
+		//cout << "file name= " << inputFileName << endl;
+	}
+
 	std::ifstream stream;
-  	stream.open(argv[1]);
+  	stream.open(inputFileName);
   	if(!stream){
   		return LEXPARSE_ERROR_IN_PROG_ARGS;
   	}
 	ANTLRInputStream input(stream);
 	TigerLexer lexer(&input);
-	lexer.removeErrorListeners();
+	//lexer.removeErrorListeners();
 	// now add our own error listener
 	auto lexErrorListen = LexerErrorListener();
 	lexer.addErrorListener(&lexErrorListen);
@@ -73,30 +109,37 @@ int main(int argc, char *argv[]){
 	
 	tokens.fill();
 	
-	bool printTokens=false;
 	if(printTokens){
 		for (auto token : tokens.getTokens()) {
-		  //std::cout << token->toString() << std::endl;
+		  std::cout << token->toString() << std::endl;
 		}
 	}
-	if(lexErrorListen.getError()){
-		return LEXPARSE_LEXICAL_ERROR;
-	}
+	hasLexError=lexErrorListen.getError();
 
 
 	auto parErrorListen = ParserErrorListener();
   	TigerParser parser(&tokens);
-    	parser.removeErrorListeners();
+    	//parser.removeErrorListeners();
 	auto parseErrorListen = ParserErrorListener();
 	parser.addErrorListener(&parseErrorListen);
   	
   	tree::ParseTree* tree = parser.tiger_program();
 
-	if(parseErrorListen.getError()){
+	
+	hasParseError=parseErrorListen.getError();
+	
+
+	if(printParseTree){
+		std::cout << tree->toStringTree(&parser) << std::endl << std::endl;
+	}
+	
+	if(hasLexError){
+		return LEXPARSE_LEXICAL_ERROR;
+	}
+	else if(hasParseError){
 		return LEXPARSE_PARSER_ERROR;
 	}
-
-
-  	//std::cout << tree->toStringTree(&parser) << std::endl << std::endl;
+	
+	
 	return LEXPARSE_NO_ERROR_FOUND;
 }

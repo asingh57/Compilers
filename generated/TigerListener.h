@@ -83,11 +83,29 @@ public:
   virtual void enterExpr(TigerParser::ExprContext *ctx) = 0;
   virtual void exitExpr(TigerParser::ExprContext *ctx) = 0;
 
+  virtual void enterUnambiguous_expr(TigerParser::Unambiguous_exprContext *ctx) = 0;
+  virtual void exitUnambiguous_expr(TigerParser::Unambiguous_exprContext *ctx) = 0;
+
+  virtual void enterLogical_op_expr(TigerParser::Logical_op_exprContext *ctx) = 0;
+  virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext *ctx) = 0;
+
+  virtual void enterCompare_op_expr(TigerParser::Compare_op_exprContext *ctx) = 0;
+  virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext *ctx) = 0;
+
+  virtual void enterAdd_op_expr(TigerParser::Add_op_exprContext *ctx) = 0;
+  virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext *ctx) = 0;
+
+  virtual void enterMult_op_expr(TigerParser::Mult_op_exprContext *ctx) = 0;
+  virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext *ctx) = 0;
+
+  virtual void enterPow_op_expr(TigerParser::Pow_op_exprContext *ctx) = 0;
+  virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext *ctx) = 0;
+
+  virtual void enterExpr_no_op(TigerParser::Expr_no_opContext *ctx) = 0;
+  virtual void exitExpr_no_op(TigerParser::Expr_no_opContext *ctx) = 0;
+
   virtual void enterConstant(TigerParser::ConstantContext *ctx) = 0;
   virtual void exitConstant(TigerParser::ConstantContext *ctx) = 0;
-
-  virtual void enterBinary_operator(TigerParser::Binary_operatorContext *ctx) = 0;
-  virtual void exitBinary_operator(TigerParser::Binary_operatorContext *ctx) = 0;
 
   virtual void enterExpr_list(TigerParser::Expr_listContext *ctx) = 0;
   virtual void exitExpr_list(TigerParser::Expr_listContext *ctx) = 0;

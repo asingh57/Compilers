@@ -85,11 +85,29 @@ public:
   virtual void enterExpr(TigerParser::ExprContext * /*ctx*/) override { }
   virtual void exitExpr(TigerParser::ExprContext * /*ctx*/) override { }
 
+  virtual void enterUnambiguous_expr(TigerParser::Unambiguous_exprContext * /*ctx*/) override { }
+  virtual void exitUnambiguous_expr(TigerParser::Unambiguous_exprContext * /*ctx*/) override { }
+
+  virtual void enterLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
+  virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
+  virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterAdd_op_expr(TigerParser::Add_op_exprContext * /*ctx*/) override { }
+  virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterMult_op_expr(TigerParser::Mult_op_exprContext * /*ctx*/) override { }
+  virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterPow_op_expr(TigerParser::Pow_op_exprContext * /*ctx*/) override { }
+  virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterExpr_no_op(TigerParser::Expr_no_opContext * /*ctx*/) override { }
+  virtual void exitExpr_no_op(TigerParser::Expr_no_opContext * /*ctx*/) override { }
+
   virtual void enterConstant(TigerParser::ConstantContext * /*ctx*/) override { }
   virtual void exitConstant(TigerParser::ConstantContext * /*ctx*/) override { }
-
-  virtual void enterBinary_operator(TigerParser::Binary_operatorContext * /*ctx*/) override { }
-  virtual void exitBinary_operator(TigerParser::Binary_operatorContext * /*ctx*/) override { }
 
   virtual void enterExpr_list(TigerParser::Expr_listContext * /*ctx*/) override { }
   virtual void exitExpr_list(TigerParser::Expr_listContext * /*ctx*/) override { }

@@ -110,7 +110,7 @@ compare_op_expr: add_op_expr ( ( EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATE
 add_op_expr: mult_op_expr ( ( PLUS | MINUS ) mult_op_expr )*;
 mult_op_expr: pow_op_expr ( ( MULT | DIV ) pow_op_expr )*;
 pow_op_expr: expr_no_op ( ( POW ) expr_no_op )*;
-
+//create expr but without binary operator
 expr_no_op: constant | lvalue | OPENPAREN expr CLOSEPAREN;
 
 
