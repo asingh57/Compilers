@@ -119,6 +119,10 @@ int main(int argc, char *argv[]){
 		if(type==""){
 			type = vocab.getLiteralName(token->getType());
 		}
+		if(type=="EOF"){
+			std::cout <<"";
+		
+		}
 		std::cout <<type;
 		
 		std::cout <<", \"";
