@@ -127,7 +127,7 @@ int main(int argc, char *argv[]){
 			std::cout <<token->getText();
 		}
 		else{
-			std::cout <<"EOF";
+			std::cout <<"";
 		}
 		
 		
