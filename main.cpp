@@ -113,27 +113,21 @@ int main(int argc, char *argv[]){
 	
 	if(printTokens){
 		for (auto token : tokens.getTokens()) {
-		std::cout <<"<";
 		
 		std::string type = vocab.getSymbolicName(token->getType());
 		if(type==""){
 			type = vocab.getLiteralName(token->getType());
 		}
 		if(type=="EOF"){
-			std::cout <<"";
-		
+			continue;
 		}
+		
+		std::cout <<"<";
 		std::cout <<type;
 		
 		std::cout <<", \"";
 		
-		if(type!="EOF"){
-			std::cout <<token->getText();
-		}
-		else{
-			std::cout <<"";
-		}
-		
+		std::cout <<token->getText();
 		
 		std::cout <<"\">" << std::endl;
 		  //std::cout << token->toString() << std::endl;
