@@ -109,9 +109,24 @@ int main(int argc, char *argv[]){
 	
 	tokens.fill();
 	
+	auto vocab = lexer.getVocabulary();
+	
 	if(printTokens){
 		for (auto token : tokens.getTokens()) {
-		  std::cout << token->toString() << std::endl;
+		std::cout <<"<";
+		
+		std::string type = vocab.getSymbolicName(token->getType());
+		if(type==""){
+			type = vocab.getLiteralName(token->getType());
+		}
+		std::cout <<type;
+		
+		std::cout <<",\"";
+		
+		std::cout <<token->getText();
+		
+		std::cout <<"\">" << std::endl;
+		  //std::cout << token->toString() << std::endl;
 		}
 	}
 	hasLexError=lexErrorListen.getError();
