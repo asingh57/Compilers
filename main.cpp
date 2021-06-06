@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
 		}
 		std::cout <<type;
 		
-		std::cout <<",\"";
+		std::cout <<", \"";
 		
 		std::cout <<token->getText();
 		
