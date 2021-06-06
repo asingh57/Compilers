@@ -123,7 +123,13 @@ int main(int argc, char *argv[]){
 		
 		std::cout <<", \"";
 		
-		std::cout <<token->getText();
+		if(type!="EOF"){
+			std::cout <<token->getText();
+		}
+		else{
+			std::cout <<"EOF";
+		}
+		
 		
 		std::cout <<"\">" << std::endl;
 		  //std::cout << token->toString() << std::endl;
