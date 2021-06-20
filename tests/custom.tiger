@@ -1,19 +1,27 @@
-/* selection sort */
-program sort
+/* Recursive Fibonacci */
+program fib
 let
+    static result : int;
 begin
-    function main () : int
+    function fib (n : int) : int
     begin
         let
-            type catList = array [8] of int ;
-            type cat2 = catList;
-            type cat3 = int;
-            var cats : catList ;
-            var index : int ;
-            var lowestIndex, l2, ll : int ;
+            var tmp1, tmp2 : int := 0;
         begin
-            cats [0] := 7;
+            if (n <= 1) then
+                return n;
+            else
+                tmp1 := fib(n-1);
+                tmp2 := fib(n-2);
+                return tmp1 + tmp2;
+            endif;
         end
+    end
+
+    function main() : int 
+    begin
+        result := fib(12);
+        printi(result);
         return 0;
     end
 end

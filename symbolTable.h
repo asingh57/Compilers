@@ -54,44 +54,13 @@ struct Symbol{
 	Symbol* alias;//alias assigned to alias
 	
 	//valid for loops and functions
-	std::vector<Scope> childScopes;
+	Scope* scope;
 	
 	//valid only for function calls
-	std::vector<Symbol> inputVariables;
+	std::vector<Symbol*> inputVariables;
 	DataType returnType; 
 	
-	void print(){
-		
-		tabCount++;
-		for(int i = 0; i< tabCount; i++){
-		    	std::cout << "\t";
-		}
-		if(type==TYPE_INT){
-			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", int";
-		}
-		else if(type == TYPE_ALIAS_ASSIGNED){
-			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", "<<alias->name;
-			
-		}
-		else if(type==TYPE_ALIAS){
-			std::cout << name << ", type, ";
-			if(aliasType==TYPE_ALIAS){
-				std::cout << alias->name;
-			}
-			else if(aliasType==TYPE_INT){
-				std::cout << "int";
-			}
-			else if(aliasType==TYPE_ARRAY){
-				std::cout << "array, "<<len;
-			}
-		}
-		
-		std::cout << "\n";
-	
-		tabCount--;
-		
-		
-	}
+	void print();
 
 	
 	Symbol():type(TYPE_ZERO){
@@ -147,7 +116,70 @@ int Symbol::tabCount=0;
 
 
 
-
+void Symbol::print(){
+		
+		tabCount++;
+		for(int i = 0; i< tabCount; i++){
+		    	std::cout <<  "    ";
+		}
+		if(type==TYPE_INT){
+			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", int";
+		}
+		else if(type == TYPE_ALIAS_ASSIGNED){
+			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", "<<alias->name;
+			
+		}
+		else if(type==TYPE_ALIAS){
+			std::cout << name << ", type, ";
+			if(aliasType==TYPE_ALIAS){
+				std::cout << alias->name;
+			}
+			else if(aliasType==TYPE_INT){
+				std::cout << "int";
+			}
+			else if(aliasType==TYPE_ARRAY){
+				std::cout << "array, "<<len;
+			}
+		}
+		else if(type==TYPE_FUNCTION){
+			std::cout << name<<",Function ,";
+			if(returnType==TYPE_ALIAS){
+				std::cout << alias->name;
+			}
+			else if(returnType==TYPE_INT){
+				std::cout << "int, ";
+			}
+			else if(returnType==TYPE_ARRAY){
+				std::cout << "array, "<<len;
+			}
+			else if(returnType==TYPE_VOID){
+				std::cout << "void, "<<len;
+			}
+			
+			std::cout <<"\n";
+			for(int i = 0; i< tabCount; i++){
+			    	std::cout <<  "    ";
+			}
+			std::cout <<"(";
+			for(auto sy : inputVariables){			
+				sy->print();
+			}
+			
+			std::cout <<"\n";
+			for(int i = 0; i< tabCount; i++){
+			    	std::cout <<  "    ";
+			}
+			std::cout <<"):\n";
+			
+			scope->printSymbolTable();
+		}
+		
+		std::cout << "\n";
+	
+		tabCount--;
+		
+		
+	}
 
 
 

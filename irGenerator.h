@@ -140,17 +140,36 @@ private:
 	
 	}
 	
+	void createFunctDeclaration(TigerParser::FunctContext * ctx){
+		auto sc=new Scope(ctx->ID()->getText(), _currentScope);
+		Symbol* sym = new Symbol;
+		sym->scope=sc;
+		sym->type=TYPE_FUNCTION;
+		sym->inputVariables= std::vector<Symbol*>();
+		_currentScope->addSymbol(ctx->ID()->getText(),sym);	
+		_currentScope= sc;
+	}
+	
+	
 public:
 	
-	IRGenerator(){};
-	
-	void printSymbolTable(){
-		_globalScope->printSymbolTable();
-	}
+IRGenerator(){};
+
+void printSymbolTable(){
+	_globalScope->printSymbolTable();
+}
 	
   void enterTiger_program(TigerParser::Tiger_programContext *ctx) override { 
 	_globalScope = new Scope(ctx->ID()->getText());
 	_currentScope = _globalScope;
+  }
+  
+  
+  void enterFunct(TigerParser::FunctContext * ctx) override { 
+  	createFunctDeclaration(ctx);
+  }
+  void exitFunct(TigerParser::FunctContext * ctx) override {
+  	escapeToParent();
   }
   
   
@@ -162,6 +181,9 @@ public:
   void enterVar_declaration(TigerParser::Var_declarationContext * ctx) override { 
   	createVarDeclaration(ctx);
   }
+  
+  
+
   
   
 
