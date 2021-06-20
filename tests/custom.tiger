@@ -10,7 +10,7 @@ begin
             type cat3 = int;
             var cats : catList ;
             var index : int ;
-            var lowestIndex : int ;
+            var lowestIndex, l2, ll : int ;
         begin
             cats [0] := 7;
         end

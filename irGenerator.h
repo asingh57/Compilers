@@ -6,7 +6,8 @@ enum IRErrorCodes{
 };
 
 enum IRErrorMessageID{
-	IRERROR_NO_SUCH_TYPE
+	IRERROR_NO_SUCH_TYPE,
+	IRERROR_NO_ARRAY_ALLOWED_VAR
 };
 
 class IRGenerator  : public TigerBaseListener{
@@ -22,6 +23,11 @@ private:
 			case IRERROR_NO_SUCH_TYPE:
 			{
 			desc = "type does not exist";
+			break;
+			}
+			case IRERROR_NO_ARRAY_ALLOWED_VAR:
+			{
+			desc = "arrays are not allowed to be assigned directly to var. Must define as type first";
 			break;
 			}
 		
@@ -47,7 +53,7 @@ private:
 		if(ctx->type()->INTLIT()){
 			//integer literal: this is an array
 			sym->aliasType=TYPE_ARRAY;
-			sym->arrayItemType= TYPE_INT;
+			sym->arrayItemType= TYPE_ALIAS;
 			sym->len = std::stoi (ctx->type()->INTLIT()->getText());
 		}		
 		else if(ctx->type()->type_id()){
@@ -60,7 +66,7 @@ private:
 			auto rvalSymbol = _currentScope->getSymbol(ctx->type()->ID()->getText());
 			if(!rvalSymbol){
 			
-				auto lineNum = ctx->getStart()->getLine();
+				auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
 				auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
 				printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
 			}
@@ -71,6 +77,67 @@ private:
 		
 		_currentScope->addSymbol(name,sym);
 		
+	}
+	
+	
+	void createVarDeclaration(TigerParser::Var_declarationContext * ctx){
+		Symbol* sym = new Symbol;//zero out everything
+		std::vector<std::string> varNames;
+		
+		auto idlist = ctx->id_list();
+		while(idlist->id_list()){
+			varNames.push_back(idlist->ID()->getText());
+			idlist= idlist->id_list();
+		}
+		varNames.push_back(idlist->ID()->getText());
+		
+		StorageClass sc= STORAGE_VAR;
+		if(ctx->storage_class()->STATIC()){
+			//local var
+			sc = STORAGE_STATIC;
+		}
+		sym->storageclass=sc;
+		
+		
+		if(ctx->type()->INTLIT()){
+			//integer literal: this is an array NOT allowed according to 3.3 of spec
+			
+			auto lineNum = ctx->type()->ARRAY()->getSymbol()->getLine();
+			auto colNum = ctx->type()->ARRAY()->getSymbol()->getCharPositionInLine();
+			printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
+			
+		}		
+		else if(ctx->type()->type_id()){
+			//type is int
+			sym->type=TYPE_INT;
+		}
+		else if(ctx->type()->ID()){
+			//another type
+			//look this up in current symbol table
+			auto rvalSymbol = _currentScope->getSymbol(ctx->type()->ID()->getText());
+			if(!rvalSymbol){
+			
+				auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
+				auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
+				printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
+			}
+			sym->type=TYPE_ALIAS_ASSIGNED;
+			sym->alias = rvalSymbol;			
+		}
+		
+		if(ctx->optional_init()->constant()){
+			int val = std::stoi (ctx->optional_init()->constant()->INTLIT()->getText());
+			sym->val = val;
+		}
+		else{
+			sym->val = 0;
+		}
+		for(auto name: varNames){
+			Symbol *copy = new Symbol;
+			*copy= *sym;
+			_currentScope->addSymbol(name,copy);		
+		}
+	
 	}
 	
 public:
@@ -93,7 +160,7 @@ public:
 
 
   void enterVar_declaration(TigerParser::Var_declarationContext * ctx) override { 
-  
+  	createVarDeclaration(ctx);
   }
   
   

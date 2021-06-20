@@ -5,7 +5,7 @@
 #include <string>
 #include <variant>
 #include <vector>
-
+#include <cstring>
 class Scope;
 struct Symbol;
 
@@ -15,6 +15,7 @@ TYPE_ZERO = 0,
 //types
  TYPE_INT,
  TYPE_VOID,
+TYPE_ALIAS_ASSIGNED, //this is a var which has been assigned an alias val
 
 //type array
  TYPE_ARRAY,
@@ -32,10 +33,7 @@ enum StorageClass{
 	STORAGE_VAR
 };
 
-
-union Value{
-	int intval;
-};
+typedef int Value;
 
 struct Symbol{
 	static int tabCount;
@@ -71,6 +69,10 @@ struct Symbol{
 		if(type==TYPE_INT){
 			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", int";
 		}
+		else if(type == TYPE_ALIAS_ASSIGNED){
+			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", "<<alias->name;
+			
+		}
 		else if(type==TYPE_ALIAS){
 			std::cout << name << ", type, ";
 			if(aliasType==TYPE_ALIAS){
@@ -91,6 +93,7 @@ struct Symbol{
 		
 	}
 
+	
 	Symbol():type(TYPE_ZERO){
 	
 	}
