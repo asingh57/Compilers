@@ -146,6 +146,35 @@ private:
 		sym->scope=sc;
 		sym->type=TYPE_FUNCTION;
 		sym->inputVariables= std::vector<Symbol*>();
+		sym->returnType=TYPE_VOID;
+		if(ctx->ret_type() && ctx->ret_type()->type()){
+			auto type = ctx->ret_type()->type();
+			if(type->INTLIT()){
+					//integer literal: this is an array NOT ALLOWED
+					auto lineNum = type->ARRAY()->getSymbol()->getLine();
+					auto colNum = type->ARRAY()->getSymbol()->getCharPositionInLine();
+					printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
+			}		
+			else if(type->type_id()){
+				//type is int
+				sym->returnType=TYPE_INT;
+			}
+			else if(type->ID()){
+				//another type
+				//look this up in current symbol table
+				auto rvalSymbol = _currentScope->getSymbol(type->ID()->getText());
+				if(!rvalSymbol){
+				
+					auto lineNum = type->ID()->getSymbol()->getLine();
+					auto colNum = type->ID()->getSymbol()->getCharPositionInLine();
+					printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
+				}
+				sym->returnType=TYPE_ALIAS_ASSIGNED;
+				sym->alias = rvalSymbol;
+				
+			}
+		}
+		
 		if(ctx->param_list()){
 			auto parList = ctx->param_list()->param_list_tail();
 			auto par = ctx->param_list()->param();
@@ -154,6 +183,7 @@ private:
 				//add par to symbol table
 				auto varName = par->ID()->getText();
 				inputSym->name = varName;
+				inputSym->storageclass=STORAGE_VAR;
 				auto type = par->type();
 				if(type->INTLIT()){
 					//integer literal: this is an array NOT ALLOWED

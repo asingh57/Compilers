@@ -143,18 +143,6 @@ void Symbol::print(){
 		}
 		else if(type==TYPE_FUNCTION){
 			std::cout << name<<",Function ,";
-			if(returnType==TYPE_ALIAS){
-				std::cout << alias->name;
-			}
-			else if(returnType==TYPE_INT){
-				std::cout << "int, ";
-			}
-			else if(returnType==TYPE_ARRAY){
-				std::cout << "array, "<<len;
-			}
-			else if(returnType==TYPE_VOID){
-				std::cout << "void, "<<len;
-			}
 			
 			std::cout <<"\n";
 			for(int i = 0; i< tabCount; i++){
@@ -169,7 +157,21 @@ void Symbol::print(){
 			for(int i = 0; i< tabCount; i++){
 			    	std::cout <<  "    ";
 			}
-			std::cout <<"):\n";
+			std::cout <<") -> ";
+			
+			if(returnType==TYPE_ALIAS_ASSIGNED){
+				std::cout << alias->name;
+			}
+			else if(returnType==TYPE_INT){
+				std::cout << "int";
+			}
+			else if(returnType==TYPE_ARRAY){
+				std::cout << "array"<<len;
+			}
+			else if(returnType==TYPE_VOID){
+				std::cout << "void";
+			}
+			std::cout << ":\n";
 			
 			scope->printSymbolTable();
 		}
