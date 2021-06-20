@@ -42,6 +42,7 @@ struct Symbol{
 	DataType type;
 	StorageClass storageclass;
 	Value val;
+	bool hasValue;
 	std::string name;
 	
 	//valid for arrays
@@ -63,7 +64,7 @@ struct Symbol{
 	void print();
 
 	
-	Symbol():type(TYPE_ZERO){
+	Symbol():type(TYPE_ZERO),hasValue(false){
 	
 	}
 };
@@ -124,10 +125,15 @@ void Symbol::print(){
 		}
 		if(type==TYPE_INT){
 			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", int";
+			if(hasValue){
+				std::cout<<", "<<val;
+			}
 		}
 		else if(type == TYPE_ALIAS_ASSIGNED){
 			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", "<<alias->name;
-			
+			if(hasValue){
+				std::cout<<", "<<val;
+			}
 		}
 		else if(type==TYPE_ALIAS){
 			std::cout << name << ", type, ";

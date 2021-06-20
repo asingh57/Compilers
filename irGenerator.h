@@ -96,8 +96,8 @@ private:
 			//local var
 			sc = STORAGE_STATIC;
 		}
-		sym->storageclass=sc;
-		
+		sym->storageclass=sc;		
+		sym->hasValue = false;
 		
 		if(ctx->type()->INTLIT()){
 			//integer literal: this is an array NOT allowed according to 3.3 of spec
@@ -128,9 +128,11 @@ private:
 		if(ctx->optional_init()->constant()){
 			int val = std::stoi (ctx->optional_init()->constant()->INTLIT()->getText());
 			sym->val = val;
+			sym->hasValue = true;
 		}
-		else{
+		else if(sc==STORAGE_STATIC){
 			sym->val = 0;
+			sym->hasValue = true;
 		}
 		for(auto name: varNames){
 			Symbol *copy = new Symbol;
@@ -179,7 +181,8 @@ private:
 			auto parList = ctx->param_list()->param_list_tail();
 			auto par = ctx->param_list()->param();
 			while(par){
-				Symbol* inputSym = new Symbol;
+				Symbol* inputSym = new Symbol;				
+				inputSym->hasValue = false;
 				//add par to symbol table
 				auto varName = par->ID()->getText();
 				inputSym->name = varName;

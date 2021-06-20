@@ -2,7 +2,7 @@
 program fib
 let
     type catList = array [8] of int ;
-    static result : int;
+    static result : int :=9;
 begin
     function fib (bb : int, naaa : int, nn : catList) : int
     begin
