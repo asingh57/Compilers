@@ -5,10 +5,13 @@
 #include "antlr4-runtime.h"
 #include "TigerLexer.h"
 #include "TigerParser.h"
+#include "irGenerator.h"
 
 using namespace antlr4;
 using namespace std;
 
+//-----------------------------------------------------------------------------------------------------
+//ERRORS FOR LEXER AND PARSER
 
 enum LexerParserErrorCodes{
 	LEXPARSE_NO_ERROR_FOUND = 0,
@@ -52,12 +55,14 @@ public:
                            };
 };
 
+//-----------------------------------------------------------------------------------------------------
 
 
 
 int main(int argc, char *argv[]){
 
-
+//PART 1 of the assignment
+//-----------------------------------------------------------------------------------------------------
 	bool hasParseError=false;
 	bool hasLexError=false;
 	if(argc < 3){
@@ -67,6 +72,7 @@ int main(int argc, char *argv[]){
 	string inputFileName="";
 	bool printTokens=false;
 	bool printParseTree=false;
+	bool printSymbolTable=false;
 	for(int i = 1; i <argc ; i++){
 		string arg = argv[i];
 		if(arg == "-i"){
@@ -80,6 +86,9 @@ int main(int argc, char *argv[]){
 		}
 		else if(arg == "-p"){
 			printParseTree= true;
+		}		
+		else if(arg == "-s"){
+			printSymbolTable= true;
 		}
 		else {
 			return LEXPARSE_ERROR_IN_PROG_ARGS;
@@ -158,6 +167,21 @@ int main(int argc, char *argv[]){
 	else if(hasParseError){
 		return LEXPARSE_PARSER_ERROR;
 	}
+//-----------------------------------------------------------------------------------------------------
+	
+	
+	IRGenerator intermediateRep= IRGenerator();
+	
+  	tree::ParseTreeWalker::DEFAULT.walk(&intermediateRep, tree);
+	
+	if(printSymbolTable){
+	
+		std::cout <<"symbol table:\n";
+		intermediateRep.printSymbolTable();
+	}
+	
+	
+	
 	
 	
 	return LEXPARSE_NO_ERROR_FOUND;

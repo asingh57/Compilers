@@ -1,0 +1,19 @@
+/* selection sort */
+program sort
+let
+begin
+    function main () : int
+    begin
+        let
+            type catList = array [8] of int ;
+            type cat2 = catList;
+            type cat3 = int;
+            var cats : catList ;
+            var index : int ;
+            var lowestIndex : int ;
+        begin
+            cats [0] := 7;
+        end
+        return 0;
+    end
+end

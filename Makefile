@@ -7,7 +7,7 @@ BIN = cs8803_bin
 
 # here is where you plug in the runtime for your OS
 LOCAL=/usr/local/
-CC=g++
+CC=g++ -std=c++17
 CCARGS=-c -I $(LOCAL)/include/antlr4-runtime/ -I $(GENERATED)	
 LDARGS=-g
 LIBS=$(LOCAL)/lib/libantlr4-runtime.a
@@ -15,7 +15,7 @@ LIBS=$(LOCAL)/lib/libantlr4-runtime.a
 
 
 
-all: clean tiger
+all: tiger
 
 tiger: dirs antlr4 main.cpp
 	$(CC) $(CCARGS) main.cpp  -o $(OUTPUT)/tiger.o 
@@ -39,7 +39,7 @@ clean:
 	rm -rf $(GENERATED)/*
 	rm -rf $(TESTRIG)/*
 	rm -f tigerc
-	rm -f $(BIN)
+	rm -rf $(BIN)
 	
 	
 testrig: clean
