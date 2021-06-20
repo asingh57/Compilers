@@ -160,7 +160,7 @@ void Symbol::print(){
 			for(int i = 0; i< tabCount; i++){
 			    	std::cout <<  "    ";
 			}
-			std::cout <<"(";
+			std::cout <<"(\n";
 			for(auto sy : inputVariables){			
 				sy->print();
 			}

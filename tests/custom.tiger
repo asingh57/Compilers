@@ -1,9 +1,10 @@
 /* Recursive Fibonacci */
 program fib
 let
+    type catList = array [8] of int ;
     static result : int;
 begin
-    function fib (n : int) : int
+    function fib (bb : int, naaa : int, nn : catList) : int
     begin
         let
             var tmp1, tmp2 : int := 0;
