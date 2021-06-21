@@ -7,7 +7,8 @@ enum IRErrorCodes{
 
 enum IRErrorMessageID{
 	IRERROR_NO_SUCH_TYPE,
-	IRERROR_NO_ARRAY_ALLOWED_VAR
+	IRERROR_NO_ARRAY_ALLOWED_VAR,
+	IRERROR_NO_SUCH_VARIABLE
 };
 
 
@@ -33,6 +34,11 @@ std::string desc;
 		case IRERROR_NO_ARRAY_ALLOWED_VAR:
 		{
 		desc = "arrays are not allowed to be assigned directly to var. Must define as type first";
+		break;
+		}
+		case IRERROR_NO_SUCH_VARIABLE:
+		{
+		desc = "variable doesn't exist";
 		break;
 		}
 	
@@ -368,15 +374,258 @@ public:
 
 				
 	
-   void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { }
-
-   void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { }
-
-   void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { }
+   void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { 
    
-   void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { }
+   
+   		if(ctx->logical_op_expr_ext() && ctx->logical_op_expr_ext()->compare_op_expr() ){//then we have power operators
+	   		//pop everything from stack, and convert it into a new AST node   
+	   		
+	   		std::cout <<astStack.size() << std::endl;
+	   		for(auto a : astStack){
+	   			std::cout <<"|" << a->_var;
+	   		}
+	   				
+	   		std::cout << std::endl;
+	   		
+	   		auto op= Operator_plus;
+	   		
+	   		auto nd = new ASTNode();
+	   		nd->_isVar=true;
+	   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+	   		nd->_var= v->getName();   		
+			currentScope->addSymbol(v->getName(),v);
+	   		//push that node
+	   		
+	   		//now start processing all nodes
+	   		auto v1 =  astStack.back();
+	   		nd->_left = v1;
+	   		astStack.pop_back();
+	   		auto v2 =  astStack.back();
+	   		nd->_right = v2;
+	   		astStack.pop_back();
+	   		nd->_op= op;
+	   		   
+	   		while(astStack.size()){
+	   			v1= nd;
+	   			v2= astStack.back();
+	   			astStack.pop_back();
+	   			
+	   			nd = new ASTNode();
+	   			nd->_left = v1;
+	   			nd->_right = v1;
+	   			nd->_isVar=true;
+	   			v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+	   			nd->_var= v->getName();   	
+	   			nd->_op= op;	
+				currentScope->addSymbol(v->getName(),v);
+	   		}	
+	   		
+	   		astStack.push_back(nd);   		
+	   	}
+   
+   
+   }
 
-   void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { }
+   void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { 
+   
+	   if(ctx->compare_op_expr_ext() && ctx->compare_op_expr_ext()->add_op_expr() ){//then we have power operators
+	   		//pop everything from stack, and convert it into a new AST node   
+	   		
+	   		std::cout <<astStack.size() << std::endl;
+	   		for(auto a : astStack){
+	   			std::cout <<"|" << a->_var;
+	   		}
+	   				
+	   		std::cout << std::endl;
+	   		
+	   		auto op= Operator_plus;
+	   		
+	   		auto nd = new ASTNode();
+	   		nd->_isVar=true;
+	   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+	   		nd->_var= v->getName();   		
+			currentScope->addSymbol(v->getName(),v);
+	   		//push that node
+	   		
+	   		//now start processing all nodes
+	   		auto v1 =  astStack.back();
+	   		nd->_left = v1;
+	   		astStack.pop_back();
+	   		auto v2 =  astStack.back();
+	   		nd->_right = v2;
+	   		astStack.pop_back();
+	   		nd->_op= op;
+	   		   
+	   		while(astStack.size()){
+	   			v1= nd;
+	   			v2= astStack.back();
+	   			astStack.pop_back();
+	   			
+	   			nd = new ASTNode();
+	   			nd->_left = v1;
+	   			nd->_right = v1;
+	   			nd->_isVar=true;
+	   			v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+	   			nd->_var= v->getName();   	
+	   			nd->_op= op;	
+				currentScope->addSymbol(v->getName(),v);
+	   		}	
+	   		
+	   		astStack.push_back(nd);   		
+	   	}
+   
+   
+   
+   
+   }
+
+   void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { 
+   	if(ctx->add_op_expr_ext() && ctx->add_op_expr_ext()->mult_op_expr() ){//then we have power operators
+   		//pop everything from stack, and convert it into a new AST node   
+   		
+   		std::cout <<astStack.size() << std::endl;
+   		for(auto a : astStack){
+   			std::cout <<"|" << a->_var;
+   		}
+   				
+   		std::cout << std::endl;
+   		
+   		auto op= Operator_plus;
+   		
+   		auto nd = new ASTNode();
+   		nd->_isVar=true;
+   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   		nd->_var= v->getName();   		
+		currentScope->addSymbol(v->getName(),v);
+   		//push that node
+   		
+   		//now start processing all nodes
+   		auto v1 =  astStack.back();
+   		nd->_left = v1;
+   		astStack.pop_back();
+   		auto v2 =  astStack.back();
+   		nd->_right = v2;
+   		astStack.pop_back();
+   		nd->_op= op;
+   		   
+   		while(astStack.size()){
+   			v1= nd;
+   			v2= astStack.back();
+   			astStack.pop_back();
+   			
+   			nd = new ASTNode();
+   			nd->_left = v1;
+   			nd->_right = v1;
+   			nd->_isVar=true;
+   			v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   			nd->_var= v->getName();   	
+   			nd->_op= op;	
+			currentScope->addSymbol(v->getName(),v);
+   		}	
+   		
+   		astStack.push_back(nd);   		
+   	}
+   
+   
+   
+   }
+   
+   void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { 
+   	if(ctx->mult_op_expr_ext() && ctx->mult_op_expr_ext()->pow_op_expr() ){//then we have power operators
+   		//pop everything from stack, and convert it into a new AST node   
+   		
+   		std::cout <<astStack.size() << std::endl;
+   		for(auto a : astStack){
+   			std::cout <<"|" << a->_var;
+   		}
+   				
+   		std::cout << std::endl;
+   		
+   		auto op= Operator_multiply;
+   		
+   		auto nd = new ASTNode();
+   		nd->_isVar=true;
+   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   		nd->_var= v->getName();   		
+		currentScope->addSymbol(v->getName(),v);
+   		//push that node
+   		
+   		//now start processing all nodes
+   		auto v1 =  astStack.back();
+   		nd->_left = v1;
+   		astStack.pop_back();
+   		auto v2 =  astStack.back();
+   		nd->_right = v2;
+   		astStack.pop_back();
+   		nd->_op= op;
+   		   
+   		while(astStack.size()){
+   			v1= nd;
+   			v2= astStack.back();
+   			astStack.pop_back();
+   			
+   			nd = new ASTNode();
+   			nd->_left = v1;
+   			nd->_right = v1;
+   			nd->_isVar=true;
+   			v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   			nd->_var= v->getName();   	
+   			nd->_op= op;	
+			currentScope->addSymbol(v->getName(),v);
+   		}	
+   		
+   		astStack.push_back(nd);   		
+   	}
+   
+   
+   }
+
+   void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
+   	if(ctx->pow_op_expr_ext() && ctx->pow_op_expr_ext()->expr_no_op() ){//then we have power operators
+   		//pop everything from stack, and convert it into a new AST node   
+   		
+   		std::cout <<astStack.size() << std::endl;
+   		for(auto a : astStack){
+   			std::cout <<"|" << a->_var;
+   		}
+   		std::cout << std::endl;
+   				
+   		auto nd = new ASTNode();
+   		nd->_isVar=true;
+   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   		nd->_var= v->getName();   		
+		currentScope->addSymbol(v->getName(),v);
+   		//push that node
+   		
+   		//now start processing all nodes
+   		auto v1 =  astStack.back();
+   		nd->_left = v1;
+   		astStack.pop_back();
+   		auto v2 =  astStack.back();
+   		nd->_right = v2;
+   		astStack.pop_back();
+   		nd->_op= Operator_pow;
+   		   
+   		while(astStack.size()){
+   			v1= nd;
+   			v2= astStack.back();
+   			astStack.pop_back();
+   			
+   			nd = new ASTNode();
+   			nd->_left = v1;
+   			nd->_right = v1;
+   			nd->_isVar=true;
+   			v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,false,0);
+   			nd->_var= v->getName();   		
+   			nd->_op= Operator_pow;
+			currentScope->addSymbol(v->getName(),v);
+   		}	
+   		
+   		astStack.push_back(nd);   		
+   	}
+   	
+   
+   }
    
    void exitExpr_no_op(TigerParser::Expr_no_opContext * ctx) override { 
    
@@ -384,20 +633,52 @@ public:
    		//create temp with assigned value
    		auto nd = new ASTNode();
    		nd->_isVar=true;
-   		nd->_var= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));   		
-		currentScope->addSymbol(nd->_var->getName(),nd->_var);
-   		astStack.push_back(nd);
-   	}   	
-   	else if(ctx->lvalue()){
-   		//create temp with assigned lvalue
-   		auto nd = new ASTNode();
-   	
+   		auto v= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));
+   		nd->_var= v->getName();   		
+		currentScope->addSymbol(v->getName(),v);
    		astStack.push_back(nd);
    	}
    }
 
 
 
+
+  void exitLvalue(TigerParser::LvalueContext * ctx) override { 
+  	auto nd = new ASTNode();
+	nd->_isVar=true;
+	//use existing var
+	nd->_var = ctx->ID()->getText();
+	
+	if(ctx->lvalue_tail() && ctx->lvalue_tail()->expr()){  
+		
+   		
+		nd->_isIndex= true;		
+		nd->_index = astStack.back();
+		astStack.pop_back();
+	}
+	astStack.push_back(nd);
+  }
+
+
+
+
+  void exitAssignment_stat(TigerParser::Assignment_statContext * ctx) override { 
+  	//pop last ASTNode and put it in rval
+  	
+  	//use lvalue l_tail to determine remaining AST nodes to take out, and put them in lval of assignment
+  
+  }
+  
+  
+  
+  void enterStat_seq_if(TigerParser::Stat_seq_ifContext * ctx) override { 
+  	
+  }
+  void exitStat_seq_if(TigerParser::Stat_seq_ifContext * ctx) override { 
+  
+  }
+  
+  void enterIf_else_stat
 
 
 

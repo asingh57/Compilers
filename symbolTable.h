@@ -279,14 +279,15 @@ enum Operator{
 
 class ASTNode{
 public:
-	std::vector<ASTNode*> _children;
+	ASTNode* _left;
+	ASTNode* _right;
 	ASTNode* _parent;
 	Operator _op;
 	bool _isVar;
-	SymbolVariable* _var;
+	std::string _var;
 	bool _isIndex;
-	ASTNode* index;
-	ASTNode(ASTNode* parent=NULL): _parent(parent), _isIndex(false), _children(){
+	ASTNode* _index;
+	ASTNode(ASTNode* parent=NULL): _parent(parent), _isIndex(false), _left(NULL), _right(NULL){
 	
 	}
 };
@@ -311,10 +312,8 @@ class IfStat: public Stat{
 		std::vector<Stat*> _ifStats;
 };
 
-class IfElseStat: public Stat{
+class IfElseStat: public IfStat{
 	public:
-		ASTNode* _condition;
-		std::vector<Stat*> _ifStat;
 		std::vector<Stat*> _elseStat;
 };
 

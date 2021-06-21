@@ -7,7 +7,7 @@ let
     static result : int :=9;
     var test : catList := 10;
 begin
-    function fib (bb : int, naaa : int, nn : catList) : int
+    function fib (n : int, naaa : int, nn : catList) : int
     begin
         let
             var tmp1, tmp2 : int := 0;
@@ -17,6 +17,7 @@ begin
             else
                 tmp1 := fib(n-1);
                 tmp2 := fib(n-2);
+                tmp2 := tmp2 ** tmp2;
                 return tmp1 + tmp2;
             endif;
         end
