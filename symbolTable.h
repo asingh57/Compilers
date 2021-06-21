@@ -6,189 +6,219 @@
 #include <variant>
 #include <vector>
 #include <cstring>
-class Scope;
-struct Symbol;
 
-enum DataType{
-//uninitialised data type
-TYPE_ZERO = 0,
-//types
- TYPE_INT,
- TYPE_VOID,
-TYPE_ALIAS_ASSIGNED, //this is a var which has been assigned an alias val
 
-//type array
- TYPE_ARRAY,
-
-//type alias
- TYPE_ALIAS,
-
-//function
- TYPE_FUNCTION,
- 
+enum Type{
+TYPE_TYPEDEF = 0,
+TYPE_VARIABLE = 1,
+TYPE_FUNC = 2,
+TYPE_INT= 3,
+TYPE_VOID
 };
 
 enum StorageClass{
-	STORAGE_STATIC,
-	STORAGE_VAR
+	STORAGE_VAR,
+	STORAGE_STATIC
 };
 
-typedef int Value;
+class Scope;
 
-struct Symbol{
-	static int tabCount;
-	
-	
-	DataType type;
-	StorageClass storageclass;
-	Value val;
-	bool hasValue;
-	std::string name;
-	
-	//valid for arrays
-	DataType arrayItemType;
-	std::vector<Symbol> symbolArray;
-	int len;
-	
-	//valid for aliases
-	DataType aliasType;	
-	Symbol* alias;//alias assigned to alias
-	
-	//valid for loops and functions
-	Scope* scope;
-	
-	//valid only for function calls
-	std::vector<Symbol*> inputVariables;
-	DataType returnType; 
-	
-	void print();
 
-	
-	Symbol():type(TYPE_ZERO),hasValue(false){
-	
-	}
+class Symbol{
+protected:
+	Type _baseType;
+	std::string _name;
+	Scope* _scope;
+public:
+	static int tempCounter;
+public: 
+	Symbol(std::string name, Scope* scope, Type baseType): 
+		_name(name), 
+		_scope(scope), 
+		_baseType(baseType){}
+		
+	virtual void print() {};
+
 };
-
-
 
 class Scope{
-	private:
+private:
+	std::map<std::string, Symbol*> _symbolsMap;
+	Scope* _parentScope;	
 	std::string _name;
-	Scope* _parent;
-	std::map<std::string, Symbol*> _symbols;
+	Scope(std::string name, Scope* parentScope=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name){
+	
+	}
+public:
+
 	static int scopeCounter;
-	public:
-	Scope(std::string name, Scope* parent=nullptr): _name(name), _parent(parent), _symbols(){}
-	void addSymbol(std::string name, Symbol* property){
-		_symbols.insert(std::make_pair(name,property));
-		property->name = name;	
-	}
-	
-	Scope* getParent(){
-		return _parent;
-	}
-	
-	Symbol* getSymbol(std::string name,bool checkParents=true){
-		auto fnd = _symbols.find(name);
-		if(fnd != _symbols.end()){
-			return fnd->second;
-			
+	static int tabCounter;
+	static void tabs(){
+		for(int i=0;i<tabCounter;i++){
+			std::cout << "    ";
 		}
-		if(_parent){
-			return _parent->getSymbol(name);
-		}
-		return NULL;
 	}
-		
-		
+public:
+	//scope factory
+	static Scope* create(Scope* parent=NULL){
+		return new Scope("Scope " + std::to_string(scopeCounter++), parent);
+	}
 	
-  void printSymbolTable(){
-  
-	for (auto const& [key, val] : _symbols)
-	{
-	    val->print();	    
-	} 
 	
-  }
+	void addSymbol(std::string name, Symbol* value){
+		_symbolsMap.insert(std::make_pair(name,value));
+	}
+	Symbol* searchSymbol(std::string name, bool checkParents){
+		auto search= _symbolsMap.find(name);
+		if(search!=_symbolsMap.end()){
+			return search->second;
+		}
+		
+		if(_parentScope && checkParents){
+			return _parentScope->searchSymbol(name,checkParents);
+		}
+		
+		return nullptr;
+	}
+	
+	
+	void printSymbols(){
+		tabs();
+		std::cout<< _name <<":" <<std::endl;
+		tabCounter++;
+		for(auto const& [key, val] : _symbolsMap){
+			val->print();
+		}
+		tabCounter--;
+	}
+	
+
 };
 
-int Scope::scopeCounter=0;
-int Symbol::tabCount=0;
-
-
-
-void Symbol::print(){
+class SymbolVariable : public Symbol{
+private:
+	Type _deriveFromType;
+	std::string _deriveFromSymbolName;
+	StorageClass _storageclass;
+	bool _hasValue;
+	int _defaultValue;
+public: 
+	SymbolVariable(
+	std::string name, 
+	Scope* scope, 
+	Type deriveFromType=TYPE_INT, 
+	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
+	StorageClass storageclass=STORAGE_VAR, 
+	bool hasValue=false ,
+	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
+	: 
+		Symbol(name,scope, TYPE_VARIABLE),
+		_deriveFromType(deriveFromType), 
+		_deriveFromSymbolName(deriveFromSymbolName), 
+		_storageclass(storageclass),
+		_hasValue(hasValue), 
+		_defaultValue(defaultValue){}
 		
-		tabCount++;
-		for(int i = 0; i< tabCount; i++){
-		    	std::cout <<  "    ";
+		
+		
+	void print() override {
+		
+		Scope::tabs();
+		
+		std::cout << _name <<", " <<std::string(_storageclass==STORAGE_VAR? "var":"static");
+		if(_deriveFromType == TYPE_INT){
+			std::cout << ", int";
 		}
-		if(type==TYPE_INT){
-			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", int";
-			if(hasValue){
-				std::cout<<", "<<val;
-			}
-		}
-		else if(type == TYPE_ALIAS_ASSIGNED){
-			std::cout << name << ", " << std::string((storageclass==STORAGE_STATIC)?"static":"var")<<", "<<alias->name;
-			if(hasValue){
-				std::cout<<", "<<val;
-			}
-		}
-		else if(type==TYPE_ALIAS){
-			std::cout << name << ", type, ";
-			if(aliasType==TYPE_ALIAS){
-				std::cout << alias->name;
-			}
-			else if(aliasType==TYPE_INT){
-				std::cout << "int";
-			}
-			else if(aliasType==TYPE_ARRAY){
-				std::cout << "array, "<<len;
-			}
-		}
-		else if(type==TYPE_FUNCTION){
-			std::cout << name<<",Function ,";
-			
-			std::cout <<"\n";
-			for(int i = 0; i< tabCount; i++){
-			    	std::cout <<  "    ";
-			}
-			std::cout <<"(\n";
-			for(auto sy : inputVariables){			
-				sy->print();
-			}
-			
-			std::cout <<"\n";
-			for(int i = 0; i< tabCount; i++){
-			    	std::cout <<  "    ";
-			}
-			std::cout <<") -> ";
-			
-			if(returnType==TYPE_ALIAS_ASSIGNED){
-				std::cout << alias->name;
-			}
-			else if(returnType==TYPE_INT){
-				std::cout << "int";
-			}
-			else if(returnType==TYPE_ARRAY){
-				std::cout << "array"<<len;
-			}
-			else if(returnType==TYPE_VOID){
-				std::cout << "void";
-			}
-			std::cout << ":\n";
-			
-			scope->printSymbolTable();
+		else if(_deriveFromType == TYPE_TYPEDEF){
+			std::cout << ", " << _deriveFromSymbolName;
 		}
 		
-		std::cout << "\n";
+		std::cout << std::endl;
 	
-		tabCount--;
+	};
+};
+
+class SymbolTypedef : public Symbol{
+	bool _isArray;
+	int _arrayLen; 
+	Type _deriveFromType; 
+	std::string _deriveFromSymbolName;
+public: 
+	SymbolTypedef(
+	std::string name, 
+	Scope* scope, 
+	bool isArray = false, 
+	int arrayLen=0, 
+	Type deriveFromType=TYPE_INT, 
+	std::string deriveFromSymbolName=""
+	)
+	: 
+		Symbol(name,scope,TYPE_TYPEDEF), 
+		_isArray(isArray),
+		_arrayLen(arrayLen),
+		_deriveFromType(deriveFromType),
+		_deriveFromSymbolName(deriveFromSymbolName)
+		{}
 		
 		
+	
+	void print() override {
+		
+		Scope::tabs();
+		
+		std::cout << _name <<", type";
+		if(_deriveFromType == TYPE_INT){
+			std::cout << ", int";
+		}
+		else if(_deriveFromType == TYPE_TYPEDEF){
+			std::cout << ", " << _deriveFromSymbolName;
+		}
+		
+		if(_isArray){
+			std::cout << ",array , " << _arrayLen;
+		}
+		
+		std::cout << std::endl;
+	
+	};
+};
+
+class SymbolFunc : public Symbol{
+
+	Type _returnType; 
+	std::string _returnSymbol;
+public: 
+	SymbolFunc(std::string name, 
+	Scope* scope, 
+	Type returnType=TYPE_VOID, 
+	std::string returnSymbol=""/*fill this if return type is TYPE_TYPEDEF*/
+	)
+	: 
+	Symbol(name,scope,TYPE_FUNC), 
+	_returnType(returnType), 
+	_returnSymbol(returnSymbol){
 	}
+	
+	
+	void print() override {
+		
+		Scope::tabs();
+		
+		std::cout << _name <<", func";
+		if(_returnType == TYPE_INT){
+			std::cout << ", int";
+		}
+		else if(_returnType == TYPE_TYPEDEF){
+			std::cout << ", " << _returnSymbol;
+		}
+		
+		std::cout << std::endl;
+	
+	};
+};
 
 
 
-
+int Scope::tabCounter=0;
+int Scope::scopeCounter=1;
+int Symbol::tempCounter=1;
