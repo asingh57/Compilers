@@ -2,6 +2,8 @@
 program fib
 let
     type catList = array [8] of int;
+    type catList2 = int;
+    type catList3 = catList;
     static result : int :=9;
     var test : catList := 10;
 begin

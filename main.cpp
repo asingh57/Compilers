@@ -170,14 +170,17 @@ int main(int argc, char *argv[]){
 //-----------------------------------------------------------------------------------------------------
 	
 	
-	IRGenerator intermediateRep= IRGenerator();
+	//IRGenerator intermediateRep= IRGenerator();
 	
-  	tree::ParseTreeWalker::DEFAULT.walk(&intermediateRep, tree);
+	SymbolTableGenerator symT;//collects functions, their params and their statements
+  	tree::ParseTreeWalker::DEFAULT.walk(&symT, tree);
+
+
+	
 	
 	if(printSymbolTable){
 	
-		std::cout <<"symbol table:\n";
-		intermediateRep.printSymbolTable();
+		symT.printSymbolTable();
 	}
 	
 	

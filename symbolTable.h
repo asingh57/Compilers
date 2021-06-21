@@ -39,6 +39,9 @@ public:
 		
 	virtual void print() {};
 
+	std::string getName(){
+		return _name;
+	}
 };
 
 class Scope{
@@ -47,10 +50,8 @@ private:
 	Scope* _parentScope;	
 	std::string _name;
 	Scope(std::string name, Scope* parentScope=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name){
-	
 	}
 public:
-
 	static int scopeCounter;
 	static int tabCounter;
 	static void tabs(){
@@ -58,24 +59,28 @@ public:
 			std::cout << "    ";
 		}
 	}
-public:
 	//scope factory
 	static Scope* create(Scope* parent=NULL){
 		return new Scope("Scope " + std::to_string(scopeCounter++), parent);
 	}
 	
+public:
+
+	Scope* parent(){
+		return _parentScope;
+	}
 	
 	void addSymbol(std::string name, Symbol* value){
 		_symbolsMap.insert(std::make_pair(name,value));
 	}
-	Symbol* searchSymbol(std::string name, bool checkParents){
+	Symbol* getSymbol(std::string name, bool checkParents=true){
 		auto search= _symbolsMap.find(name);
 		if(search!=_symbolsMap.end()){
 			return search->second;
 		}
 		
 		if(_parentScope && checkParents){
-			return _parentScope->searchSymbol(name,checkParents);
+			return _parentScope->getSymbol(name,checkParents);
 		}
 		
 		return nullptr;
@@ -104,8 +109,8 @@ private:
 	int _defaultValue;
 public: 
 	SymbolVariable(
-	std::string name, 
-	Scope* scope, 
+	std::string name,
+	Scope* scope,
 	Type deriveFromType=TYPE_INT, 
 	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
 	StorageClass storageclass=STORAGE_VAR, 
@@ -145,8 +150,8 @@ class SymbolTypedef : public Symbol{
 	std::string _deriveFromSymbolName;
 public: 
 	SymbolTypedef(
-	std::string name, 
-	Scope* scope, 
+	std::string name,
+	Scope* scope,
 	bool isArray = false, 
 	int arrayLen=0, 
 	Type deriveFromType=TYPE_INT, 
@@ -187,18 +192,29 @@ class SymbolFunc : public Symbol{
 
 	Type _returnType; 
 	std::string _returnSymbol;
+	std::vector<SymbolVariable* > _params;
+	Scope* associatedScope;
 public: 
-	SymbolFunc(std::string name, 
-	Scope* scope, 
+	SymbolFunc(std::string name,
+	Scope* scope,
 	Type returnType=TYPE_VOID, 
 	std::string returnSymbol=""/*fill this if return type is TYPE_TYPEDEF*/
 	)
 	: 
 	Symbol(name,scope,TYPE_FUNC), 
 	_returnType(returnType), 
-	_returnSymbol(returnSymbol){
+	_returnSymbol(returnSymbol),
+	_params(),
+	associatedScope(NULL)
+	{
 	}
 	
+	void addParam(SymbolVariable* sy){
+		_params.push_back(sy);
+	}
+	void setAssociatedScope(Scope* sc){
+		associatedScope=sc;
+	}
 	
 	void print() override {
 		
@@ -211,8 +227,10 @@ public:
 		else if(_returnType == TYPE_TYPEDEF){
 			std::cout << ", " << _returnSymbol;
 		}
-		
 		std::cout << std::endl;
+		Scope::tabCounter++;
+		associatedScope->printSymbols();		
+		Scope::tabCounter--;
 	
 	};
 };
