@@ -65,11 +65,53 @@ public:
   virtual void enterParam(TigerParser::ParamContext *ctx) = 0;
   virtual void exitParam(TigerParser::ParamContext *ctx) = 0;
 
+  virtual void enterStat_seq_func(TigerParser::Stat_seq_funcContext *ctx) = 0;
+  virtual void exitStat_seq_func(TigerParser::Stat_seq_funcContext *ctx) = 0;
+
   virtual void enterStat_seq(TigerParser::Stat_seqContext *ctx) = 0;
   virtual void exitStat_seq(TigerParser::Stat_seqContext *ctx) = 0;
 
   virtual void enterStat(TigerParser::StatContext *ctx) = 0;
   virtual void exitStat(TigerParser::StatContext *ctx) = 0;
+
+  virtual void enterAssignment_stat(TigerParser::Assignment_statContext *ctx) = 0;
+  virtual void exitAssignment_stat(TigerParser::Assignment_statContext *ctx) = 0;
+
+  virtual void enterIf_stat(TigerParser::If_statContext *ctx) = 0;
+  virtual void exitIf_stat(TigerParser::If_statContext *ctx) = 0;
+
+  virtual void enterIf_else_stat(TigerParser::If_else_statContext *ctx) = 0;
+  virtual void exitIf_else_stat(TigerParser::If_else_statContext *ctx) = 0;
+
+  virtual void enterWhile_stat(TigerParser::While_statContext *ctx) = 0;
+  virtual void exitWhile_stat(TigerParser::While_statContext *ctx) = 0;
+
+  virtual void enterFor_stat(TigerParser::For_statContext *ctx) = 0;
+  virtual void exitFor_stat(TigerParser::For_statContext *ctx) = 0;
+
+  virtual void enterFncall_stat(TigerParser::Fncall_statContext *ctx) = 0;
+  virtual void exitFncall_stat(TigerParser::Fncall_statContext *ctx) = 0;
+
+  virtual void enterBreak_stat(TigerParser::Break_statContext *ctx) = 0;
+  virtual void exitBreak_stat(TigerParser::Break_statContext *ctx) = 0;
+
+  virtual void enterReturn_stat(TigerParser::Return_statContext *ctx) = 0;
+  virtual void exitReturn_stat(TigerParser::Return_statContext *ctx) = 0;
+
+  virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext *ctx) = 0;
+  virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext *ctx) = 0;
+
+  virtual void enterStat_seq_if(TigerParser::Stat_seq_ifContext *ctx) = 0;
+  virtual void exitStat_seq_if(TigerParser::Stat_seq_ifContext *ctx) = 0;
+
+  virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext *ctx) = 0;
+  virtual void exitStat_seq_else(TigerParser::Stat_seq_elseContext *ctx) = 0;
+
+  virtual void enterStat_seq_while(TigerParser::Stat_seq_whileContext *ctx) = 0;
+  virtual void exitStat_seq_while(TigerParser::Stat_seq_whileContext *ctx) = 0;
+
+  virtual void enterStat_seq_for(TigerParser::Stat_seq_forContext *ctx) = 0;
+  virtual void exitStat_seq_for(TigerParser::Stat_seq_forContext *ctx) = 0;
 
   virtual void enterOpt_return(TigerParser::Opt_returnContext *ctx) = 0;
   virtual void exitOpt_return(TigerParser::Opt_returnContext *ctx) = 0;
@@ -89,17 +131,32 @@ public:
   virtual void enterLogical_op_expr(TigerParser::Logical_op_exprContext *ctx) = 0;
   virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext *ctx) = 0;
 
+  virtual void enterLogical_op_expr_ext(TigerParser::Logical_op_expr_extContext *ctx) = 0;
+  virtual void exitLogical_op_expr_ext(TigerParser::Logical_op_expr_extContext *ctx) = 0;
+
   virtual void enterCompare_op_expr(TigerParser::Compare_op_exprContext *ctx) = 0;
   virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext *ctx) = 0;
+
+  virtual void enterCompare_op_expr_ext(TigerParser::Compare_op_expr_extContext *ctx) = 0;
+  virtual void exitCompare_op_expr_ext(TigerParser::Compare_op_expr_extContext *ctx) = 0;
 
   virtual void enterAdd_op_expr(TigerParser::Add_op_exprContext *ctx) = 0;
   virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext *ctx) = 0;
 
+  virtual void enterAdd_op_expr_ext(TigerParser::Add_op_expr_extContext *ctx) = 0;
+  virtual void exitAdd_op_expr_ext(TigerParser::Add_op_expr_extContext *ctx) = 0;
+
   virtual void enterMult_op_expr(TigerParser::Mult_op_exprContext *ctx) = 0;
   virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext *ctx) = 0;
 
+  virtual void enterMult_op_expr_ext(TigerParser::Mult_op_expr_extContext *ctx) = 0;
+  virtual void exitMult_op_expr_ext(TigerParser::Mult_op_expr_extContext *ctx) = 0;
+
   virtual void enterPow_op_expr(TigerParser::Pow_op_exprContext *ctx) = 0;
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext *ctx) = 0;
+
+  virtual void enterPow_op_expr_ext(TigerParser::Pow_op_expr_extContext *ctx) = 0;
+  virtual void exitPow_op_expr_ext(TigerParser::Pow_op_expr_extContext *ctx) = 0;
 
   virtual void enterExpr_no_op(TigerParser::Expr_no_opContext *ctx) = 0;
   virtual void exitExpr_no_op(TigerParser::Expr_no_opContext *ctx) = 0;

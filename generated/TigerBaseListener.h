@@ -67,11 +67,53 @@ public:
   virtual void enterParam(TigerParser::ParamContext * /*ctx*/) override { }
   virtual void exitParam(TigerParser::ParamContext * /*ctx*/) override { }
 
+  virtual void enterStat_seq_func(TigerParser::Stat_seq_funcContext * /*ctx*/) override { }
+  virtual void exitStat_seq_func(TigerParser::Stat_seq_funcContext * /*ctx*/) override { }
+
   virtual void enterStat_seq(TigerParser::Stat_seqContext * /*ctx*/) override { }
   virtual void exitStat_seq(TigerParser::Stat_seqContext * /*ctx*/) override { }
 
   virtual void enterStat(TigerParser::StatContext * /*ctx*/) override { }
   virtual void exitStat(TigerParser::StatContext * /*ctx*/) override { }
+
+  virtual void enterAssignment_stat(TigerParser::Assignment_statContext * /*ctx*/) override { }
+  virtual void exitAssignment_stat(TigerParser::Assignment_statContext * /*ctx*/) override { }
+
+  virtual void enterIf_stat(TigerParser::If_statContext * /*ctx*/) override { }
+  virtual void exitIf_stat(TigerParser::If_statContext * /*ctx*/) override { }
+
+  virtual void enterIf_else_stat(TigerParser::If_else_statContext * /*ctx*/) override { }
+  virtual void exitIf_else_stat(TigerParser::If_else_statContext * /*ctx*/) override { }
+
+  virtual void enterWhile_stat(TigerParser::While_statContext * /*ctx*/) override { }
+  virtual void exitWhile_stat(TigerParser::While_statContext * /*ctx*/) override { }
+
+  virtual void enterFor_stat(TigerParser::For_statContext * /*ctx*/) override { }
+  virtual void exitFor_stat(TigerParser::For_statContext * /*ctx*/) override { }
+
+  virtual void enterFncall_stat(TigerParser::Fncall_statContext * /*ctx*/) override { }
+  virtual void exitFncall_stat(TigerParser::Fncall_statContext * /*ctx*/) override { }
+
+  virtual void enterBreak_stat(TigerParser::Break_statContext * /*ctx*/) override { }
+  virtual void exitBreak_stat(TigerParser::Break_statContext * /*ctx*/) override { }
+
+  virtual void enterReturn_stat(TigerParser::Return_statContext * /*ctx*/) override { }
+  virtual void exitReturn_stat(TigerParser::Return_statContext * /*ctx*/) override { }
+
+  virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { }
+  virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { }
+
+  virtual void enterStat_seq_if(TigerParser::Stat_seq_ifContext * /*ctx*/) override { }
+  virtual void exitStat_seq_if(TigerParser::Stat_seq_ifContext * /*ctx*/) override { }
+
+  virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext * /*ctx*/) override { }
+  virtual void exitStat_seq_else(TigerParser::Stat_seq_elseContext * /*ctx*/) override { }
+
+  virtual void enterStat_seq_while(TigerParser::Stat_seq_whileContext * /*ctx*/) override { }
+  virtual void exitStat_seq_while(TigerParser::Stat_seq_whileContext * /*ctx*/) override { }
+
+  virtual void enterStat_seq_for(TigerParser::Stat_seq_forContext * /*ctx*/) override { }
+  virtual void exitStat_seq_for(TigerParser::Stat_seq_forContext * /*ctx*/) override { }
 
   virtual void enterOpt_return(TigerParser::Opt_returnContext * /*ctx*/) override { }
   virtual void exitOpt_return(TigerParser::Opt_returnContext * /*ctx*/) override { }
@@ -91,17 +133,32 @@ public:
   virtual void enterLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
   virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
 
+  virtual void enterLogical_op_expr_ext(TigerParser::Logical_op_expr_extContext * /*ctx*/) override { }
+  virtual void exitLogical_op_expr_ext(TigerParser::Logical_op_expr_extContext * /*ctx*/) override { }
+
   virtual void enterCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
   virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterCompare_op_expr_ext(TigerParser::Compare_op_expr_extContext * /*ctx*/) override { }
+  virtual void exitCompare_op_expr_ext(TigerParser::Compare_op_expr_extContext * /*ctx*/) override { }
 
   virtual void enterAdd_op_expr(TigerParser::Add_op_exprContext * /*ctx*/) override { }
   virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * /*ctx*/) override { }
 
+  virtual void enterAdd_op_expr_ext(TigerParser::Add_op_expr_extContext * /*ctx*/) override { }
+  virtual void exitAdd_op_expr_ext(TigerParser::Add_op_expr_extContext * /*ctx*/) override { }
+
   virtual void enterMult_op_expr(TigerParser::Mult_op_exprContext * /*ctx*/) override { }
   virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * /*ctx*/) override { }
 
+  virtual void enterMult_op_expr_ext(TigerParser::Mult_op_expr_extContext * /*ctx*/) override { }
+  virtual void exitMult_op_expr_ext(TigerParser::Mult_op_expr_extContext * /*ctx*/) override { }
+
   virtual void enterPow_op_expr(TigerParser::Pow_op_exprContext * /*ctx*/) override { }
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * /*ctx*/) override { }
+
+  virtual void enterPow_op_expr_ext(TigerParser::Pow_op_expr_extContext * /*ctx*/) override { }
+  virtual void exitPow_op_expr_ext(TigerParser::Pow_op_expr_extContext * /*ctx*/) override { }
 
   virtual void enterExpr_no_op(TigerParser::Expr_no_opContext * /*ctx*/) override { }
   virtual void exitExpr_no_op(TigerParser::Expr_no_opContext * /*ctx*/) override { }

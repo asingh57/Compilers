@@ -172,15 +172,17 @@ int main(int argc, char *argv[]){
 	
 	//IRGenerator intermediateRep= IRGenerator();
 	
-	SymbolTableGenerator symT;//collects functions, their params and their statements
-  	tree::ParseTreeWalker::DEFAULT.walk(&symT, tree);
+	FunctionReader funRead;//collects function names
+  	tree::ParseTreeWalker::DEFAULT.walk(&funRead, tree);
 
-
+	IRGenerator ig(funRead);
+  	tree::ParseTreeWalker::DEFAULT.walk(&ig, tree);
+	
 	
 	
 	if(printSymbolTable){
 	
-		symT.printSymbolTable();
+		funRead.printSymbolTable();
 	}
 	
 	

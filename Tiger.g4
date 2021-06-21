@@ -81,35 +81,57 @@ var_declaration : storage_class id_list COLON type optional_init SEMICOLON;
 storage_class : VAR | STATIC;
 id_list : ID | ID COMMA id_list;
 optional_init : ASSIGN constant | /*empty*/;
-funct : FUNCTION ID OPENPAREN param_list CLOSEPAREN ret_type BEGIN stat_seq END;
+funct : FUNCTION ID OPENPAREN param_list CLOSEPAREN ret_type BEGIN stat_seq_func END;
 param_list : param param_list_tail | /*empty*/;
 param_list_tail : COMMA param param_list_tail | /*empty*/;
 ret_type : COLON type | /*empty*/;
 param : ID COLON type;
+stat_seq_func: stat_seq;
 stat_seq : stat | stat stat_seq;
-stat : lvalue l_tail ASSIGN expr SEMICOLON |
-	IF expr THEN stat_seq ENDIF SEMICOLON |
-	IF expr THEN stat_seq ELSE stat_seq ENDIF SEMICOLON |
-	WHILE expr DO stat_seq ENDDO SEMICOLON |
-	FOR ID ASSIGN expr TO expr DO stat_seq ENDDO SEMICOLON |
-	opt_prefix ID OPENPAREN expr_list CLOSEPAREN SEMICOLON |
-	BREAK SEMICOLON |
-	RETURN opt_return SEMICOLON |
-	LET declaration_segment BEGIN stat_seq END;
+stat : assignment_stat |
+	if_stat |
+	if_else_stat |
+	while_stat |
+	for_stat |
+	fncall_stat |
+	break_stat |
+	return_stat |
+	sub_scope_stat;
+
+assignment_stat : lvalue l_tail ASSIGN expr SEMICOLON;
+if_stat: IF expr THEN stat_seq_if ENDIF SEMICOLON;
+if_else_stat: IF expr THEN stat_seq_if ELSE stat_seq_else ENDIF SEMICOLON;
+while_stat: WHILE expr DO stat_seq_while ENDDO SEMICOLON;
+for_stat: FOR ID ASSIGN expr TO expr DO stat_seq_for ENDDO SEMICOLON;
+fncall_stat: opt_prefix ID OPENPAREN expr_list CLOSEPAREN SEMICOLON;
+break_stat: BREAK SEMICOLON;
+return_stat: RETURN opt_return SEMICOLON;
+sub_scope_stat: LET declaration_segment BEGIN stat_seq END;
+
+
+stat_seq_if : stat_seq;
+stat_seq_else : stat_seq;
+stat_seq_while : stat_seq;
+stat_seq_for : stat_seq;
 opt_return : expr | /*empty*/;
 opt_prefix : lvalue ASSIGN | /*empty*/;
 l_tail : ASSIGN lvalue l_tail | /*empty*/;
-expr : constant | lvalue | unambiguous_expr | OPENPAREN expr CLOSEPAREN;
+expr : expr_no_op | unambiguous_expr;
 
 
 //fix binary operator ambiguity by putting low priority things first in the recursion
 
 unambiguous_expr: logical_op_expr;
-logical_op_expr: compare_op_expr ( ( AND | OR ) compare_op_expr)?; //there cannot be more than one AND/OR in a row
-compare_op_expr: add_op_expr ( ( EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ ) add_op_expr )*;
-add_op_expr: mult_op_expr ( ( PLUS | MINUS ) mult_op_expr )*;
-mult_op_expr: pow_op_expr ( ( MULT | DIV ) pow_op_expr )*;
-pow_op_expr: expr_no_op ( ( POW ) expr_no_op )*;
+logical_op_expr: compare_op_expr logical_op_expr_ext;
+logical_op_expr_ext: ( AND | OR ) compare_op_expr logical_op_expr_ext | /*empty*/;
+compare_op_expr: add_op_expr compare_op_expr_ext;
+compare_op_expr_ext: ( EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ ) add_op_expr compare_op_expr_ext | /*empty*/;
+add_op_expr: mult_op_expr add_op_expr_ext;
+add_op_expr_ext: ( PLUS | MINUS ) mult_op_expr add_op_expr_ext | /*e*/;
+mult_op_expr: pow_op_expr mult_op_expr_ext;
+mult_op_expr_ext: ( MULT | DIV ) pow_op_expr mult_op_expr_ext | /*e*/;
+pow_op_expr: expr_no_op pow_op_expr_ext ;
+pow_op_expr_ext : ( POW ) expr_no_op pow_op_expr_ext | /*e*/;
 //create expr but without binary operator
 expr_no_op: constant | lvalue | OPENPAREN expr CLOSEPAREN;
 

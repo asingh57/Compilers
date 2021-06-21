@@ -22,7 +22,7 @@ enum StorageClass{
 };
 
 class Scope;
-
+class Stat;
 
 class Symbol{
 protected:
@@ -44,12 +44,14 @@ public:
 	}
 };
 
+
 class Scope{
 private:
 	std::map<std::string, Symbol*> _symbolsMap;
 	Scope* _parentScope;	
 	std::string _name;
-	Scope(std::string name, Scope* parentScope=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name){
+	std::vector<Stat*> _stats;
+	Scope(std::string name, Scope* parentScope=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name), _stats(){
 	}
 public:
 	static int scopeCounter;
@@ -62,6 +64,10 @@ public:
 	//scope factory
 	static Scope* create(Scope* parent=NULL){
 		return new Scope("Scope " + std::to_string(scopeCounter++), parent);
+	}
+	
+	std::vector<Stat*>* getStatPtr(){
+		return &_stats;
 	}
 	
 public:
@@ -124,6 +130,20 @@ public:
 		_hasValue(hasValue), 
 		_defaultValue(defaultValue){}
 		
+	SymbolVariable(
+	Scope* scope,
+	Type deriveFromType=TYPE_INT, 
+	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
+	StorageClass storageclass=STORAGE_VAR, 
+	bool hasValue=false ,
+	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
+	: 
+		Symbol("_t"+std::to_string(Symbol::tempCounter++),scope, TYPE_VARIABLE),
+		_deriveFromType(deriveFromType), 
+		_deriveFromSymbolName(deriveFromSymbolName), 
+		_storageclass(storageclass),
+		_hasValue(hasValue), 
+		_defaultValue(defaultValue){}
 		
 		
 	void print() override {
@@ -136,6 +156,9 @@ public:
 		}
 		else if(_deriveFromType == TYPE_TYPEDEF){
 			std::cout << ", " << _deriveFromSymbolName;
+		}
+		if(_hasValue){
+			std::cout << ", "<< _defaultValue;
 		}
 		
 		std::cout << std::endl;
@@ -215,6 +238,9 @@ public:
 	void setAssociatedScope(Scope* sc){
 		associatedScope=sc;
 	}
+	Scope* getAssociatedScope(){
+		return associatedScope;
+	}
 	
 	void print() override {
 		
@@ -233,6 +259,92 @@ public:
 		Scope::tabCounter--;
 	
 	};
+};
+
+
+
+enum Operator{
+	Operator_plus,
+	Operator_minus,
+	Operator_multiply,
+	Operator_divide,
+	Operator_pow,
+	Operator_lt,	
+	Operator_gt,	
+	Operator_lte,	
+	Operator_gte,	
+	Operator_eq
+};
+
+
+class ASTNode{
+public:
+	std::vector<ASTNode*> _children;
+	ASTNode* _parent;
+	Operator _op;
+	bool _isVar;
+	SymbolVariable* _var;
+	bool _isIndex;
+	ASTNode* index;
+	ASTNode(ASTNode* parent=NULL): _parent(parent), _isIndex(false), _children(){
+	
+	}
+};
+
+class Stat{
+
+};
+
+class AssignmentStat : public Stat{
+public:
+	std::vector<std::pair<SymbolVariable, ASTNode*>> vars;
+	ASTNode* rval;
+	
+	AssignmentStat():vars(){
+	
+	}
+};
+
+class IfStat: public Stat{
+	public:
+		ASTNode* _condition;
+		std::vector<Stat*> _ifStats;
+};
+
+class IfElseStat: public Stat{
+	public:
+		ASTNode* _condition;
+		std::vector<Stat*> _ifStat;
+		std::vector<Stat*> _elseStat;
+};
+
+class WhileStat: public Stat{
+	public:
+		ASTNode* _condition;
+		std::vector<Stat*> _stats;
+};
+
+class ForStat: public Stat{
+	public:
+		ASTNode* _conditionStart;
+		ASTNode* _conditionEnd;
+		std::vector<Stat*> _stats;
+};
+
+class FunctionCallStat: public Stat{
+	public:
+		std::string _function;
+		std::vector<ASTNode*> _params;
+};
+
+class ReturnCallStat: public Stat{
+	public:
+		ASTNode* _return;	
+};
+
+class SubScopeStat: public Stat{
+	public:
+		Scope* scope;
 };
 
 

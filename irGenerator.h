@@ -43,15 +43,18 @@ std::string desc;
 	exit(SEMANTIC_ERROR);
 }
 
-class SymbolTableGenerator  : public TigerBaseListener{
+class IRGenerator;
 
+class FunctionReader  : public TigerBaseListener{
+
+friend class IRGenerator;
 private:
 	Scope* globalScope;
 	Scope* currentScope;
-	bool inMain;
+   	ASTNode* currentASTNode;
 
 public:
-	SymbolTableGenerator(): inMain(false){
+	FunctionReader(){
 		
 	
 	}
@@ -103,8 +106,8 @@ public:
 		}
 	  	SymbolFunc * sym = new SymbolFunc(name, currentScope,retType,aliasName); 
 	  	currentScope->addSymbol(name, sym);
-	  	currentScope=Scope::create(currentScope);
-	  	sym->setAssociatedScope(currentScope);
+	  	sym->setAssociatedScope(Scope::create(currentScope));
+	  	/*
   		if(ctx->param_list()){
 			auto parList = ctx->param_list()->param_list_tail();
 			auto par = ctx->param_list()->param();
@@ -120,11 +123,6 @@ public:
 				std::string deriveFromSymbolName = "";
 				if(type->INTLIT()){
 					//integer literal: this is an array NOT ALLOWED
-					/*
-					inputSym->type=TYPE_ARRAY;
-					inputSym->arrayItemType= TYPE_INT;
-					inputSym->len = std::stoi (type->INTLIT()->getText());
-					*/
 					auto lineNum = type->ARRAY()->getSymbol()->getLine();
 					auto colNum = type->ARRAY()->getSymbol()->getCharPositionInLine();
 					printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
@@ -151,12 +149,92 @@ public:
 				name, 
 				currentScope, 
 				deriveFromType, 
-				deriveFromSymbolName /*used if deriveFromType is TYPE_TYPEDEF*/, 
+				deriveFromSymbolName , 
 				storageclass, 
 				hasValue ,
-				0/*gets assigned to zero if StorageClass  static*/);
+				0);
 				sym->addParam(var);	
-						
+				currentScope->addSymbol(name,var);		
+				par=parList->param();
+				parList=parList->param_list_tail();
+				if(!parList){
+					break;
+				}
+			}
+		
+		}*/
+		
+	  	
+	  }
+
+};
+
+
+
+
+class IRGenerator  : public TigerBaseListener{
+private:
+	Scope* globalScope;
+	Scope* currentScope;
+	std::vector<ASTNode*> astStack; 
+public:
+	IRGenerator(FunctionReader fr): globalScope(fr.globalScope), currentScope(fr.globalScope),astStack(){
+		
+	}
+	
+	void enterFunct(TigerParser::FunctContext * ctx) override {
+		auto name= ctx->ID()->getText();
+		auto sym =  dynamic_cast<SymbolFunc*>(globalScope->getSymbol(name));
+		
+		currentScope= sym->getAssociatedScope();
+		
+  		if(ctx->param_list()){
+			auto parList = ctx->param_list()->param_list_tail();
+			auto par = ctx->param_list()->param();
+			while(par){
+								
+				bool hasValue = false;
+				//add par to symbol table
+				auto varName = par->ID()->getText();
+				auto name = varName;
+				auto storageclass=STORAGE_VAR;
+				auto type = par->type();
+				auto deriveFromType = TYPE_INT;
+				std::string deriveFromSymbolName = "";
+				if(type->INTLIT()){
+					//integer literal: this is an array NOT ALLOWED
+					auto lineNum = type->ARRAY()->getSymbol()->getLine();
+					auto colNum = type->ARRAY()->getSymbol()->getCharPositionInLine();
+					printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
+				}		
+				else if(type->type_id()){
+					//type is int
+					deriveFromType=TYPE_INT;
+				}
+				else if(type->ID()){
+					//another type
+					//look this up in current symbol table
+					auto rvalSymbol = currentScope->getSymbol(type->ID()->getText());
+					if(!rvalSymbol){
+					
+						auto lineNum = type->ID()->getSymbol()->getLine();
+						auto colNum = type->ID()->getSymbol()->getCharPositionInLine();
+						printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
+					}
+					deriveFromType=TYPE_TYPEDEF;
+					deriveFromSymbolName = rvalSymbol->getName();						
+				}		
+				//now add this symbol
+				SymbolVariable *var = new SymbolVariable(
+				name, 
+				currentScope, 
+				deriveFromType, 
+				deriveFromSymbolName , 
+				storageclass, 
+				hasValue ,
+				0);
+				sym->addParam(var);	
+				currentScope->addSymbol(name,var);		
 				par=parList->param();
 				parList=parList->param_list_tail();
 				if(!parList){
@@ -165,19 +243,15 @@ public:
 			}
 		
 		}
-	  	
-	  	
-	  	
-	  	
-	  }
-	  
-	   void exitFunct(TigerParser::FunctContext * ctx) override {
-	   	currentScope=currentScope->parent();
-	   }
-	  
-	  
-	  
-	  void enterType_declaration(TigerParser::Type_declarationContext *ctx) override { 
+		
+	}
+	
+	void exitFunct(TigerParser::FunctContext * ctx) override {
+		currentScope=currentScope->parent();
+		
+	}
+	
+	 void enterType_declaration(TigerParser::Type_declarationContext *ctx) override { 
 		//insert to symbol table ID matching with symbol
 		auto name = ctx->ID()->getText();
 		bool isArray= false;
@@ -291,6 +365,56 @@ public:
 			currentScope->addSymbol(name,sym);		
 		}
 	  }
+
+				
 	
-	
+   void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { }
+
+   void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { }
+
+   void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { }
+   
+   void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { }
+
+   void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { }
+   
+   void exitExpr_no_op(TigerParser::Expr_no_opContext * ctx) override { 
+   
+   	if(ctx->constant()){
+   		//create temp with assigned value
+   		auto nd = new ASTNode();
+   		nd->_isVar=true;
+   		nd->_var= new SymbolVariable(currentScope,TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));   		
+		currentScope->addSymbol(nd->_var->getName(),nd->_var);
+   		astStack.push_back(nd);
+   	}   	
+   	else if(ctx->lvalue()){
+   		//create temp with assigned lvalue
+   		auto nd = new ASTNode();
+   	
+   		astStack.push_back(nd);
+   	}
+   }
+
+
+
+
+
+
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
