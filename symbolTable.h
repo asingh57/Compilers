@@ -1,4 +1,4 @@
-#include "TigerBaseListener.h"
+#include "symbol.h"
 
 #include <map>
 #include <string>
@@ -7,70 +7,6 @@
 #include <cstring>
 
 
-class Stat;//statements type (ifelse, return, loop etc...)
-class Symbol;//symbol type (function. typedef, var (user defined as well as generated), static)
-
-class Scope{
-private:
-	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope
-	Scope* _parentScope;//parent scope
-	std::string _name;//scope name (auto generated
-	Stat* _associatedStat;//associated parent statement if applicable
-	std::vector<Stat*> _stats; //sub-statements inside scope
-	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
-		
-	}
-public:
-	static int scopeCounter;//counter for creating new scopes
-	static int tabCounter;//keeps count of scope tabs
-	static void tabs(){//print tabs
-		for(int i=0;i<tabCounter;i++){
-			std::cout << "    ";
-		}
-	}
-	//scope factory
-	static Scope* create(Scope* parent=NULL){
-		return new Scope("Scope " + std::to_string(scopeCounter++), parent);
-	}
-	
-	
-public:
-	//get parent
-	Scope* parent(){
-		return _parentScope;
-	}
-	
-	//add symbol to scope
-	void addSymbol(Symbol* value){
-		_symbolsMap.insert(std::make_pair(value->_name,value));
-	}
-	
-	//get symbol by name
-	Symbol* getSymbol(std::string name, bool checkParents=true){
-		auto search= _symbolsMap.find(name);
-		if(search!=_symbolsMap.end()){
-			return search->second;
-		}
-		
-		if(_parentScope && checkParents){
-			return _parentScope->getSymbol(name,checkParents);
-		}
-		
-		return nullptr;
-	}
-	
-	//print all symbols
-	void printSymbols(){
-		tabs();
-		std::cout<< _name <<":" <<std::endl;
-		tabCounter++;
-		for(auto const& [key, val] : _symbolsMap){
-			val->print();
-		}
-		tabCounter--;
-	}
-	
-};
 
 class SymbolTableGenerator : public TigerBaseListener{
 public:
@@ -83,9 +19,14 @@ public:
 	}
 	
 
+void printSymbolTable(){
+	globalScope->printSymbols();
+
+}
+
+
   virtual void enterType_declaration(TigerParser::Type_declarationContext * ctx) override {
   	//add type declarations to last scope
-  
   }
   
 
@@ -103,7 +44,7 @@ public:
   }
 
   virtual void enterRet_type(TigerParser::Ret_typeContext * /*ctx*/) override { 
-  	//add return type to last scope
+  	//add return type to last fn
   }
 
   virtual void enterParam(TigerParser::ParamContext * /*ctx*/) override {  
@@ -190,7 +131,7 @@ public:
   }
 
 
-// the following create ast nodes
+// the following create ast nodes and temp vars
   virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
 
   virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
@@ -211,4 +152,4 @@ public:
   }
 
 
-}
+};
