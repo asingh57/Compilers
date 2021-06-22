@@ -1,16 +1,16 @@
 #include "scope.h"
 
 
-Symbol::Symbol(std::string name,Scope* scope, Type type){
+Symbol::Symbol(std::string name,Type type){
 		_name = name;
-		_scope = scope;
-		scope->_symbolsMap.insert(std::make_pair(_name,this));
+		_scope = Scope::scopeStack.back();
+		_scope->_symbolsMap.insert(std::make_pair(_name,this));
 		_type=type;
 	}
-Symbol::Symbol(Scope* scope, Type type){
+Symbol::Symbol(Type type){
 	_name="_t"+std::to_string(counter++);
-	_scope = scope;
-	scope->_symbolsMap.insert(std::make_pair(_name,this));
+	_scope = Scope::scopeStack.back();
+	_scope->_symbolsMap.insert(std::make_pair(_name,this));
 		_type=type;
 }	
 
@@ -31,14 +31,13 @@ private:
 public: 
 	SymbolVariable(
 	std::string name,
-	Scope* scope,
 	Type deriveFromType=TYPE_INT, 
 	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
 	StorageClass storageclass=STORAGE_VAR, 
 	bool hasValue=false ,
 	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
 	: 
-		Symbol(name,scope, TYPE_VARIABLE),
+		Symbol(name, TYPE_VARIABLE),
 		_deriveFromType(deriveFromType), 
 		_deriveFromSymbolName(deriveFromSymbolName), 
 		_storageclass(storageclass),
@@ -46,14 +45,13 @@ public:
 		_defaultValue(defaultValue){}
 		
 	SymbolVariable(
-	Scope* scope,
 	Type deriveFromType=TYPE_INT, 
 	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
 	StorageClass storageclass=STORAGE_VAR, 
 	bool hasValue=false ,
 	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
 	: 
-		Symbol(scope, TYPE_VARIABLE),
+		Symbol( TYPE_VARIABLE),
 		_deriveFromType(deriveFromType), 
 		_deriveFromSymbolName(deriveFromSymbolName), 
 		_storageclass(storageclass),
@@ -77,6 +75,102 @@ public:
 		}
 		
 		std::cout << std::endl;
+	
+	};
+};
+
+
+class SymbolTypedef : public Symbol{
+	bool _isArray;
+	int _arrayLen; 
+	Type _deriveFromType; 
+	std::string _deriveFromSymbolName;
+public: 
+	SymbolTypedef(
+	std::string name,
+	bool isArray = false, 
+	int arrayLen=0, 
+	Type deriveFromType=TYPE_INT, 
+	std::string deriveFromSymbolName=""
+	)
+	: 
+		Symbol(name,TYPE_TYPEDEF), 
+		_isArray(isArray),
+		_arrayLen(arrayLen),
+		_deriveFromType(deriveFromType),
+		_deriveFromSymbolName(deriveFromSymbolName)
+		{}
+		
+		
+	
+	void print() override {
+		
+		Scope::tabs();
+		
+		std::cout << _name <<", type";
+		if(_deriveFromType == TYPE_INT){
+			std::cout << ", int";
+		}
+		else if(_deriveFromType == TYPE_TYPEDEF){
+			std::cout << ", " << _deriveFromSymbolName;
+		}
+		
+		if(_isArray){
+			std::cout << ",array , " << _arrayLen;
+		}
+		
+		std::cout << std::endl;
+	
+	};
+};
+
+
+
+class SymbolFunc : public Symbol{
+
+	Type _returnType; 
+	std::string _returnSymbol;
+	std::vector<SymbolVariable* > _params;
+	Scope* associatedScope;
+public: 
+	SymbolFunc(std::string name,
+	Type returnType=TYPE_VOID, 
+	std::string returnSymbol=""/*fill this if return type is TYPE_TYPEDEF*/
+	)
+	: 
+	Symbol(name,TYPE_FUNC), 
+	_returnType(returnType), 
+	_returnSymbol(returnSymbol),
+	_params(),
+	associatedScope(NULL)
+	{
+	}
+	
+	void addParam(SymbolVariable* sy){
+		_params.push_back(sy);
+	}
+	void setAssociatedScope(Scope* sc){
+		associatedScope=sc;
+	}
+	Scope* getAssociatedScope(){
+		return associatedScope;
+	}
+	
+	void print() override {
+		
+		Scope::tabs();
+		
+		std::cout << _name <<", func";
+		if(_returnType == TYPE_INT){
+			std::cout << ", int";
+		}
+		else if(_returnType == TYPE_TYPEDEF){
+			std::cout << ", " << _returnSymbol;
+		}
+		std::cout << std::endl;
+		Scope::tabCounter++;
+		associatedScope->printSymbols();		
+		Scope::tabCounter--;
 	
 	};
 };

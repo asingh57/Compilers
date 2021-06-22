@@ -7,7 +7,7 @@ BIN = cs8803_bin
 
 # here is where you plug in the runtime for your OS
 LOCAL=/usr/local/
-CC=g++ -std=c++17
+CC=g++ -std=c++17 -g
 CCARGS=-c -I $(LOCAL)/include/antlr4-runtime/ -I $(GENERATED)	
 LDARGS=-g
 LIBS=$(LOCAL)/lib/libantlr4-runtime.a
