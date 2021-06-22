@@ -258,22 +258,156 @@ void printSymbolTable(){
 
 // the following create ast nodes and associated temp vars
   virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { 
+  	TigerParser::Logical_op_expr_extContext * logicalExt=ctx->logical_op_expr_ext();  
+
+  
+  	while(logicalExt && logicalExt->compare_op_expr() ){//then we have power operators
+   		 logger("creating logical op");
+   		 auto nd = new ASTNode();
+   		 ASTNode::astStack.push_back(nd); 
+   		 if(logicalExt->AND()){
+   		 	nd->_op = OPERATOR_AND;   	
+  		}
+  		else{
+   		 	nd->_op = OPERATOR_OR;  
+  			
+  		}
+   		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
+   	  	 nd->_var= v->getName(); 
+   		 auto v1 =  ASTNode::astStack.back();
+   		 ASTNode::astStack.pop_back();
+   		 auto v2 =  ASTNode::astStack.back();   
+   		 ASTNode::astStack.pop_back();
+   		 nd->_left = v2;
+   		 nd->_right = v1;   		 
+   		 		 		
+   		 logicalExt= logicalExt->logical_op_expr_ext();
+   	}  	
   	
   }
 
   virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { 
+  	TigerParser::Compare_op_expr_extContext * compareExt=ctx->compare_op_expr_ext();  
+
+  	//EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ
   
+  	while(compareExt && compareExt->add_op_expr() ){//then we have power operators
+   		 logger("creating compare op");
+   		 auto nd = new ASTNode();
+   		 ASTNode::astStack.push_back(nd); 
+   		 if(compareExt->EQUAL()){
+   		 	nd->_op = OPERATOR_EQ;   	
+  		}
+  		else if(compareExt->NEQUAL()){
+   		 	nd->_op = OPERATOR_NEQ;   	
+  		}
+  		else if(compareExt->LESS()){
+   		 	nd->_op = OPERATOR_LT;   	
+  		}
+  		else if(compareExt->GREAT()){
+  			nd->_op = OPERATOR_GT; 
+  		}
+  		else if(compareExt->LESSEQ()){
+  			nd->_op = OPERATOR_LTE;  		
+  		}
+  		else if(compareExt->GREATEQ()){
+  			nd->_op = OPERATOR_GTE;    		
+  		}
+   		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
+   	  	 nd->_var= v->getName(); 
+   		 auto v1 =  ASTNode::astStack.back();
+   		 ASTNode::astStack.pop_back();
+   		 auto v2 =  ASTNode::astStack.back();   
+   		 ASTNode::astStack.pop_back();
+   		 nd->_left = v2;
+   		 nd->_right = v1;   		 
+   		 		 		
+   		 compareExt= compareExt->compare_op_expr_ext();
+   	}
   }
 
   virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { 
+  	TigerParser::Add_op_expr_extContext * addExt=ctx->add_op_expr_ext();  
+
+  	
+  
+  	while(addExt && addExt->mult_op_expr() ){//then we have power operators
+   		 logger("creating add/sub op");
+   		 auto nd = new ASTNode();
+   		 ASTNode::astStack.push_back(nd); 
+   		 if(addExt->PLUS()){
+   		 	nd->_op = OPERATOR_PLUS;   	
+  		}
+  		else{
+  			nd->_op = OPERATOR_MINUS; 
+  		}
+   		 
+   		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
+   	  	 nd->_var= v->getName(); 
+   		 auto v1 =  ASTNode::astStack.back();
+   		 ASTNode::astStack.pop_back();
+   		 auto v2 =  ASTNode::astStack.back();   
+   		 ASTNode::astStack.pop_back();
+   		 nd->_left = v2;
+   		 nd->_right = v1;   		 
+   		 		 		
+   		 addExt= addExt->add_op_expr_ext();
+   	}
+  
   
   }
 
   virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { 
+  	TigerParser::Mult_op_expr_extContext * mulExt=ctx->mult_op_expr_ext();  
+  	auto op = OPERATOR_MULT;
+  	
   
+  	while(mulExt && mulExt->pow_op_expr() ){//then we have power operators
+   		 logger("creating mul/div op");
+   		 auto nd = new ASTNode();
+   		 ASTNode::astStack.push_back(nd); 
+   		 if(mulExt->MULT()){
+   		 	nd->_op = OPERATOR_MULT;   	
+  		}
+  		else{
+  			nd->_op = OPERATOR_DIV; 
+  		}
+   		 
+   		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
+   	  	 nd->_var= v->getName(); 
+   		 auto v1 =  ASTNode::astStack.back();
+   		 ASTNode::astStack.pop_back();
+   		 auto v2 =  ASTNode::astStack.back();   
+   		 ASTNode::astStack.pop_back();
+   		 nd->_left = v2;
+   		 nd->_right = v1;
+   		 
+   		 		 		
+   		 mulExt= mulExt->mult_op_expr_ext();
+   	}
   }
 
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
+  	TigerParser::Pow_op_expr_extContext * powExt=ctx->pow_op_expr_ext();
+  	
+  
+  	while(powExt && powExt->expr_no_op() ){//then we have power operators
+   		 logger("creating pow op");
+   		 auto nd = new ASTNode();
+   		 nd->_op = OPERATOR_POW;
+   		 ASTNode::astStack.push_back(nd);  
+   		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
+   	  	 nd->_var= v->getName(); 
+   		 auto v1 =  ASTNode::astStack.back();
+   		 ASTNode::astStack.pop_back();
+   		 auto v2 =  ASTNode::astStack.back();   
+   		 ASTNode::astStack.pop_back();
+   		 nd->_left = v2;
+   		 nd->_right = v1;
+   		 
+   		 		 		
+   		 powExt= powExt->pow_op_expr_ext();
+   	}
   
   }
 
@@ -281,6 +415,7 @@ void printSymbolTable(){
   	//handle lvalue here
   	
    	if(ctx->constant()){
+   		logger("creating const");
    		//create temp with assigned value
    		auto nd = new ASTNode();
    		auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));
@@ -294,6 +429,7 @@ void printSymbolTable(){
   
   
   void exitLvalue(TigerParser::LvalueContext * ctx) override { 
+   	logger("creating lvalue");
   	auto nd = new ASTNode();
 	//use existing var
 	nd->_var = ctx->ID()->getText();
