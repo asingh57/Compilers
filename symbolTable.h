@@ -256,24 +256,55 @@ void printSymbolTable(){
   }
 
 
-// the following create ast nodes and temp vars
-  virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { }
+// the following create ast nodes and associated temp vars
+  virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { 
+  	
+  }
 
-  virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { }
+  virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * ctx) override { 
+  
+  }
 
-  virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { }
+  virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { 
+  
+  }
 
-  virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { }
+  virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { 
+  
+  }
 
-  virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { }
+  virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
+  
+  }
 
   virtual void exitExpr_no_op(TigerParser::Expr_no_opContext * ctx) override { 
   	//handle lvalue here
   	
+   	if(ctx->constant()){
+   		//create temp with assigned value
+   		auto nd = new ASTNode();
+   		auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));
+   		nd->_var= v->getName();
+   		nd->_isLeaf = true;
+   		ASTNode::astStack.push_back(nd);
+   	
+   	}
+  	
   }
-
-  virtual void exitConstant(TigerParser::ConstantContext * ctx) override { 
   
+  
+  void exitLvalue(TigerParser::LvalueContext * ctx) override { 
+  	auto nd = new ASTNode();
+	//use existing var
+	nd->_var = ctx->ID()->getText();
+	
+	if(ctx->lvalue_tail() && ctx->lvalue_tail()->expr()){  		
+		nd->_hasIndex= true;		
+		nd->_index = ASTNode::astStack.back();
+		nd->_isLeaf = true;
+		ASTNode::astStack.pop_back();
+	}
+	ASTNode::astStack.push_back(nd);
   }
 
 

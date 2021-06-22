@@ -31,7 +31,7 @@ public:
 static int counter;
 	Symbol(std::string name, Type type);
 	Symbol(Type type);
-	std::string name(){
+	std::string getName(){
 		return _name;
 	}
 	Scope* scope(){

@@ -18,6 +18,7 @@ begin
                 tmp1 := fib(n-1);
                 tmp2 := fib(n-2);
                 tmp2 := tmp2 ** tmp2;
+                tmp[10] := 1;
                 return tmp1 + tmp2;
             endif;
         end
