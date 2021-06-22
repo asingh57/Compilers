@@ -99,8 +99,8 @@ stat : assignment_stat |
 	sub_scope_stat;
 
 assignment_stat : lvalue l_tail ASSIGN expr SEMICOLON;
-if_stat: IF expr THEN stat_seq_if ENDIF SEMICOLON;
-if_else_stat: IF expr THEN stat_seq_if ELSE stat_seq_else ENDIF SEMICOLON;
+if_stat: if_stat_lhs ENDIF SEMICOLON;
+if_else_stat: if_stat_lhs ELSE stat_seq_else ENDIF SEMICOLON;
 while_stat: WHILE expr DO stat_seq_while ENDDO SEMICOLON;
 for_stat: FOR ID ASSIGN expr TO expr DO stat_seq_for ENDDO SEMICOLON;
 fncall_stat: opt_prefix ID OPENPAREN expr_list CLOSEPAREN SEMICOLON;
@@ -108,8 +108,8 @@ break_stat: BREAK SEMICOLON;
 return_stat: RETURN opt_return SEMICOLON;
 sub_scope_stat: LET declaration_segment BEGIN stat_seq END;
 
-
-stat_seq_if : stat_seq;
+if_stat_lhs: IF expr THEN stat_seq_then;
+stat_seq_then: stat_seq;
 stat_seq_else : stat_seq;
 stat_seq_while : stat_seq;
 stat_seq_for : stat_seq;

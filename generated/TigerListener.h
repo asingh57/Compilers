@@ -101,8 +101,11 @@ public:
   virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext *ctx) = 0;
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext *ctx) = 0;
 
-  virtual void enterStat_seq_if(TigerParser::Stat_seq_ifContext *ctx) = 0;
-  virtual void exitStat_seq_if(TigerParser::Stat_seq_ifContext *ctx) = 0;
+  virtual void enterIf_stat_lhs(TigerParser::If_stat_lhsContext *ctx) = 0;
+  virtual void exitIf_stat_lhs(TigerParser::If_stat_lhsContext *ctx) = 0;
+
+  virtual void enterStat_seq_then(TigerParser::Stat_seq_thenContext *ctx) = 0;
+  virtual void exitStat_seq_then(TigerParser::Stat_seq_thenContext *ctx) = 0;
 
   virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext *ctx) = 0;
   virtual void exitStat_seq_else(TigerParser::Stat_seq_elseContext *ctx) = 0;

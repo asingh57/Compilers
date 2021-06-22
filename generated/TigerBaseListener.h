@@ -103,8 +103,11 @@ public:
   virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { }
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { }
 
-  virtual void enterStat_seq_if(TigerParser::Stat_seq_ifContext * /*ctx*/) override { }
-  virtual void exitStat_seq_if(TigerParser::Stat_seq_ifContext * /*ctx*/) override { }
+  virtual void enterIf_stat_lhs(TigerParser::If_stat_lhsContext * /*ctx*/) override { }
+  virtual void exitIf_stat_lhs(TigerParser::If_stat_lhsContext * /*ctx*/) override { }
+
+  virtual void enterStat_seq_then(TigerParser::Stat_seq_thenContext * /*ctx*/) override { }
+  virtual void exitStat_seq_then(TigerParser::Stat_seq_thenContext * /*ctx*/) override { }
 
   virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext * /*ctx*/) override { }
   virtual void exitStat_seq_else(TigerParser::Stat_seq_elseContext * /*ctx*/) override { }

@@ -32,14 +32,14 @@ public:
     RuleStat_seq = 18, RuleStat = 19, RuleAssignment_stat = 20, RuleIf_stat = 21, 
     RuleIf_else_stat = 22, RuleWhile_stat = 23, RuleFor_stat = 24, RuleFncall_stat = 25, 
     RuleBreak_stat = 26, RuleReturn_stat = 27, RuleSub_scope_stat = 28, 
-    RuleStat_seq_if = 29, RuleStat_seq_else = 30, RuleStat_seq_while = 31, 
-    RuleStat_seq_for = 32, RuleOpt_return = 33, RuleOpt_prefix = 34, RuleL_tail = 35, 
-    RuleExpr = 36, RuleUnambiguous_expr = 37, RuleLogical_op_expr = 38, 
-    RuleLogical_op_expr_ext = 39, RuleCompare_op_expr = 40, RuleCompare_op_expr_ext = 41, 
-    RuleAdd_op_expr = 42, RuleAdd_op_expr_ext = 43, RuleMult_op_expr = 44, 
-    RuleMult_op_expr_ext = 45, RulePow_op_expr = 46, RulePow_op_expr_ext = 47, 
-    RuleExpr_no_op = 48, RuleConstant = 49, RuleExpr_list = 50, RuleExpr_list_tail = 51, 
-    RuleLvalue = 52, RuleLvalue_tail = 53
+    RuleIf_stat_lhs = 29, RuleStat_seq_then = 30, RuleStat_seq_else = 31, 
+    RuleStat_seq_while = 32, RuleStat_seq_for = 33, RuleOpt_return = 34, 
+    RuleOpt_prefix = 35, RuleL_tail = 36, RuleExpr = 37, RuleUnambiguous_expr = 38, 
+    RuleLogical_op_expr = 39, RuleLogical_op_expr_ext = 40, RuleCompare_op_expr = 41, 
+    RuleCompare_op_expr_ext = 42, RuleAdd_op_expr = 43, RuleAdd_op_expr_ext = 44, 
+    RuleMult_op_expr = 45, RuleMult_op_expr_ext = 46, RulePow_op_expr = 47, 
+    RulePow_op_expr_ext = 48, RuleExpr_no_op = 49, RuleConstant = 50, RuleExpr_list = 51, 
+    RuleExpr_list_tail = 52, RuleLvalue = 53, RuleLvalue_tail = 54
   };
 
   explicit TigerParser(antlr4::TokenStream *input);
@@ -81,7 +81,8 @@ public:
   class Break_statContext;
   class Return_statContext;
   class Sub_scope_statContext;
-  class Stat_seq_ifContext;
+  class If_stat_lhsContext;
+  class Stat_seq_thenContext;
   class Stat_seq_elseContext;
   class Stat_seq_whileContext;
   class Stat_seq_forContext;
@@ -440,10 +441,7 @@ public:
   public:
     If_statContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IF();
-    ExprContext *expr();
-    antlr4::tree::TerminalNode *THEN();
-    Stat_seq_ifContext *stat_seq_if();
+    If_stat_lhsContext *if_stat_lhs();
     antlr4::tree::TerminalNode *ENDIF();
     antlr4::tree::TerminalNode *SEMICOLON();
 
@@ -458,10 +456,7 @@ public:
   public:
     If_else_statContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *IF();
-    ExprContext *expr();
-    antlr4::tree::TerminalNode *THEN();
-    Stat_seq_ifContext *stat_seq_if();
+    If_stat_lhsContext *if_stat_lhs();
     antlr4::tree::TerminalNode *ELSE();
     Stat_seq_elseContext *stat_seq_else();
     antlr4::tree::TerminalNode *ENDIF();
@@ -578,9 +573,25 @@ public:
 
   Sub_scope_statContext* sub_scope_stat();
 
-  class  Stat_seq_ifContext : public antlr4::ParserRuleContext {
+  class  If_stat_lhsContext : public antlr4::ParserRuleContext {
   public:
-    Stat_seq_ifContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    If_stat_lhsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *IF();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *THEN();
+    Stat_seq_thenContext *stat_seq_then();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  If_stat_lhsContext* if_stat_lhs();
+
+  class  Stat_seq_thenContext : public antlr4::ParserRuleContext {
+  public:
+    Stat_seq_thenContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     Stat_seqContext *stat_seq();
 
@@ -589,7 +600,7 @@ public:
    
   };
 
-  Stat_seq_ifContext* stat_seq_if();
+  Stat_seq_thenContext* stat_seq_then();
 
   class  Stat_seq_elseContext : public antlr4::ParserRuleContext {
   public:

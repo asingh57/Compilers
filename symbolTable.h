@@ -1,4 +1,3 @@
-
 #include "TigerBaseListener.h"
 
 #include <map>
@@ -8,55 +7,23 @@
 #include <cstring>
 
 
-enum Type{
-TYPE_TYPEDEF = 0,
-TYPE_VARIABLE = 1,
-TYPE_FUNC = 2,
-TYPE_INT= 3,
-TYPE_VOID
-};
-
-enum StorageClass{
-	STORAGE_VAR,
-	STORAGE_STATIC
-};
-
-class Scope;
-class Stat;
-
-class Symbol{
-protected:
-	Type _baseType;
-	std::string _name;
-	Scope* _scope;
-public:
-	static int tempCounter;
-public: 
-	Symbol(std::string name, Scope* scope, Type baseType): 
-		_name(name), 
-		_scope(scope), 
-		_baseType(baseType){}
-		
-	virtual void print() {};
-
-	std::string getName(){
-		return _name;
-	}
-};
-
+class Stat;//statements type (ifelse, return, loop etc...)
+class Symbol;//symbol type (function. typedef, var (user defined as well as generated), static)
 
 class Scope{
 private:
-	std::map<std::string, Symbol*> _symbolsMap;
-	Scope* _parentScope;	
-	std::string _name;
-	std::vector<Stat*> _stats;
-	Scope(std::string name, Scope* parentScope=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name), _stats(){
+	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope
+	Scope* _parentScope;//parent scope
+	std::string _name;//scope name (auto generated
+	Stat* _associatedStat;//associated parent statement if applicable
+	std::vector<Stat*> _stats; //sub-statements inside scope
+	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
+		
 	}
 public:
-	static int scopeCounter;
-	static int tabCounter;
-	static void tabs(){
+	static int scopeCounter;//counter for creating new scopes
+	static int tabCounter;//keeps count of scope tabs
+	static void tabs(){//print tabs
 		for(int i=0;i<tabCounter;i++){
 			std::cout << "    ";
 		}
@@ -66,19 +33,19 @@ public:
 		return new Scope("Scope " + std::to_string(scopeCounter++), parent);
 	}
 	
-	std::vector<Stat*>* getStatPtr(){
-		return &_stats;
-	}
 	
 public:
-
+	//get parent
 	Scope* parent(){
 		return _parentScope;
 	}
 	
-	void addSymbol(std::string name, Symbol* value){
-		_symbolsMap.insert(std::make_pair(name,value));
+	//add symbol to scope
+	void addSymbol(Symbol* value){
+		_symbolsMap.insert(std::make_pair(value->_name,value));
 	}
+	
+	//get symbol by name
 	Symbol* getSymbol(std::string name, bool checkParents=true){
 		auto search= _symbolsMap.find(name);
 		if(search!=_symbolsMap.end()){
@@ -92,7 +59,7 @@ public:
 		return nullptr;
 	}
 	
-	
+	//print all symbols
 	void printSymbols(){
 		tabs();
 		std::cout<< _name <<":" <<std::endl;
@@ -103,251 +70,145 @@ public:
 		tabCounter--;
 	}
 	
-
 };
 
-class SymbolVariable : public Symbol{
-private:
-	Type _deriveFromType;
-	std::string _deriveFromSymbolName;
-	StorageClass _storageclass;
-	bool _hasValue;
-	int _defaultValue;
-public: 
-	SymbolVariable(
-	std::string name,
-	Scope* scope,
-	Type deriveFromType=TYPE_INT, 
-	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
-	StorageClass storageclass=STORAGE_VAR, 
-	bool hasValue=false ,
-	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
-	: 
-		Symbol(name,scope, TYPE_VARIABLE),
-		_deriveFromType(deriveFromType), 
-		_deriveFromSymbolName(deriveFromSymbolName), 
-		_storageclass(storageclass),
-		_hasValue(hasValue), 
-		_defaultValue(defaultValue){}
-		
-	SymbolVariable(
-	Scope* scope,
-	Type deriveFromType=TYPE_INT, 
-	std::string deriveFromSymbolName="" /*used if deriveFromType is TYPE_TYPEDEF*/, 
-	StorageClass storageclass=STORAGE_VAR, 
-	bool hasValue=false ,
-	int defaultValue=0/*gets assigned to zero if StorageClass  static*/)
-	: 
-		Symbol("_t"+std::to_string(Symbol::tempCounter++),scope, TYPE_VARIABLE),
-		_deriveFromType(deriveFromType), 
-		_deriveFromSymbolName(deriveFromSymbolName), 
-		_storageclass(storageclass),
-		_hasValue(hasValue), 
-		_defaultValue(defaultValue){}
-		
-		
-	void print() override {
-		
-		Scope::tabs();
-		
-		std::cout << _name <<", " <<std::string(_storageclass==STORAGE_VAR? "var":"static");
-		if(_deriveFromType == TYPE_INT){
-			std::cout << ", int";
-		}
-		else if(_deriveFromType == TYPE_TYPEDEF){
-			std::cout << ", " << _deriveFromSymbolName;
-		}
-		if(_hasValue){
-			std::cout << ", "<< _defaultValue;
-		}
-		
-		std::cout << std::endl;
-	
-	};
-};
-
-class SymbolTypedef : public Symbol{
-	bool _isArray;
-	int _arrayLen; 
-	Type _deriveFromType; 
-	std::string _deriveFromSymbolName;
-public: 
-	SymbolTypedef(
-	std::string name,
-	Scope* scope,
-	bool isArray = false, 
-	int arrayLen=0, 
-	Type deriveFromType=TYPE_INT, 
-	std::string deriveFromSymbolName=""
-	)
-	: 
-		Symbol(name,scope,TYPE_TYPEDEF), 
-		_isArray(isArray),
-		_arrayLen(arrayLen),
-		_deriveFromType(deriveFromType),
-		_deriveFromSymbolName(deriveFromSymbolName)
-		{}
-		
-		
-	
-	void print() override {
-		
-		Scope::tabs();
-		
-		std::cout << _name <<", type";
-		if(_deriveFromType == TYPE_INT){
-			std::cout << ", int";
-		}
-		else if(_deriveFromType == TYPE_TYPEDEF){
-			std::cout << ", " << _deriveFromSymbolName;
-		}
-		
-		if(_isArray){
-			std::cout << ",array , " << _arrayLen;
-		}
-		
-		std::cout << std::endl;
-	
-	};
-};
-
-class SymbolFunc : public Symbol{
-
-	Type _returnType; 
-	std::string _returnSymbol;
-	std::vector<SymbolVariable* > _params;
-	Scope* associatedScope;
-public: 
-	SymbolFunc(std::string name,
-	Scope* scope,
-	Type returnType=TYPE_VOID, 
-	std::string returnSymbol=""/*fill this if return type is TYPE_TYPEDEF*/
-	)
-	: 
-	Symbol(name,scope,TYPE_FUNC), 
-	_returnType(returnType), 
-	_returnSymbol(returnSymbol),
-	_params(),
-	associatedScope(NULL)
-	{
-	}
-	
-	void addParam(SymbolVariable* sy){
-		_params.push_back(sy);
-	}
-	void setAssociatedScope(Scope* sc){
-		associatedScope=sc;
-	}
-	Scope* getAssociatedScope(){
-		return associatedScope;
-	}
-	
-	void print() override {
-		
-		Scope::tabs();
-		
-		std::cout << _name <<", func";
-		if(_returnType == TYPE_INT){
-			std::cout << ", int";
-		}
-		else if(_returnType == TYPE_TYPEDEF){
-			std::cout << ", " << _returnSymbol;
-		}
-		std::cout << std::endl;
-		Scope::tabCounter++;
-		associatedScope->printSymbols();		
-		Scope::tabCounter--;
-	
-	};
-};
-
-
-
-enum Operator{
-	Operator_plus,
-	Operator_minus,
-	Operator_multiply,
-	Operator_divide,
-	Operator_pow,
-	Operator_lt,	
-	Operator_gt,	
-	Operator_lte,	
-	Operator_gte,	
-	Operator_eq
-};
-
-
-class ASTNode{
+class SymbolTableGenerator : public TigerBaseListener{
 public:
-	ASTNode* _left;
-	ASTNode* _right;
-	ASTNode* _parent;
-	Operator _op;
-	bool _isVar;
-	std::string _var;
-	bool _isIndex;
-	ASTNode* _index;
-	ASTNode(ASTNode* parent=NULL): _parent(parent), _isIndex(false), _left(NULL), _right(NULL){
-	
+	Scope* globalScope;
+	std::vector<Scope*> scopes;
+	std::vector<Stat>* stats;
+	SymbolTableGenerator(): scopes(),stats(){
+		globalScope= Scope::create();
+		scopes.push_back(globalScope);
 	}
-};
-
-class Stat{
-
-};
-
-class AssignmentStat : public Stat{
-public:
-	std::vector<std::pair<SymbolVariable, ASTNode*>> vars;
-	ASTNode* rval;
 	
-	AssignmentStat():vars(){
-	
-	}
-};
 
-class IfStat: public Stat{
-	public:
-		ASTNode* _condition;
-		std::vector<Stat*> _ifStats;
-};
+  virtual void enterType_declaration(TigerParser::Type_declarationContext * ctx) override {
+  	//add type declarations to last scope
+  
+  }
+  
 
-class IfElseStat: public IfStat{
-	public:
-		std::vector<Stat*> _elseStat;
-};
-
-class WhileStat: public Stat{
-	public:
-		ASTNode* _condition;
-		std::vector<Stat*> _stats;
-};
-
-class ForStat: public Stat{
-	public:
-		ASTNode* _conditionStart;
-		ASTNode* _conditionEnd;
-		std::vector<Stat*> _stats;
-};
-
-class FunctionCallStat: public Stat{
-	public:
-		std::string _function;
-		std::vector<ASTNode*> _params;
-};
-
-class ReturnCallStat: public Stat{
-	public:
-		ASTNode* _return;	
-};
-
-class SubScopeStat: public Stat{
-	public:
-		Scope* scope;
-};
+  virtual void enterVar_declaration(TigerParser::Var_declarationContext * ctx) override { 
+  	//add var declarations to last scope
+  }
 
 
+  virtual void enterFunct(TigerParser::FunctContext * ctx) override { 
+  	//add function and scope associated with it
+  
+  }
+  virtual void exitFunct(TigerParser::FunctContext * /*ctx*/) override { 
+  	//pop scope
+  }
 
-int Scope::tabCounter=0;
-int Scope::scopeCounter=1;
-int Symbol::tempCounter=1;
+  virtual void enterRet_type(TigerParser::Ret_typeContext * /*ctx*/) override { 
+  	//add return type to last scope
+  }
+
+  virtual void enterParam(TigerParser::ParamContext * /*ctx*/) override {  
+  	//add param to last function
+  	//add param to scope
+   }
+  
+  virtual void exitStat_seq(TigerParser::Stat_seqContext * /*ctx*/) override { 
+  	//count number of stats and pop that many from stats, then add them to scope
+  }
+
+  virtual void exitAssignment_stat(TigerParser::Assignment_statContext * /*ctx*/) override {
+  	//create stat and push to stats
+  	
+  	//assign stat rval = last astnode and pop that node
+   }
+
+  virtual void exitIf_stat(TigerParser::If_statContext * /*ctx*/) override { 
+  	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
+  	//pop astnode: this is the expr condition
+  	//create stat and add the above two as well as the last scope (popped)
+  }
+
+  virtual void exitIf_else_stat(TigerParser::If_else_statContext * /*ctx*/) override { 
+  	//pop num stats equal to number of stats in stat_seq_else: this is the ELSE statements
+  	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
+  	//pop astnode: this is the expr
+  	//create stat and add the above two as well as last 2 scopes (popped)
+  }
+
+  virtual void exitWhile_stat(TigerParser::While_statContext * /*ctx*/) override {  	
+  	//pop num stats equal to number of stats in stat_seq_while: these are the statements
+  	//pop last astnode, this is the expr
+  	//create stat and add the above, as well as the last scope  (popped)	
+  }
+
+
+  virtual void exitFor_stat(TigerParser::For_statContext * /*ctx*/) override { 
+  	//pop ast: to
+  	//pop ast: from
+  	//ID: name of var in for
+  	//pop count of stat_seq_for  	
+  	//create stat and add the above, as well as the last scope (popped)
+  
+  }
+
+  virtual void exitFncall_stat(TigerParser::Fncall_statContext * /*ctx*/) override { 
+  	//pop ast count equal to expr_list-> function params
+  	//ID function name
+  	//opt_prefix Lval assignment
+  	//create stat and add the above  
+  }
+
+  virtual void exitBreak_stat(TigerParser::Break_statContext * /*ctx*/) override { 
+  	//create stat
+  }
+
+  virtual void exitReturn_stat(TigerParser::Return_statContext * /*ctx*/) override { 
+  	//if opt_return-> take last astnode
+  	//create stat with above
+  }
+
+  virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { 
+  	//create scope
+  }
+  virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * /*ctx*/) override { 
+  	//exit scope, pop
+  }
+  
+  virtual void enterStat_seq_then(TigerParser::Stat_seq_thenContext * /*ctx*/) override { 
+  	//create scope
+  }
+
+  virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext * /*ctx*/) override { 
+  	//create scope
+  }
+
+  virtual void enterStat_seq_while(TigerParser::Stat_seq_whileContext * /*ctx*/) override {
+  	//create scope
+   }
+
+  virtual void enterStat_seq_for(TigerParser::Stat_seq_forContext * /*ctx*/) override { 
+  	//create scope
+  }
+
+
+// the following create ast nodes
+  virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * /*ctx*/) override { }
+
+  virtual void exitCompare_op_expr(TigerParser::Compare_op_exprContext * /*ctx*/) override { }
+
+  virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * /*ctx*/) override { }
+
+  virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * /*ctx*/) override { }
+
+  virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * /*ctx*/) override { }
+
+  virtual void exitExpr_no_op(TigerParser::Expr_no_opContext * /*ctx*/) override { 
+  	//handle lvalue here
+  	
+  }
+
+  virtual void exitConstant(TigerParser::ConstantContext * /*ctx*/) override { 
+  
+  }
+
+
+}
