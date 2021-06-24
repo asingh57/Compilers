@@ -1,0 +1,20 @@
+program invalid_comparison_op
+let
+begin
+    function main() : int
+    begin
+        let
+            var a, b: int := 1;
+            var c : int; 
+        begin
+            if (a == b == 1) then
+                c := 0;
+            else
+                c := 1;
+            endif;
+        end
+        return 0;
+    end
+end
+
+/*Semantic Test: Comparison operators do not associate*/

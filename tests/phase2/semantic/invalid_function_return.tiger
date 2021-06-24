@@ -1,0 +1,10 @@
+program invalid_function_return
+let
+begin
+    function main() : int
+    begin
+        return;
+    end
+end
+
+/*Semantic Test: Type mismatch: null return from function*/

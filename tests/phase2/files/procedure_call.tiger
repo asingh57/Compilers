@@ -1,0 +1,19 @@
+/* Test: user defined procedure call*/
+
+program procedure_call
+let
+begin
+
+    function printSquare (x : int)
+    begin
+        printi(x * x);
+        return;
+    end
+
+    function main() : int 
+    begin
+        printSquare(10);
+        return 0;
+    end
+
+end

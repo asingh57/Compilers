@@ -73,6 +73,7 @@ int main(int argc, char *argv[]){
 	bool printTokens=false;
 	bool printParseTree=false;
 	bool printSymbolTable=false;
+	bool outputIR=false;
 	for(int i = 1; i <argc ; i++){
 		string arg = argv[i];
 		if(arg == "-i"){
@@ -89,6 +90,9 @@ int main(int argc, char *argv[]){
 		}		
 		else if(arg == "-s"){
 			printSymbolTable= true;
+		}
+		else if(arg == "–-ir"){
+			outputIR = true;
 		}
 		else {
 			return LEXPARSE_ERROR_IN_PROG_ARGS;
@@ -175,6 +179,8 @@ int main(int argc, char *argv[]){
 	SymbolTableGenerator symT;//collects function names
   	tree::ParseTreeWalker::DEFAULT.walk(&symT, tree);
 	
+	SemanticEnforcer semE(&symT);//does semantic enforcement
+  	tree::ParseTreeWalker::DEFAULT.walk(&semE, tree);
 	
 	
 	if(printSymbolTable){

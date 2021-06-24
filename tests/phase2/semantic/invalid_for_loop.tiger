@@ -1,0 +1,20 @@
+program invalid_for_loop
+let
+    type myArray = array[10] of int; 
+begin
+    function main() : int
+    begin
+        let
+            var i : int;
+            var count : int := 0;
+            var a : myArray := 0;
+        begin
+            for i := 1 to a do
+                count := count + 1;
+            enddo;
+        end
+        return 0;
+    end
+end
+
+/*Semantic Test: For loop ranges must be integers*/

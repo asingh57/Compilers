@@ -1,0 +1,18 @@
+program invalid_array_assign
+let
+    type arrayA = array[10] of int;
+    type arrayB = array[5] of int;
+begin
+    function main() : int
+    begin
+        let
+            var a : arrayA := 10;
+            var b : arrayB := 0; 
+        begin
+            b := a;
+        end   
+        return 0;
+    end
+end
+
+/*Semantic Test: Array assignment is not same structure*/

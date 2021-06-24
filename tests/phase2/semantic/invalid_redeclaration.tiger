@@ -1,0 +1,17 @@
+program invalid_redeclaration
+let
+begin
+    function main() : int
+    begin
+        let
+            var a : int;
+            var b : int;
+            var a : int;
+        begin
+            a := b := 1;
+        end
+        return 0;
+    end
+end
+
+/*Semantic Test: Redeclaration in same scope*/

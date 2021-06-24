@@ -1,0 +1,43 @@
+/* Test Program: Pseudo-random Number Generator */
+
+/* Algorithm from: https://www.geeksforgeeks.org/java-program-to-implement-the-linear-congruential-generator-for-pseudo-random-number-generation/ */
+
+program prng
+let
+    static size : int;
+begin
+
+    function modulo (a : int, b : int) : int
+    begin
+        let
+            var r : int;
+        begin
+            r := a - (b * (a / b));
+            return r;
+        end
+    end
+
+    function gen_random(seed : int, mod : int, mult : int, inc : int)
+    begin
+        let
+            var i, prev, cur : int;
+        begin
+            prev := seed;
+
+            for i := 1 to size do
+                printi(prev);						
+                cur := modulo((prev * mult) + inc, mod);
+                prev := cur;
+            enddo;
+            return;
+        end
+    end
+
+    function main() : int
+    begin
+        size := 6;
+        gen_random(5, 7, 3, 3);
+        return 0;
+    end
+
+end

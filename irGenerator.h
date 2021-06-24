@@ -40,11 +40,16 @@ std::string desc;
 	exit(SEMANTIC_ERROR);
 }
 
-class SemanticEnforcement : public TigerBaseListener{
-
+class SemanticEnforcer : public TigerBaseListener{
+public:
 	Scope* globalScope;
-	SemanticEnforcement(SymbolTableGenerator* symTable):globalScope(symTable->getTopLevelScope()){
+	SemanticEnforcer(SymbolTableGenerator* symTable):globalScope(symTable->getTopLevelScope()){
 	
 	}
 
+};
+
+class IRGenerator{
+public:
+	IRGenerator();
 };

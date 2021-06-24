@@ -1,0 +1,17 @@
+/* Test: basic if-else stmt */
+
+program basic_if_else
+let
+begin
+
+    function main() : int
+    begin
+        if (1 > 0) then
+            printi(1);
+        else
+            printi(0);
+        endif;
+        return 0;
+    end
+
+end

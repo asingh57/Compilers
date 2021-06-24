@@ -1,0 +1,10 @@
+invalid_symbol_not_found
+invalid_redeclaration
+invalid_for_loop
+invalid_break
+invalid_procedure_return
+invalid_function_return
+invalid_global
+invalid_array_assign
+invalid_array_binop
+invalid_comparison_op

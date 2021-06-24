@@ -1,0 +1,16 @@
+program invalid_array_binop
+let
+begin
+    function main() : int
+    begin
+        let
+            type intArray = array[10] of int;
+            var a : intArray := 5;
+        begin
+            a := a + a;
+        end
+        return 0;
+    end
+end
+
+/*Semantic Test: Array binary operations not allowed*/

@@ -1,0 +1,30 @@
+/* Test: user function that calls user function */
+
+program function_call2
+let
+begin
+
+    function square(x : int) : int
+    begin
+        return x * x;
+    end
+    
+    function doubleSquare(y : int) : int
+    begin	
+        y := y * 2;
+        y := square(y);
+        return y;
+    end
+
+    function main() : int
+    begin
+        let
+            var result : int;			
+        begin
+            result := doubleSquare(10);
+            printi(result);
+        end
+        return 0;
+    end
+
+end

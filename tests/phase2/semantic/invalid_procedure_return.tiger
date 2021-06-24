@@ -1,0 +1,18 @@
+program invalid_procedure_return
+let
+    static x : int := 10;
+begin
+    function doubleIt()
+    begin
+        x := x * 2;
+        return x;
+    end
+
+    function main() : int
+    begin
+        doubleIt(10);
+        return 0;
+    end
+end
+
+/*Semantic Test: Type mismatch: invalid return value from procedure*/

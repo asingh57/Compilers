@@ -1,0 +1,21 @@
+/* Test: global scope */
+
+program global_scope
+let
+    static sum : int := 5;
+begin
+
+    function addToSum (x : int)
+    begin
+        sum := sum + x;
+    end
+    
+    function main() : int
+    begin
+        addToSum(10);
+        addToSum(20);
+        printi(sum);
+        return 0;
+    end
+    
+end

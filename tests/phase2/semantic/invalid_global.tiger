@@ -1,0 +1,12 @@
+program invalid_global
+let
+    var a : int;
+begin
+    function main() : int
+    begin
+        a := 10;
+        return 0;
+    end
+end
+
+/*Semantic Test: Non-static global variable*/

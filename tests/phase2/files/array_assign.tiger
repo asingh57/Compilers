@@ -1,0 +1,23 @@
+/* Test: array assignment */
+
+program array_assign
+let
+begin
+
+    function main() : int
+    begin
+        let
+            type intArray = array[3] of int;
+            var a : intArray := 1;
+            var b : intArray := 10;
+        begin
+            printi(a[0]);
+            printi(b[0]);
+            
+            b := a;
+            printi(b[0] + b[1] + b[2]);
+        end
+        return 0;
+    end
+
+end

@@ -1,0 +1,15 @@
+program symbol_not_found
+let
+begin
+    function main() : int
+    begin
+        let
+            var a : int; 
+        begin
+            a := b + 1;
+        end
+        return 0;
+    end
+end
+    
+/*Semantic Test: Symbol (var) not found*/
