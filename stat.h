@@ -35,43 +35,26 @@ class ASTNode{
 		ASTNode(ASTNode* parent=NULL): _parent(parent), _hasIndex(false), _left(NULL), _right(NULL), _isLeaf(false){
 		
 		}
+		
+		virtual void printSymbols(){
+		
+		}
 };
 
 std::vector<ASTNode*> ASTNode::astStack={};
 
-enum StatType{
-	STAT_NONE,
-	STAT_ASSIGN,
-	STAT_IF,
-	STAT_IFELSE,
-	STAT_WHILE,
-	STAT_FOR,
-	STAT_FNCALL,
-	STAT_BREAK,
-	STAT_RETURN,
-	STAT_SUBSCOPE
-};
 
-class Stat{
-public:
-	static std::vector<Stat*> statStack;
-protected:
-	StatType _type;
 
-	Stat(StatType type = STAT_NONE): _type(type){
-		statStack.push_back(this);
-	}
-public:
-	Stat* create(){
-		return new Stat();
-	}
-};
 
 class StatAssignment : Stat{
 public:
 	std::vector<std::pair<std::string, ASTNode*>> _lvalues;
 	ASTNode* _assignedExpr;
 	StatAssignment(ASTNode* assignedExpr):Stat(STAT_ASSIGN),_assignedExpr(assignedExpr),_lvalues(){
+		
+	}
+	
+	void printSymbols() override{
 		
 	}
 
@@ -84,6 +67,10 @@ public:
 	StatIfStmt(ASTNode* condition, Scope* ifScope):Stat(STAT_IF), _condition(condition), _ifScope(ifScope){
 	
 	}
+	
+	void printSymbols() override{
+		
+	}
 };
 
 class StatIfElseStmt : Stat{
@@ -93,6 +80,10 @@ public:
 	Scope* _elseScope;
 	StatIfElseStmt(ASTNode* condition, Scope* ifScope, Scope* elseScope):Stat(STAT_IFELSE), _condition(condition), _ifScope(ifScope),_elseScope(elseScope){
 	
+	}
+	
+	void printSymbols() override{
+		
 	}
 };
 
@@ -104,6 +95,10 @@ public:
 	StatWhileStmt(ASTNode* condition, Scope* whileScope):Stat(STAT_WHILE),_condition(condition), _whileScope(whileScope) {
 	
 	} 
+	
+	void printSymbols() override{
+		
+	}
 
 };
 
@@ -128,6 +123,10 @@ public:
 	StatFnCall(std::string fnName):Stat(STAT_FNCALL), _fnCallParams(), _lvalue(""), _lvalueIndex(NULL), _fnName(fnName){
 	
 	}
+	
+	void printSymbols() override{
+		
+	}
 
 };
 
@@ -137,6 +136,10 @@ public:
 	StatBreak():Stat(STAT_BREAK){
 	
 	}
+	
+	void printSymbols() override{
+		
+	}
 };
 
 class StatReturn :Stat{
@@ -145,6 +148,10 @@ public:
 	StatReturn(ASTNode* retVal):Stat(STAT_RETURN),_retVal(retVal){
 	
 	}
+	
+	void printSymbols() override{
+		
+	}
 };
 
 class StatSubScope :Stat{
@@ -152,6 +159,10 @@ public:
 	Scope* _scope;
 	StatSubScope(Scope* scope):Stat(STAT_SUBSCOPE),_scope(scope){
 	
+	}
+	
+	void printSymbols() override{
+		
 	}
 };
 

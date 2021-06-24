@@ -59,7 +59,7 @@ public:
 		_defaultValue(defaultValue){}
 		
 		
-	void print() override {
+	void printSymbol() override {
 		
 		Scope::tabs();
 		
@@ -103,7 +103,7 @@ public:
 		
 		
 	
-	void print() override {
+	void printSymbol() override {
 		
 		Scope::tabs();
 		
@@ -156,7 +156,7 @@ public:
 		return associatedScope;
 	}
 	
-	void print() override {
+	void printSymbol() override {
 		
 		Scope::tabs();
 		

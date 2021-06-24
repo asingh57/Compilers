@@ -22,6 +22,38 @@ enum Type{
 	TYPE_VOID
 };
 
+
+enum StatType{
+	STAT_NONE,
+	STAT_ASSIGN,
+	STAT_IF,
+	STAT_IFELSE,
+	STAT_WHILE,
+	STAT_FOR,
+	STAT_FNCALL,
+	STAT_BREAK,
+	STAT_RETURN,
+	STAT_SUBSCOPE
+};
+
+class Stat{
+public:
+	static std::vector<Stat*> statStack;
+protected:
+	StatType _type;
+
+	Stat(StatType type = STAT_NONE): _type(type){
+		statStack.push_back(this);
+	}
+public:
+	Stat* create(){
+		return new Stat();
+	}
+	
+	
+	virtual void printSymbols(){}
+};
+
 class Symbol{
 protected:
 std::string _name;
@@ -40,7 +72,7 @@ static int counter;
 	Type getType(){
 		return _type;
 	}
-	virtual void print(){};
+	virtual void printSymbol(){};
 };
 int Symbol::counter=0;
 
@@ -114,8 +146,13 @@ public:
 		std::cout<< _name <<":" <<std::endl;
 		tabCounter++;
 		for(auto const& [key, val] : _symbolsMap){
-			val->print();
+			val->printSymbol();
 		}
+		
+		for(auto st : _stats){
+			st->printSymbols();
+		}
+		
 		tabCounter--;
 	}
 	
