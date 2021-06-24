@@ -69,7 +69,7 @@ public:
 
 class StatAssignment : Stat{
 public:
-	std::vector<std::string> _lvalues;
+	std::vector<std::pair<std::string, ASTNode*>> _lvalues;
 	ASTNode* _assignedExpr;
 	StatAssignment(ASTNode* assignedExpr):Stat(STAT_ASSIGN),_assignedExpr(assignedExpr),_lvalues(){
 		

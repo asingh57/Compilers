@@ -19,6 +19,9 @@ public:
 
 void printSymbolTable(){
 	logger("printing symbol table");
+		std::cout << Scope::scopeStack.size() << std::endl;
+		std::cout << ASTNode::astStack.size() << std::endl;
+		std::cout << Stat::statStack.size() << std::endl;
 	globalScope->printSymbols();
 
 }
@@ -193,11 +196,22 @@ void printSymbolTable(){
   	
   	
   	//set lvalues
-  	st->_lvalues.push_back(ctx->lvalue()->ID()->getSymbol()->getText());
+  	ASTNode* index= NULL;
   	//TODO lvalue indices
   	auto tail = ctx->l_tail();	
+  	if(ctx->lvalue()->lvalue_tail()){
+		index=ASTNode::astStack.back();
+		ASTNode::astStack.pop_back();
+	}
+  	st->_lvalues.push_back(std::make_pair(ctx->lvalue()->ID()->getSymbol()->getText(),index));
+  	
   	while(tail && tail->lvalue()){
-  		st->_lvalues.push_back(tail->lvalue()->ID()->getSymbol()->getText());  		
+  		index= NULL;
+  		if(tail->lvalue()->lvalue_tail()){
+			index=ASTNode::astStack.back();
+			ASTNode::astStack.pop_back();
+		}
+  		st->_lvalues.push_back(std::make_pair(tail->lvalue()->ID()->getSymbol()->getText(),index));  		
   		tail = tail->l_tail();
   	}
   	
@@ -237,6 +251,7 @@ void printSymbolTable(){
   	
   	//create stat with the if scope, else scope and the last ast node as the expression
   	auto ifelse = new StatIfElseStmt(ASTNode::astStack.back(), ifScope, elseScope);
+  	ASTNode::astStack.pop_back();
   	
   }
 
@@ -334,7 +349,7 @@ void printSymbolTable(){
   	Scope::create(Scope::scopeStack.back());
   }
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * ctx) override { 
-  	//TODO create stat and associate last scope with it
+  	//create stat and associate last scope with it
   	StatSubScope(Scope::scopeStack.back());
   	//exit scope, pop
   	Scope::scopeStack.pop_back();

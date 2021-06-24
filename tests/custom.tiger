@@ -15,19 +15,19 @@ begin
             if (n <= 1) then
                 return n;
             else
-                tmp1 := fib(n-1);
-                tmp2 := fib(n-2);
-                tmp2 := tmp2 ** tmp2;
-                tmp[10] := 1;
-                return tmp1 + tmp2;
+                tmp2 := tmp2;
+                return tmp1 ;
+                if (n) then
+				return n;
+		    else
+			tmp2 := 1;
+		    endif;
             endif;
         end
     end
 
     function main() : int 
     begin
-        result := fib(12);
-        printi(result);
         return 0;
     end
 end
