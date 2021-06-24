@@ -9,20 +9,18 @@ let
 begin
     function fib (n : int, naaa : int, nn : catList) : int
     begin
+            tmp := 1;
+            tmp := 1;
+            tmp := 1;
+            tmp := 1;
+            tmp := 1;
+            tmp := 1;
         let
             var tmp1, tmp2 : int := 0;
         begin
-            if (n <= 1) then
-                return n;
-            else
-                tmp2 := tmp2;
-                return tmp1 ;
-                if (n) then
-				return n;
-		    else
-			tmp2 := 1;
-		    endif;
-            endif;
+            tmp := 1;
+            tmp := 1;
+            tmp := 1;
         end
     end
 

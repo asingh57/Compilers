@@ -349,6 +349,11 @@ void printSymbolTable(){
   	Scope::create(Scope::scopeStack.back());
   }
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * ctx) override { 
+	//remove stats
+  	auto cnt = countStats(ctx->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}  	
   	//create stat and associate last scope with it
   	StatSubScope(Scope::scopeStack.back());
   	//exit scope, pop
