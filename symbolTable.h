@@ -14,12 +14,12 @@ public:
 	SymbolTableGenerator(){
 	}
 	
+	Scope* getTopLevelScope(){
+		return globalScope;
+	}
 
 void printSymbolTable(){
 	logger("printing symbol table");
-		std::cout << Scope::scopeStack.size() << std::endl;
-		std::cout << ASTNode::astStack.size() << std::endl;
-		std::cout << Stat::statStack.size() << std::endl;
 	globalScope->printSymbols();
 
 }
