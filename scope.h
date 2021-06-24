@@ -86,6 +86,10 @@ public:
 		_symbolsMap.insert(std::make_pair(value->_name,value));
 	}*/
 	
+	void addStat(Stat* stat){
+		_stats.push_back(stat);
+	}
+	
 	//get symbol by name
 	Symbol* getSymbol(std::string name, bool checkParents=true){
 		auto search= _symbolsMap.find(name);

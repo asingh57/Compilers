@@ -42,15 +42,23 @@ std::vector<ASTNode*> ASTNode::astStack={};
 enum StatType{
 	STAT_NONE,
 	STAT_ASSIGN,
+	STAT_IF,
+	STAT_IFELSE,
+	STAT_WHILE,
+	STAT_FOR,
+	STAT_FNCALL,
+	STAT_BREAK,
+	STAT_RETURN,
+	STAT_SUBSCOPE
 };
 
 class Stat{
 public:
-	std::vector<Stat*> statStack;
+	static std::vector<Stat*> statStack;
 protected:
 	StatType _type;
 
-	Stat(StatType type = STAT_NONE):statStack(), _type(type){
+	Stat(StatType type = STAT_NONE): _type(type){
 		statStack.push_back(this);
 	}
 public:
@@ -61,8 +69,90 @@ public:
 
 class StatAssignment : Stat{
 public:
-	StatAssignment():Stat(STAT_ASSIGN){
+	std::vector<std::string> _lvalues;
+	ASTNode* _assignedExpr;
+	StatAssignment(ASTNode* assignedExpr):Stat(STAT_ASSIGN),_assignedExpr(assignedExpr),_lvalues(){
+		
+	}
+
+};
+
+class StatIfStmt : Stat{
+public:
+	ASTNode* _condition;
+	Scope* _ifScope;
+	StatIfStmt(ASTNode* condition, Scope* ifScope):Stat(STAT_IF), _condition(condition), _ifScope(ifScope){
+	
+	}
+};
+
+class StatIfElseStmt : Stat{
+public:
+	ASTNode* _condition;
+	Scope* _ifScope;
+	Scope* _elseScope;
+	StatIfElseStmt(ASTNode* condition, Scope* ifScope, Scope* elseScope):Stat(STAT_IFELSE), _condition(condition), _ifScope(ifScope),_elseScope(elseScope){
+	
+	}
+};
+
+
+class StatWhileStmt : Stat{
+public:
+	ASTNode* _condition;
+	Scope* _whileScope;
+	StatWhileStmt(ASTNode* condition, Scope* whileScope):Stat(STAT_WHILE),_condition(condition), _whileScope(whileScope) {
+	
+	} 
+
+};
+
+class StatFor :Stat{
+public:
+	ASTNode* _from;	
+	ASTNode* _to;
+	std::string _assignVar;
+	StatFor(std::string assignVar, ASTNode* from, ASTNode* to, Scope* _forScope):Stat(STAT_FOR),_from(from),_to(to),_assignVar(assignVar){
+	
+	}
+};
+
+
+class StatFnCall :Stat{
+public:
+	std::vector<ASTNode*> _fnCallParams;
+	std::string _lvalue;
+	ASTNode* _lvalueIndex;
+	std::string _fnName;
+
+	StatFnCall(std::string fnName):Stat(STAT_FNCALL), _fnCallParams(), _lvalue(""), _lvalueIndex(NULL), _fnName(fnName){
 	
 	}
 
 };
+
+class StatBreak :Stat{
+public:
+
+	StatBreak():Stat(STAT_BREAK){
+	
+	}
+};
+
+class StatReturn :Stat{
+public:
+	ASTNode* _retVal;
+	StatReturn(ASTNode* retVal):Stat(STAT_RETURN),_retVal(retVal){
+	
+	}
+};
+
+class StatSubScope :Stat{
+public:
+	Scope* _scope;
+	StatSubScope(Scope* scope):Stat(STAT_SUBSCOPE),_scope(scope){
+	
+	}
+};
+
+std::vector<Stat*> Stat::statStack = {};

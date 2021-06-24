@@ -171,88 +171,193 @@ void printSymbolTable(){
   
   }
   
+  void popLastStatAndAddToCurrentScope(){  
+  		Scope::scopeStack.back()->addStat(Stat::statStack.back());
+  		Stat::statStack.pop_back();
+  }
   
   virtual void exitStat_seq_func(TigerParser::Stat_seq_funcContext * ctx) override { 
+  
   	//count number of stats and pop that many from stats, then add them to scope
-  	//auto cnt = countStats(ctx->stat_seq());
-  	//TODO add to scope
+  	auto cnt = countStats(ctx->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}
   }
 
   virtual void exitAssignment_stat(TigerParser::Assignment_statContext * ctx) override {
-  	//create stat and push to stats
-  	//StatAssignment *st = new StatAssignment();
-  	
-  	
+  	//create stat and AUTO push to stats
+  	StatAssignment *st = new StatAssignment(ASTNode::astStack.back());
   	//assign stat rval = last astnode and pop that node
+  	ASTNode::astStack.pop_back();
+  	
+  	
+  	//set lvalues
+  	st->_lvalues.push_back(ctx->lvalue()->ID()->getSymbol()->getText());
+  	//TODO lvalue indices
+  	auto tail = ctx->l_tail();	
+  	while(tail && tail->lvalue()){
+  		st->_lvalues.push_back(tail->lvalue()->ID()->getSymbol()->getText());  		
+  		tail = tail->l_tail();
+  	}
+  	
    }
 
-  virtual void exitIf_stat(TigerParser::If_statContext * ctx) override { 
-  	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
-  	//pop astnode: this is the expr condition
-  	//create stat and add the above two as well as the last scope (popped)
-  	//make sure parent of this scope is correct
+  virtual void exitIf_stat(TigerParser::If_statContext * ctx) override {
+  	
+   	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
+   	auto cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}
+	   
+   	//create stat and associate the last astnode to the condition, and last scope to the "then" condition
+   	auto stat = new StatIfStmt(ASTNode::astStack.back(), Scope::scopeStack.back());
+   	ASTNode::astStack.pop_back();   
+  	Scope::scopeStack.pop_back();
   }
 
-  virtual void exitIf_else_stat(TigerParser::If_else_statContext * ctx) override { 
+  virtual void exitIf_else_stat(TigerParser::If_else_statContext * ctx) override {
+  	
+  	auto elseScope = Scope::scopeStack.back();
   	//pop num stats equal to number of stats in stat_seq_else: this is the ELSE statements
+  	auto cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}
+  	Scope::scopeStack.pop_back();
+  	
+  	auto ifScope = Scope::scopeStack.back();
   	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
-  	//pop astnode: this is the expr
-  	//create stat and add the above two as well as last 2 scopes (popped)
+  	cnt = countStats(ctx->stat_seq_else()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}
+  	Scope::scopeStack.pop_back();
+  	
+  	//create stat with the if scope, else scope and the last ast node as the expression
+  	auto ifelse = new StatIfElseStmt(ASTNode::astStack.back(), ifScope, elseScope);
+  	
   }
 
   virtual void exitWhile_stat(TigerParser::While_statContext * ctx) override {  	
   	//pop num stats equal to number of stats in stat_seq_while: these are the statements
-  	//pop last astnode, this is the expr
-  	//create stat and add the above, as well as the last scope  (popped)	
+  	auto cnt = countStats(ctx->stat_seq_while()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}
+  	
+  	//create stat and last ast node and the last scope
+  	StatWhileStmt(ASTNode::astStack.back(), Scope::scopeStack.back());
+  	
+  	
+  	ASTNode::astStack.pop_back();   
+  	Scope::scopeStack.pop_back();
   }
 
 
   virtual void exitFor_stat(TigerParser::For_statContext * ctx) override { 
   	//pop ast: to
+  	auto to = ASTNode::astStack.back();
+  	ASTNode::astStack.pop_back();   
   	//pop ast: from
+  	auto from = ASTNode::astStack.back();
+  	ASTNode::astStack.pop_back();
   	//ID: name of var in for
+  	auto varName= ctx->ID()->getText();
   	//pop count of stat_seq_for  	
-  	//create stat and add the above, as well as the last scope (popped)
+  	auto cnt = countStats(ctx->stat_seq_for()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}  	
+  	
+  	//create stat and add the nodes, as well as the last scope
+  	auto stFor= StatFor(varName, from, to, Scope::scopeStack.back());
+  	
+  	Scope::scopeStack.pop_back();
   
   }
 
   virtual void exitFncall_stat(TigerParser::Fncall_statContext * ctx) override { 
-  	//pop ast count equal to expr_list-> function params
   	//ID function name
-  	//opt_prefix Lval assignment
   	//create stat and add the above  
+  	auto fnCall = new StatFnCall(ctx->ID()->getText());  	
+  	//pop ast count equal to expr_list-> function params
+  	int cnt=0;
+  	if(ctx->expr_list() && ctx->expr_list()->expr()){
+  		cnt++;
+  		auto tail = ctx->expr_list()->expr_list_tail();
+  		while(tail && tail->expr()){
+  			cnt++;
+  			tail = tail->expr_list_tail();
+  		}
+  	}
+  	
+  	for(int i=0;i<cnt;i++){
+  		fnCall->_fnCallParams.push_back(ASTNode::astStack.back());
+  		ASTNode::astStack.pop_back();
+  	}  	
+  	
+  	//opt_prefix Lval assignment  	
+  	if(ctx->opt_prefix() && ctx->opt_prefix()->lvalue()){
+  		fnCall->_lvalue = ctx->opt_prefix()->lvalue()->ID()->getText();
+  		
+  		if(ctx->opt_prefix()->lvalue()->lvalue_tail()){
+  			fnCall->_lvalueIndex=ASTNode::astStack.back();
+  			ASTNode::astStack.pop_back();
+  		}
+  	}
+  	
+  	
   }
 
   virtual void exitBreak_stat(TigerParser::Break_statContext * ctx) override { 
   	//create stat
+  	auto br = new StatBreak();
   }
 
   virtual void exitReturn_stat(TigerParser::Return_statContext * ctx) override { 
+  	ASTNode* returnVal = NULL;
+  	
   	//if opt_return-> take last astnode
+  	if(ctx->opt_return() && ctx->opt_return()->expr()){
+  		returnVal=ASTNode::astStack.back();
+  		ASTNode::astStack.pop_back();
+  	}
+  
   	//create stat with above
+  	auto stReturn = new StatReturn(returnVal);
   }
 
   virtual void enterSub_scope_stat(TigerParser::Sub_scope_statContext * ctx) override { 
   	//create scope
+  	Scope::create(Scope::scopeStack.back());
   }
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * ctx) override { 
+  	//TODO create stat and associate last scope with it
+  	StatSubScope(Scope::scopeStack.back());
   	//exit scope, pop
+  	Scope::scopeStack.pop_back();
   }
   
   virtual void enterStat_seq_then(TigerParser::Stat_seq_thenContext * ctx) override { 
   	//create scope
+  	Scope::create(Scope::scopeStack.back());
   }
 
   virtual void enterStat_seq_else(TigerParser::Stat_seq_elseContext * ctx) override { 
   	//create scope
+  	Scope::create(Scope::scopeStack.rbegin()[1]);//second to last is the parent of the else
   }
 
   virtual void enterStat_seq_while(TigerParser::Stat_seq_whileContext * ctx) override {
   	//create scope
+  	Scope::create(Scope::scopeStack.back());
    }
 
   virtual void enterStat_seq_for(TigerParser::Stat_seq_forContext * ctx) override { 
   	//create scope
+  	Scope::create(Scope::scopeStack.back());
   }
 
 
