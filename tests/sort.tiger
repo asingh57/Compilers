@@ -26,20 +26,20 @@ begin
             cats [7] := 33;
             size := 8;
             for index := 0 to size - 1 do
-            lowestIndex := index ;
-            for subIndex := ( index + 1) to ( size - 1) do
-            if ( cats [ subIndex ] < cats [ lowestIndex ]) then
-            lowestIndex := subIndex ;
-            endif ;
-            enddo ;
-            /* swap minimum to front of sub array */
-            first := cats [ index ];
-            smallest := cats [ lowestIndex ];
-            cats [ index ] := smallest ;
-            cats [ lowestIndex ] := first ;
-            enddo ;
+            	lowestIndex := index ;
+		    for subIndex := ( index + 1) to ( size - 1) do
+			    if ( cats [ subIndex ] < cats [ lowestIndex ]) then
+				    lowestIndex := subIndex ;
+				    endif ;
+				    enddo ;
+				    /* swap minimum to front of sub array */
+				    first := cats [ index ];
+				    smallest := cats [ lowestIndex ];
+				    cats [ index ] := smallest ;
+				    cats [ lowestIndex ] := first ;
+		    enddo ;
             for index := 0 to size - 1 do
-            printi ( cats [ index ]);
+            	printi ( cats [ index ]);
             enddo ;
         end
         return 0;

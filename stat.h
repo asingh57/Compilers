@@ -38,6 +38,7 @@ class ASTNode{
 		
 		virtual void printSymbols(){
 		
+		logger("printing ast");
 		}
 };
 
@@ -55,7 +56,8 @@ public:
 	}
 	
 	void printSymbols() override{
-		
+		//don't print anything
+		logger("printing assignment");
 	}
 
 };
@@ -69,7 +71,10 @@ public:
 	}
 	
 	void printSymbols() override{
-		
+	
+		logger("printing if");
+		//print subscope
+		_ifScope->printSymbols();		
 	}
 };
 
@@ -84,6 +89,10 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing ifelse");
+		//print subscopes
+		_ifScope->printSymbols();
+		_elseScope->printSymbols();
 	}
 };
 
@@ -98,6 +107,8 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing while");
+		_whileScope->printSymbols();
 	}
 
 };
@@ -107,9 +118,18 @@ public:
 	ASTNode* _from;	
 	ASTNode* _to;
 	std::string _assignVar;
-	StatFor(std::string assignVar, ASTNode* from, ASTNode* to, Scope* _forScope):Stat(STAT_FOR),_from(from),_to(to),_assignVar(assignVar){
+	Scope* _forScope;
+	StatFor(std::string assignVar, ASTNode* from, ASTNode* to, Scope* forScope):Stat(STAT_FOR),_from(from),_to(to),_assignVar(assignVar),_forScope(forScope){
 	
 	}
+	
+	
+	void printSymbols() override{
+		
+		logger("printing for");
+		_forScope->printSymbols();
+	}
+
 };
 
 
@@ -126,6 +146,7 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing fn call");
 	}
 
 };
@@ -139,6 +160,7 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing break");
 	}
 };
 
@@ -151,6 +173,7 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing return");
 	}
 };
 
@@ -163,6 +186,8 @@ public:
 	
 	void printSymbols() override{
 		
+		logger("printing subscope");
+		_scope->printSymbols();
 	}
 };
 

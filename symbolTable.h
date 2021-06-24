@@ -290,6 +290,15 @@ void printSymbolTable(){
   }
   
   void popLastStatAndAddToCurrentScope(){  
+  
+  		if(Stat::statStack.size()==0){
+  			logger("WARNING EMPTY STATSTACK");
+  		
+  		}
+  
+  		logger("pop last stat and add to ");
+  		logger(Scope::scopeStack.back()->getName());
+  		logger("stat name:" + Stat::statStack.back()->getName());
   		Scope::scopeStack.back()->addStat(Stat::statStack.back());
   		Stat::statStack.pop_back();
   }
@@ -298,7 +307,11 @@ void printSymbolTable(){
   
   	//count number of stats and pop that many from stats, then add them to scope
   	auto cnt = countStats(ctx->stat_seq());
+  	logger("exit func");
+  	
+  	logger("fn stat count" + std::to_string(cnt));
   	for(int i=0; i< cnt; i++){
+  	 	logger("-------");
   		popLastStatAndAddToCurrentScope();
   	}
   }
@@ -336,6 +349,7 @@ void printSymbolTable(){
   	
    	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
    	auto cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
+  	logger("exit if");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}
@@ -351,6 +365,7 @@ void printSymbolTable(){
   	auto elseScope = Scope::scopeStack.back();
   	//pop num stats equal to number of stats in stat_seq_else: this is the ELSE statements
   	auto cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
+  	logger("exit ifelse");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}
@@ -373,12 +388,13 @@ void printSymbolTable(){
   virtual void exitWhile_stat(TigerParser::While_statContext * ctx) override {  	
   	//pop num stats equal to number of stats in stat_seq_while: these are the statements
   	auto cnt = countStats(ctx->stat_seq_while()->stat_seq());
+  	logger("exit while");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}
   	
   	//create stat and last ast node and the last scope
-  	StatWhileStmt(ASTNode::astStack.back(), Scope::scopeStack.back());
+  	auto st = new StatWhileStmt(ASTNode::astStack.back(), Scope::scopeStack.back());
   	
   	
   	ASTNode::astStack.pop_back();   
@@ -397,12 +413,13 @@ void printSymbolTable(){
   	auto varName= ctx->ID()->getText();
   	//pop count of stat_seq_for  	
   	auto cnt = countStats(ctx->stat_seq_for()->stat_seq());
+  	logger("exit for");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}  	
   	
   	//create stat and add the nodes, as well as the last scope
-  	auto stFor= StatFor(varName, from, to, Scope::scopeStack.back());
+  	auto stFor= new StatFor(varName, from, to, Scope::scopeStack.back());
   	
   	Scope::scopeStack.pop_back();
   
@@ -466,11 +483,13 @@ void printSymbolTable(){
   virtual void exitSub_scope_stat(TigerParser::Sub_scope_statContext * ctx) override { 
 	//remove stats
   	auto cnt = countStats(ctx->stat_seq());
+  	logger("exit subscope");
   	for(int i=0; i< cnt; i++){
+  		logger("added stat to last scope");
   		popLastStatAndAddToCurrentScope();
   	}  	
   	//create stat and associate last scope with it
-  	StatSubScope(Scope::scopeStack.back());
+  	auto ss = new StatSubScope(Scope::scopeStack.back());
   	//exit scope, pop
   	Scope::scopeStack.pop_back();
   }

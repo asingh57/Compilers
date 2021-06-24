@@ -61,6 +61,7 @@ public:
 		
 	void printSymbol() override {
 		
+		logger("print var");
 		Scope::tabs();
 		
 		std::cout << _name <<", " <<std::string(_storageclass==STORAGE_VAR? "var":"static");
@@ -105,6 +106,7 @@ public:
 	
 	void printSymbol() override {
 		
+		logger("print typedef");
 		Scope::tabs();
 		
 		std::cout << _name <<", type";
@@ -157,6 +159,9 @@ public:
 	}
 	
 	void printSymbol() override {
+		
+		
+		logger("print func");
 		
 		Scope::tabs();
 		

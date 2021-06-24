@@ -1,13 +1,8 @@
 #include "TigerBaseListener.h"
 
-#define DEBUG
+//#define DEBUG
 
-void logger(std::string s){
-
-#ifdef DEBUG
-//std::cout << s << std::endl;
-#endif
-}
+void logger(std::string s);
 
 
 class Stat;//statements type (ifelse, return, loop etc...)
@@ -41,18 +36,22 @@ public:
 	static std::vector<Stat*> statStack;
 protected:
 	StatType _type;
-
-	Stat(StatType type = STAT_NONE): _type(type){
+	static int nameCounter;
+	std::string _name;
+	Stat(StatType type = STAT_NONE): _type(type),_name("_stat"+std::to_string(nameCounter++)){
 		statStack.push_back(this);
+		logger("created " + _name);
 	}
 public:
-	Stat* create(){
-		return new Stat();
+	std::string getName(){
+		return _name;
 	}
-	
 	
 	virtual void printSymbols(){}
 };
+
+int Stat::nameCounter=0;
+
 
 class Symbol{
 protected:
@@ -89,6 +88,7 @@ private:
 		logger("created scope");
 		logger(name);
 	}
+	
 public:
 	static std::vector<Scope*>scopeStack;
 	static int scopeCounter;//counter for creating new scopes
@@ -103,6 +103,10 @@ public:
 		auto sc = new Scope("Scope" + std::to_string(scopeCounter++), parent);
 		scopeStack.push_back(sc);
 		return sc;
+	}
+	
+	std::string getName(){
+		return _name;
 	}
 	
 	
@@ -149,14 +153,35 @@ public:
 			val->printSymbol();
 		}
 		
+		logger("printing stat");
+		logger(std::to_string(_stats.size()));
 		for(auto st : _stats){
+			if(st==NULL){
+			
+				logger("NULL st");
+			}
 			st->printSymbols();
+			logger("print--");
 		}
+		
+		
+		logger("printed");
 		
 		tabCounter--;
 	}
 	
 };
+
+
+void logger(std::string s){
+
+#ifdef DEBUG
+Scope::tabs();
+std::cout << s << std::endl;
+#endif
+}
+
+
 std::vector<Scope*> Scope::scopeStack= std::vector<Scope*>();
 int Scope::scopeCounter=0;
 int Scope::tabCounter=0;
