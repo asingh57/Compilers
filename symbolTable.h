@@ -37,11 +37,118 @@ void printSymbolTable(){
 
   virtual void enterType_declaration(TigerParser::Type_declarationContext * ctx) override {
   	//add type declarations to last scope
+  	auto name = ctx->ID()->getText();
+	bool isArray= false;
+	int arrayLen = 0;
+	Type deriveFromType;
+	std::string deriveFromSymbolName;
+	if(ctx->type()->INTLIT()){
+		//integer literal: this is an array
+		isArray=true;
+		arrayLen = std::stoi (ctx->type()->INTLIT()->getText());
+		deriveFromType=TYPE_INT;
+	}		
+	else if(ctx->type()->type_id()){
+		//type is int
+		deriveFromType=TYPE_INT;
+	}
+	else if(ctx->type()->ID()){
+		//another type
+		//TODO look this up in current symbol table
+		/*auto rvalSymbol = currentScope->getSymbol();
+		if(!rvalSymbol){
+		
+			auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
+			auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
+			printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
+		}*/
+		deriveFromType=TYPE_TYPEDEF;
+		deriveFromSymbolName = ctx->type()->ID()->getText();
+		
+	}
+	auto sym = new SymbolTypedef(
+		name,
+		isArray, 
+		arrayLen, 
+		deriveFromType, 
+		deriveFromSymbolName
+		);
   }
   
 
   virtual void enterVar_declaration(TigerParser::Var_declarationContext * ctx) override { 
   	//add var declarations to last scope
+  	std::vector<std::string> varNames;
+	Type deriveFromType=TYPE_INT;
+	std::string deriveFromSymbolName=""; /*used if deriveFromType is TYPE_TYPEDEF*/
+	StorageClass storageclass=STORAGE_VAR; 
+	bool hasValue=false;
+	int defaultValue=0;
+	
+	
+	auto idlist = ctx->id_list();
+	while(idlist->id_list()){
+		varNames.push_back(idlist->ID()->getText());
+		idlist= idlist->id_list();
+	}
+	varNames.push_back(idlist->ID()->getText());
+	
+	storageclass= STORAGE_VAR;
+	if(ctx->storage_class()->STATIC()){
+		//local var
+		storageclass = STORAGE_STATIC;
+	}
+
+	
+	if(ctx->type()->INTLIT()){
+		//TODO error handling integer literal: this is an array NOT allowed according to 3.3 of spec
+		/*
+		auto lineNum = ctx->type()->ARRAY()->getSymbol()->getLine();
+		auto colNum = ctx->type()->ARRAY()->getSymbol()->getCharPositionInLine();
+		printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
+		*/
+		
+	}		
+	else if(ctx->type()->type_id()){
+		//type is int
+		deriveFromType=TYPE_INT;
+	}
+	else if(ctx->type()->ID()){
+		//another type
+		//TODO look this up in current symbol table
+		/*
+		auto rvalSymbol = currentScope->getSymbol(ctx->type()->ID()->getText());
+		if(!rvalSymbol){
+		
+			auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
+			auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
+			printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
+		}*/
+		deriveFromType=TYPE_TYPEDEF;
+		deriveFromSymbolName = ctx->type()->ID()->getText();		
+	}
+	
+	if(ctx->optional_init()->constant()){
+		int val = std::stoi (ctx->optional_init()->constant()->INTLIT()->getText());
+		defaultValue = val;
+		hasValue = true;
+	}
+	else if(storageclass==STORAGE_STATIC){
+		defaultValue = 0;
+		hasValue = true;
+	}
+	for(auto name: varNames){
+		SymbolVariable *sym = new SymbolVariable(
+		name, 
+		deriveFromType, 
+		deriveFromSymbolName /*used if deriveFromType is TYPE_TYPEDEF*/, 
+		storageclass, 
+		hasValue ,
+		defaultValue/*gets assigned to zero if StorageClass  static*/);
+
+	}
+  	
+  	
   }
 
 
