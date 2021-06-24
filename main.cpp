@@ -76,7 +76,11 @@ int main(int argc, char *argv[]){
 	bool outputIR=false;
 	for(int i = 1; i <argc ; i++){
 		string arg = argv[i];
-		if(arg == "-i"){
+		
+		if(strcmp(argv[i], "--ir") == 0){
+			outputIR = true;
+		}
+		else if(arg == "-i"){
 			if(++i>=argc){
 				return LEXPARSE_ERROR_IN_PROG_ARGS;
 			}
@@ -91,10 +95,8 @@ int main(int argc, char *argv[]){
 		else if(arg == "-s"){
 			printSymbolTable= true;
 		}
-		else if(arg == "–-ir"){
-			outputIR = true;
-		}
 		else {
+			std::cout << "??" << arg << std::endl;
 			return LEXPARSE_ERROR_IN_PROG_ARGS;
 		}
 	}
@@ -186,6 +188,13 @@ int main(int argc, char *argv[]){
 	if(printSymbolTable){
 	
 		symT.printSymbolTable();
+	}
+	if(outputIR){
+		std::string irOutFile = inputFileName;
+		irOutFile=irOutFile.substr(0,irOutFile.find_last_of('.'))+".ir";
+		IRGenerator ig(&symT);
+		ig.run(irOutFile);
+		
 	}
 	
 	

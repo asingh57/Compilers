@@ -1,7 +1,6 @@
 #include "symbolTable.h"
 
 
-
 enum IRErrorCodes{
 	 SEMANTIC_ERROR= 4
 };
@@ -41,8 +40,8 @@ std::string desc;
 }
 
 class SemanticEnforcer : public TigerBaseListener{
-public:
 	Scope* globalScope;
+public:
 	SemanticEnforcer(SymbolTableGenerator* symTable):globalScope(symTable->getTopLevelScope()){
 	
 	}
@@ -50,6 +49,19 @@ public:
 };
 
 class IRGenerator{
+private:
+	Scope* globalScope;
+	std::ofstream _outfile;
+
 public:
-	IRGenerator();
+	IRGenerator(SymbolTableGenerator* symTable):globalScope(symTable->getTopLevelScope()){
+	
+	}
+	
+	void run(std::string outFile){
+		_outfile = std::ofstream(outFile);
+		_outfile << "start_program "+globalScope->_programName << std::endl;
+		globalScope ->generateIR(_outfile);
+		_outfile.close();
+	}
 };

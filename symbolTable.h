@@ -24,10 +24,11 @@ void printSymbolTable(){
 
 }
 
-  virtual void enterTiger_program(TigerParser::Tiger_programContext * /*ctx*/) override { 
+  virtual void enterTiger_program(TigerParser::Tiger_programContext * ctx) override { 
   
 	logger("global scope created");
 	globalScope= Scope::create();
+	globalScope->_programName= ctx->ID()->getText();
   }
   virtual void exitTiger_program(TigerParser::Tiger_programContext * /*ctx*/) override { 
   	Scope::scopeStack.pop_back();

@@ -1,5 +1,7 @@
 #include "TigerBaseListener.h"
 
+#include <iostream>
+#include <fstream>  
 //#define DEBUG
 
 void logger(std::string s);
@@ -78,13 +80,16 @@ int Symbol::counter=0;
 
 class Scope{
 	friend class Symbol;
+public:
+	std::string _programName;
+	
 private:
 	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope
 	Scope* _parentScope;//parent scope
 	std::string _name;//scope name (auto generated
 	Stat* _associatedStat;//associated parent statement if applicable
 	std::vector<Stat*> _stats; //sub-statements inside scope
-	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL) : _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
+	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL) : _programName(""), _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
 		logger("created scope");
 		logger(name);
 	}
@@ -168,6 +173,10 @@ public:
 		logger("printed");
 		
 		tabCounter--;
+	}
+	
+	void generateIR(std::ofstream &outFile){
+		
 	}
 	
 };
