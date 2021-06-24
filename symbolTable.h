@@ -12,8 +12,6 @@ class SymbolTableGenerator : public TigerBaseListener{
 public:
 	Scope* globalScope;
 	SymbolTableGenerator(){
-		logger("global scope created");
-		globalScope= Scope::create();
 	}
 	
 
@@ -25,6 +23,16 @@ void printSymbolTable(){
 	globalScope->printSymbols();
 
 }
+
+  virtual void enterTiger_program(TigerParser::Tiger_programContext * /*ctx*/) override { 
+  
+	logger("global scope created");
+	globalScope= Scope::create();
+  }
+  virtual void exitTiger_program(TigerParser::Tiger_programContext * /*ctx*/) override { 
+  	Scope::scopeStack.pop_back();
+  }
+
 
 
   virtual void enterType_declaration(TigerParser::Type_declarationContext * ctx) override {
