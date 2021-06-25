@@ -60,7 +60,6 @@ public:
 	
 	void run(std::string outFile){
 		_outfile = std::ofstream(outFile);
-		_outfile << "start_program "+globalScope->_programName << std::endl;
 		globalScope ->generateIR(_outfile);
 		_outfile.close();
 	}

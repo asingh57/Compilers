@@ -1,4 +1,7 @@
+#ifndef _SCOPE
+#define _SCOPE
 #include "TigerBaseListener.h"
+#include "symbol.h"
 
 #include <iostream>
 #include <fstream>  
@@ -6,10 +9,8 @@
 
 void logger(std::string s);
 
-
-class Stat;//statements type (ifelse, return, loop etc...)
-class Symbol;//symbol type (function. typedef, var (user defined as well as generated), static)
-class Scope;
+class Symbol;
+class Stat;
 
 enum Type{
 	TYPE_VARIABLE,
@@ -33,49 +34,6 @@ enum StatType{
 	STAT_SUBSCOPE
 };
 
-class Stat{
-public:
-	static std::vector<Stat*> statStack;
-protected:
-	StatType _type;
-	static int nameCounter;
-	std::string _name;
-	Stat(StatType type = STAT_NONE): _type(type),_name("_stat"+std::to_string(nameCounter++)){
-		statStack.push_back(this);
-		logger("created " + _name);
-	}
-public:
-	std::string getName(){
-		return _name;
-	}
-	
-	virtual void printSymbols(){}
-};
-
-int Stat::nameCounter=0;
-
-
-class Symbol{
-protected:
-std::string _name;
-Scope* _scope;
-Type _type;
-public:
-static int counter;
-	Symbol(std::string name, Type type);
-	Symbol(Type type);
-	std::string getName(){
-		return _name;
-	}
-	Scope* scope(){
-		return _scope;
-	}
-	Type getType(){
-		return _type;
-	}
-	virtual void printSymbol(){};
-};
-int Symbol::counter=0;
 
 
 class Scope{
@@ -89,10 +47,8 @@ private:
 	std::string _name;//scope name (auto generated
 	Stat* _associatedStat;//associated parent statement if applicable
 	std::vector<Stat*> _stats; //sub-statements inside scope
-	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL) : _programName(""), _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
-		logger("created scope");
-		logger(name);
-	}
+	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL);
+	
 	
 public:
 	static std::vector<Scope*>scopeStack;
@@ -109,6 +65,7 @@ public:
 		scopeStack.push_back(sc);
 		return sc;
 	}
+	
 	
 	std::string getName(){
 		return _name;
@@ -132,68 +89,18 @@ public:
 	}
 	
 	//get symbol by name
-	Symbol* getSymbol(std::string name, bool checkParents=true){
-		auto search= _symbolsMap.find(name);
-		if(search!=_symbolsMap.end()){
-			return search->second;
-		}
-		
-		if(_parentScope && checkParents){
-			return _parentScope->getSymbol(name,checkParents);
-		}
-		
-		return nullptr;
-	}
+	Symbol* getSymbol(std::string name, bool checkParents=true);
+	
 	
 	//print all symbols
-	void printSymbols(){
-		
-		logger("printing scope table");
+	void printSymbols();
 	
-		logger(_name);
-		tabs();
-		std::cout<< _name <<":" <<std::endl;
-		tabCounter++;
-		for(auto const& [key, val] : _symbolsMap){
-			val->printSymbol();
-		}
-		
-		logger("printing stat");
-		logger(std::to_string(_stats.size()));
-		for(auto st : _stats){
-			if(st==NULL){
-			
-				logger("NULL st");
-			}
-			st->printSymbols();
-			logger("print--");
-		}
-		
-		
-		logger("printed");
-		
-		tabCounter--;
-	}
+	void generateIR(std::ofstream &outFile);
 	
-	void generateIR(std::ofstream &outFile){
-		
-	}
 	
 };
 
 
-void logger(std::string s){
 
-#ifdef DEBUG
-Scope::tabs();
-std::cout << s << std::endl;
 #endif
-}
-
-
-std::vector<Scope*> Scope::scopeStack= std::vector<Scope*>();
-int Scope::scopeCounter=0;
-int Scope::tabCounter=0;
-
-
 

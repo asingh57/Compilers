@@ -1,5 +1,26 @@
+#ifndef _STAT
+#define _STAT
 #include "symbol.h"
 
+
+class Stat{
+public:
+	static std::vector<Stat*> statStack;
+protected:
+	StatType _type;
+	static int nameCounter;
+	std::string _name;
+	Stat(StatType type = STAT_NONE): _type(type),_name("_stat"+std::to_string(nameCounter++)){
+		statStack.push_back(this);
+		logger("created " + _name);
+	}
+public:
+	std::string getName(){
+		return _name;
+	}
+	
+	virtual void printSymbols(){}
+};
 
 
 enum Operator{
@@ -41,8 +62,6 @@ class ASTNode{
 		logger("printing ast");
 		}
 };
-
-std::vector<ASTNode*> ASTNode::astStack={};
 
 
 
@@ -131,8 +150,6 @@ public:
 	}
 
 };
-
-
 class StatFnCall :Stat{
 public:
 	std::vector<ASTNode*> _fnCallParams;
@@ -191,4 +208,6 @@ public:
 	}
 };
 
-std::vector<Stat*> Stat::statStack = {};
+
+
+#endif

@@ -23,14 +23,18 @@ tiger: dirs antlr4 main.cpp
 	$(CC) $(CCARGS) $(GENERATED)/TigerLexer.cpp -o $(OUTPUT)/TigerLexer.o 
 	$(CC) $(CCARGS) $(GENERATED)/TigerListener.cpp -o $(OUTPUT)/TigerListener.o 
 	$(CC) $(CCARGS) $(GENERATED)/TigerParser.cpp -o $(OUTPUT)/TigerParser.o 
-	$(CC) $(LDARGS) $(OUTPUT)/tiger.o $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/TigerLexer.o $(OUTPUT)/TigerListener.o $(OUTPUT)/TigerParser.o $(LIBS) -o $(BIN)/tigerc
+	$(CC) $(CCARGS) stat.cpp -o $(OUTPUT)/stat.o
+	$(CC) $(CCARGS) symbol.cpp -o $(OUTPUT)/symbol.o
+	$(CC) $(CCARGS) symbolTable.cpp -o $(OUTPUT)/symbolTable.o
+	$(CC) $(CCARGS) scope.cpp -o $(OUTPUT)/scope.o
+	$(CC) $(LDARGS) $(OUTPUT)/scope.o $(OUTPUT)/symbolTable.o $(OUTPUT)/symbol.o $(OUTPUT)/stat.o $(OUTPUT)/tiger.o $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/TigerLexer.o $(OUTPUT)/TigerListener.o $(OUTPUT)/TigerParser.o $(LIBS) -o $(BIN)/tigerc
 
 antlr4: $(GRAMMAR)
 	antlr -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)
 
 dirs:
 	mkdir -p $(OUTPUT)
-	mkdir -p $(GENERATED) 
+	mkdir -p $(GENERATED)
 	mkdir -p $(TESTRIG)
 	mkdir -p $(BIN)
 

@@ -1,19 +1,31 @@
+#ifndef _SYMBOL
+#define _SYMBOL
 #include "scope.h"
 
 
-Symbol::Symbol(std::string name,Type type){
-		_name = name;
-		_scope = Scope::scopeStack.back();
-		_scope->_symbolsMap.insert(std::make_pair(_name,this));
-		_type=type;
-	}
-Symbol::Symbol(Type type){
-	_name="_t"+std::to_string(counter++);
-	_scope = Scope::scopeStack.back();
-	_scope->_symbolsMap.insert(std::make_pair(_name,this));
-		_type=type;
-}	
 
+
+class Symbol{
+protected:
+std::string _name;
+Scope* _scope;
+Type _type;
+public:
+static int counter;
+	Symbol(std::string name, Type type);
+	Symbol(Type type);
+	std::string getName(){
+		return _name;
+	}
+	Scope* scope(){
+		return _scope;
+	}
+	Type getType(){
+		return _type;
+	}
+	virtual void printSymbol(){};
+	
+};
 
 
 enum StorageClass{
@@ -78,6 +90,8 @@ public:
 		std::cout << std::endl;
 	
 	};
+	
+	
 };
 
 
@@ -180,3 +194,4 @@ public:
 	};
 };
 
+#endif
