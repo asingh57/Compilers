@@ -91,6 +91,21 @@ public:
 	
 	};
 	
+	std::string getFinalIR(){
+		std::string val = "";
+		
+		val = _name;
+		
+		if(_deriveFromType==TYPE_TYPEDEF){
+			//TODO resolve type and add array if needed;
+			
+			
+		}
+		
+		
+		return val;
+	}
+	
 	
 };
 
@@ -192,6 +207,58 @@ public:
 		Scope::tabCounter--;
 	
 	};
+	
+	void getFinalIR(std::ofstream &outFile){
+		Scope::tabCounter++;
+		Scope::tabs(outFile);
+		outFile << "start_function " << _name << std::endl;
+		Scope::tabs(outFile);
+		if(_returnType == TYPE_VOID){
+			outFile <<"void";
+		}
+		else{ //todo resolve type
+			outFile <<"int";
+		}
+		outFile << " "<< _name <<" (";
+		
+		for(int i=0; i<_params.size(); i++){
+			outFile <<"int ";
+			outFile << _params[i]->getFinalIR();
+			
+			
+			if(i!=_params.size()-1){
+				outFile << ", ";
+			}			
+			
+		}
+		
+		outFile <<")\n";
+		Scope::tabs(outFile);
+		
+		outFile << "int-list: "; 
+		//get vars from scope and put them here
+		auto scopeVars = associatedScope->getVars();
+		
+		for(int i=0; i<scopeVars.size(); i++){
+			outFile << dynamic_cast<SymbolVariable*>(scopeVars[i])->getFinalIR();			
+			
+			if(i!=scopeVars.size()-1){
+				outFile << ", ";
+			}
+		}
+		
+		
+		outFile <<"\n";
+		Scope::tabs(outFile);
+		outFile << _name << ":\n";
+		
+		associatedScope->generateIR(outFile);
+		
+		Scope::tabs(outFile);
+		outFile << "end_function " << _name << "\n" << std::endl;		
+		Scope::tabCounter--;
+		return;
+	}
 };
 
 #endif

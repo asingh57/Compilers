@@ -51,28 +51,65 @@ void Scope::printSymbols(){
 
 
 void Scope::generateIR(std::ofstream &outFile){
+		Scope::tabCounter++;	
 	if(_programName.size()){//this scope is the top level program scope
-		outFile << "start_program "+ _programName<< std::endl;	
-		outFile << "static-int-list:"	;
+		outFile << "start_program "+ _programName<< std::endl;
+		
+		Scope::tabs(outFile);
+		outFile << "static-int-list: "	;
 		//print all var names
-		std::vector<std::pair<std::string,int>> staticList; //pair of name and optionally an array length
+		std::vector<std::string> staticList; //pair of name and optionally an array length
+
 		for(auto const& [key, val] : _symbolsMap){
 			if(val->getType()==TYPE_VARIABLE){
-				/*int arrLen = -1;//not an array
-				auto var = dynamic_cast<SymbolVariable>
-				if(){
-				
-				}
-				
-				staticList.push_back(std::make_pair(val->getName(),arrLen));*/
+				auto var = dynamic_cast<SymbolVariable*>(val);//TODO VAR SIZES
+				std::string name= var->getFinalIR();
+				staticList.push_back(name);
 			}
 		}
-		outFile<< std::endl;
+		
+		for(int i=0; i<staticList.size(); i++){
+			outFile<<staticList[i];
+			if(i!=staticList.size()-1){
+				outFile<<", ";
+			}
+		}
+		
+		outFile <<"\n"<< std::endl;
+		
+		//iterate through functions
+		for(auto const& [key, val] : _symbolsMap){
+			if(val->getType()==TYPE_FUNC){
+				auto fn = dynamic_cast<SymbolFunc*>(val);
+				//call function IR
+				
+				fn->getFinalIR(outFile);
+			}
+		}
+		
+		
+		outFile << "end_program "+ _programName<< std::endl;
 	}
 	else{
+		//print stats
+		
 	
 	}
+		Scope::tabCounter--;
 }
+
+
+
+ std::vector<Symbol*> Scope::getVars(){
+ 	std::vector<Symbol*> ret;
+ 	
+ 	for(auto const& [key, val] : _symbolsMap){
+		if(val->getType()==TYPE_VARIABLE){
+			ret.push_back(val);
+		}
+	}
+ 	return ret;
+ }
 
 
 void logger(std::string s){

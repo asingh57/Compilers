@@ -59,7 +59,7 @@ public:
 	}
 	
 	void run(std::string outFile){
-		_outfile = std::ofstream(outFile);
+		_outfile = std::ofstream(outFile);  
 		globalScope ->generateIR(_outfile);
 		_outfile.close();
 	}

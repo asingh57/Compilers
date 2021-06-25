@@ -13,6 +13,7 @@ class Symbol;
 class Stat;
 
 enum Type{
+	TYPE_NONE,
 	TYPE_VARIABLE,
 	TYPE_TYPEDEF,
 	TYPE_INT,
@@ -59,6 +60,11 @@ public:
 			std::cout << "    ";
 		}
 	}
+	static void tabs(std::ofstream &outfile){
+		for(int i=0;i<tabCounter;i++){
+			outfile << "    ";
+		}
+	}
 	//scope factory
 	static Scope* create(Scope* parent=NULL){
 		auto sc = new Scope("Scope" + std::to_string(scopeCounter++), parent);
@@ -98,6 +104,7 @@ public:
 	void generateIR(std::ofstream &outFile);
 	
 	
+	 std::vector<Symbol*> getVars();
 };
 
 

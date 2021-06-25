@@ -17,14 +17,20 @@ LIBS=$(LOCAL)/lib/libantlr4-runtime.a
 
 all: tiger
 
-tiger: dirs antlr4 main.cpp
-	$(CC) $(CCARGS) main.cpp  -o $(OUTPUT)/tiger.o 
+listener:
 	$(CC) $(CCARGS) $(GENERATED)/TigerBaseListener.cpp -o $(OUTPUT)/TigerBaseListener.o 
-	$(CC) $(CCARGS) $(GENERATED)/TigerLexer.cpp -o $(OUTPUT)/TigerLexer.o 
 	$(CC) $(CCARGS) $(GENERATED)/TigerListener.cpp -o $(OUTPUT)/TigerListener.o 
+
+lexparse:
 	$(CC) $(CCARGS) $(GENERATED)/TigerParser.cpp -o $(OUTPUT)/TigerParser.o 
+	$(CC) $(CCARGS) $(GENERATED)/TigerLexer.cpp -o $(OUTPUT)/TigerLexer.o 
+
+symbolstat:
 	$(CC) $(CCARGS) stat.cpp -o $(OUTPUT)/stat.o
 	$(CC) $(CCARGS) symbol.cpp -o $(OUTPUT)/symbol.o
+
+tiger: dirs antlr4 main.cpp symbolstat lexparse listener
+	$(CC) $(CCARGS) main.cpp  -o $(OUTPUT)/tiger.o 
 	$(CC) $(CCARGS) symbolTable.cpp -o $(OUTPUT)/symbolTable.o
 	$(CC) $(CCARGS) scope.cpp -o $(OUTPUT)/scope.o
 	$(CC) $(LDARGS) $(OUTPUT)/scope.o $(OUTPUT)/symbolTable.o $(OUTPUT)/symbol.o $(OUTPUT)/stat.o $(OUTPUT)/tiger.o $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/TigerLexer.o $(OUTPUT)/TigerListener.o $(OUTPUT)/TigerParser.o $(LIBS) -o $(BIN)/tigerc
