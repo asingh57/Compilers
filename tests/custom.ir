@@ -2,25 +2,24 @@ start_program fib
     static-int-list: result
 
         start_function fib
-        int fib (int n, int naaa, int nn)
-        int-list: _t0, _t1, _t2, n, naaa, nn
+        int fib (int n, int naaa, int nn, int p)
+        int-list: _t0, _t1, _t2, n, naaa, nn, p
         fib:
-            assign, p, _t0_Scope1, 
-        _Scope2forCondition:
-            brneq, n_Scope1, p, _Scope2forEnd
-                goto, _Scope2forEnd, , 
-                return, , , 
-            add, p, 1, p
-            goto, _Scope2forCondition, , 
-        _Scope2forEnd:
+            return, , , 
+        _Scope3whileCondition:
+        brneq, n_Scope1, _true, _Scope3whileEnd
+            goto, _Scope3whileEnd, , 
+            return, , , 
+            goto, _Scope3whileCondition, , 
+        _Scope3whileEnd:
         end_function fib
 
         start_function main
         int main ()
         int-list: _t9
         main:
-                assign, t, _t3_Scope4, 
-            return, _t9_Scope3, , 
+                assign, t, _t3_Scope5, 
+            return, _t9_Scope4, , 
         end_function main
 
 end_program fib

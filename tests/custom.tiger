@@ -6,11 +6,17 @@ let
     type catList3 = catList;
     static result : int :=9;
 begin
-    function fib (n : int, naaa : int, nn : catList) : catList3
+    function fib (n : int, naaa : int, nn : catList, p : int) : catList3
     begin
             for p := 1 to n+33 do
             	return;
-            enddo;            
+            enddo;       
+            
+            while n do
+            	break;
+            	return;
+            enddo;    
+             
     end
 
     function main() : int 

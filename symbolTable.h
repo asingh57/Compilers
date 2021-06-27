@@ -569,15 +569,37 @@ void printSymbolTable(){
   	ASTNode::astStack.pop_back();
   	//ID: name of var in for
   	auto varName= ctx->ID()->getText();
+  	
+  	
+  	
+  	//create stat and add the nodes, as well as the last scope
+  	auto stFor= new StatFor(varName, from, to, Scope::scopeStack.back());
+  	
+  	
+  	//check if this var exists
+  	int lineNum = ctx->ID()->getSymbol()->getLine();
+	int charPos =  ctx->ID()->getSymbol()->getCharPositionInLine();
+	Scope* back = Scope::scopeStack.back();
+	ErrorCheckingTask::tasks.push_back([lineNum,varName,charPos,back,stFor](){
+		std::string scopeName;
+		auto res = back->getSymbol(varName, scopeName);
+		if(res==nullptr){
+			printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);				
+		}
+		else if(res->getType()!=TYPE_VARIABLE){
+			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
+		}
+		else{
+			stFor->_assignVar=varName+scopeName;
+		}
+	});
+  	
   	//pop count of stat_seq_for  	
   	auto cnt = countStats(ctx->stat_seq_for()->stat_seq());
   	logger("exit for");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}  	
-  	
-  	//create stat and add the nodes, as well as the last scope
-  	auto stFor= new StatFor(varName, from, to, Scope::scopeStack.back());
   	
   	Scope::scopeStack.pop_back();
   	StatBreak::loopCounter--;
