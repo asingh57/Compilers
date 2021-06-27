@@ -5,6 +5,7 @@
 
 class Stat{
 public:
+	static std::vector<std::string> endList;//list of end labels for various condition
 	static std::vector<Stat*> statStack;
 protected:
 	StatType _type;
@@ -199,8 +200,13 @@ public:
 		Scope::tabs(outFile);
 		outFile<< formatIR("brneq",_condition->_var,"_true",whileEnd) <<"\n";
 		
+		//push end
+		endList.push_back(whileEnd);
 		//output scope
 		_whileScope->generateIR(outFile);
+		//pop end		
+		endList.pop_back();
+		
 		Scope::tabCounter++;
 				
 		Scope::tabs(outFile);
@@ -259,9 +265,14 @@ public:
 		Scope::tabs(outFile);
 		outFile<< formatIR("brneq",_to->_var,_assignVar,forEnd) <<"\n";
 		
+		//push to endlist
+		endList.push_back(forEnd);
 		//output scope
 		_forScope->generateIR(outFile);
 				
+		//pop from endlist
+		endList.pop_back();
+		
 		//post condition here, which is ++
 		Scope::tabs(outFile);
 		outFile << formatIR("add",_assignVar, "1", _assignVar) << "\n";
@@ -331,7 +342,8 @@ public:
 	}
 	
 	void printIR(std::ofstream &outFile) override{
-		//todo
+		Scope::tabs(outFile);
+		outFile<< formatIR("goto",Stat::endList.back() )<<"\n";
 	}
 	
 	void printSymbols() override{

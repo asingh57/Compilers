@@ -6,3 +6,4 @@ int Stat::nameCounter=0;
 
 std::vector<ASTNode*> ASTNode::astStack={};
 
+std::vector<std::string> Stat::endList={};
