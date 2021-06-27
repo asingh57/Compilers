@@ -186,6 +186,36 @@ public:
 	
 	} 
 	
+	void printIR(std::ofstream &outFile) override{
+		
+		auto whileStart = _whileScope->getName() +"whileCondition";
+		auto whileEnd = _whileScope->getName() +"whileEnd";
+		
+		
+		Scope::tabCounter--;
+		Scope::tabs(outFile);
+		outFile << whileStart <<":\n";	
+		//TODO put condition here and skip if condition not met
+		Scope::tabs(outFile);
+		outFile<< formatIR("brneq",_condition->_var,"_true",whileEnd) <<"\n";
+		
+		//output scope
+		_whileScope->generateIR(outFile);
+		Scope::tabCounter++;
+				
+		Scope::tabs(outFile);
+		outFile<< formatIR("goto",whileStart) <<"\n";
+		
+		Scope::tabCounter--;	
+		Scope::tabs(outFile);	
+		outFile << whileEnd <<":\n";
+		Scope::tabCounter++;
+		
+		
+		
+	}
+	
+	
 	void printSymbols() override{
 		
 		logger("printing while");

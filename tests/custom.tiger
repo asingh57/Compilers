@@ -9,10 +9,11 @@ let
 begin
     function fib (n : int, naaa : int, nn : catList) : int
     begin
-            if r & s then
-		    	a := 50;
-		    	x := a;
-		 endif;
+            while p do
+            	x := 12;
+            	r := 16;
+            enddo;
+            
     end
 
     function main() : int 

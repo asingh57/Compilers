@@ -3,12 +3,14 @@ start_program fib
 
         start_function fib
         int fib (int n, int naaa, int nn)
-        int-list: _t0, n, naaa, nn
+        int-list: n, naaa, nn
         fib:
-            brneq, r, _true, _Scope2if
-                assign, a, _t1, 
-                assign, x, a, 
-        _Scope2if:
+        _Scope2whileCondition:
+        brneq, p, _true, _Scope2whileEnd
+            assign, x, _t0, 
+            assign, r, _t1, 
+            goto, _Scope2whileCondition, , 
+        _Scope2whileEnd:
         end_function fib
 
         start_function main
