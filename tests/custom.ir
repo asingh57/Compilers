@@ -5,9 +5,9 @@ start_program fib
         int fib (int n, int naaa, int nn)
         int-list: _t0, _t1, _t2, n, naaa, nn
         fib:
-            assign, p, _t0, 
+            assign, p, _t0_Scope1, 
         _Scope2forCondition:
-            brneq, n, p, _Scope2forEnd
+            brneq, n_Scope1, p, _Scope2forEnd
                 return, , , 
             add, p, 1, p
             goto, _Scope2forCondition, , 
@@ -18,8 +18,8 @@ start_program fib
         int main ()
         int-list: _t9
         main:
-                assign, n, _t3, 
-            return, _t9, , 
+                assign, t, _t3_Scope4, 
+            return, _t9_Scope3, , 
         end_function main
 
 end_program fib

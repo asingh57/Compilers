@@ -36,6 +36,12 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "non static vars not allowed in main scope";
 		break;
 		}
+		case IRERROR_NOT_ASSIGNABLE_VAR:
+		{
+		desc = "types and functions cannot be assigned as rval";
+		break;
+		}
+		
 	
 	}
 	

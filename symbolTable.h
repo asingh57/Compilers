@@ -19,6 +19,8 @@ enum IRErrorMessageID{
 	IRERROR_ZERO_SIZED_ARRAY,
 	IRERROR_NOT_ASSIGNABLE_TYPE,
 	IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN,
+	IRERROR_NOT_ASSIGNABLE_VAR,
+	
 };
 
 
@@ -786,6 +788,10 @@ void printSymbolTable(){
    		auto nd = new ASTNode();
    		auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,true,std::stoi(ctx->constant()->INTLIT()->getText()));
    		nd->_var= v->getName();
+   		std::string scopeName;
+		Scope* back = Scope::scopeStack.back();
+		auto res = back->getSymbol(nd->_var, scopeName);
+		nd->_var=nd->_var+scopeName;
    		nd->_isLeaf = true;
    		ASTNode::astStack.push_back(nd);
    	
@@ -799,6 +805,25 @@ void printSymbolTable(){
   	auto nd = new ASTNode();
 	//use existing var
 	nd->_var = ctx->ID()->getText();
+	
+	//check if this var exists
+	int lineNum = ctx->ID()->getSymbol()->getLine();
+	int charPos =  ctx->ID()->getSymbol()->getCharPositionInLine();
+	Scope* back = Scope::scopeStack.back();
+	ErrorCheckingTask::tasks.push_back([lineNum,charPos,nd,back](){
+		std::string scopeName;
+		auto res = back->getSymbol(nd->_var, scopeName);
+		if(res==nullptr){
+			printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);				
+		}
+		else if(res->getType()!=TYPE_VARIABLE){
+			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
+		}
+		else{
+			nd->_var=nd->_var+scopeName;
+		}
+	});
+	
 	
 	if(ctx->lvalue_tail() && ctx->lvalue_tail()->expr()){  		
 		nd->_hasIndex= true;		
