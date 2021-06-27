@@ -46,6 +46,11 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "Symbol already defined in this scope";
 		break;
 		}
+		case IRERROR_ILLEGAL_BREAK_STATEMENT:
+		{
+		desc = "Illegal break statement, no parent loop present";
+		break;
+		}
 		
 	
 	}

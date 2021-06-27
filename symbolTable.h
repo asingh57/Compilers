@@ -21,6 +21,7 @@ enum IRErrorMessageID{
 	IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN,
 	IRERROR_NOT_ASSIGNABLE_VAR,
 	IRERROR_SYMBOL_ALREADY_EXISTS,
+	IRERROR_ILLEGAL_BREAK_STATEMENT,
 	
 };
 
@@ -529,8 +530,14 @@ void printSymbolTable(){
   	ASTNode::astStack.pop_back();
   	
   }
+  
 
-  virtual void exitWhile_stat(TigerParser::While_statContext * ctx) override {  	
+	
+  virtual void enterWhile_stat(TigerParser::While_statContext * ctx) override {  
+  	StatBreak::loopCounter++;
+  }
+
+  virtual void exitWhile_stat(TigerParser::While_statContext * ctx) override {  
   	//pop num stats equal to number of stats in stat_seq_while: these are the statements
   	auto cnt = countStats(ctx->stat_seq_while()->stat_seq());
   	logger("exit while");
@@ -543,10 +550,16 @@ void printSymbolTable(){
   	
   	
   	ASTNode::astStack.pop_back();   
-  	Scope::scopeStack.pop_back();
+  	Scope::scopeStack.pop_back();	
+  	StatBreak::loopCounter--;
   }
 
 
+  virtual void enterFor_stat(TigerParser::For_statContext * ctx) override { 
+  	StatBreak::loopCounter++;
+  }
+  
+  
   virtual void exitFor_stat(TigerParser::For_statContext * ctx) override { 
   	//pop ast: to
   	auto to = ASTNode::astStack.back();
@@ -567,6 +580,7 @@ void printSymbolTable(){
   	auto stFor= new StatFor(varName, from, to, Scope::scopeStack.back());
   	
   	Scope::scopeStack.pop_back();
+  	StatBreak::loopCounter--;
   
   }
 
@@ -606,6 +620,16 @@ void printSymbolTable(){
   virtual void exitBreak_stat(TigerParser::Break_statContext * ctx) override { 
   	//create stat
   	auto br = new StatBreak();
+  	
+  	if (StatBreak::loopCounter==0){  
+  	
+		int lineNum = ctx->BREAK()->getSymbol()->getLine();
+		int charPos =  ctx->BREAK()->getSymbol()->getCharPositionInLine();
+			
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+			printErrorAndExit(lineNum,charPos, IRERROR_ILLEGAL_BREAK_STATEMENT);	
+		});
+  	}
   }
 
   virtual void exitReturn_stat(TigerParser::Return_statContext * ctx) override { 

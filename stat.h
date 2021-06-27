@@ -336,6 +336,7 @@ public:
 
 class StatBreak :Stat{
 public:
+	static int loopCounter;
 
 	StatBreak():Stat(STAT_BREAK){
 	

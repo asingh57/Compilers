@@ -8,6 +8,7 @@ start_program fib
             assign, p, _t0_Scope1, 
         _Scope2forCondition:
             brneq, n_Scope1, p, _Scope2forEnd
+                goto, _Scope2forEnd, , 
                 return, , , 
             add, p, 1, p
             goto, _Scope2forCondition, , 
