@@ -1,19 +1,24 @@
 #include "symbol.h"
 #include "stat.h"
-Scope::Scope(std::string name, Scope* parentScope, Stat* associatedStat) : _programName(""), _symbolsMap(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
+Scope::Scope(std::string name, Scope* parentScope, Stat* associatedStat) : _programName(""), _symbolsMap(), _childrenScope(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(NULL){
 		logger("created scope");
 		logger(name);
+		
+		if(parentScope){
+			parentScope->_childrenScope.push_back(this);
+		}
 	}
 	
 	
-Symbol* Scope::getSymbol(std::string name, bool checkParents){
+Symbol* Scope::getSymbol(std::string name, std::string &scopeName, bool checkParents){
 		auto search= _symbolsMap.find(name);
 		if(search!=_symbolsMap.end()){
+			scopeName = _name;
 			return search->second;
 		}
 		
 		if(_parentScope && checkParents){
-			return _parentScope->getSymbol(name,checkParents);
+			return _parentScope->getSymbol(name,scopeName,checkParents);
 		}
 		
 		return nullptr;
@@ -62,7 +67,7 @@ void Scope::generateIR(std::ofstream &outFile){
 
 		for(auto const& [key, val] : _symbolsMap){
 			if(val->getType()==TYPE_VARIABLE){
-				auto var = dynamic_cast<SymbolVariable*>(val);//TODO VAR SIZES
+				auto var = dynamic_cast<SymbolVariable*>(val);
 				std::string name= var->getFinalIR();
 				staticList.push_back(name);
 			}
@@ -91,6 +96,10 @@ void Scope::generateIR(std::ofstream &outFile){
 		outFile << "end_program "+ _programName<< std::endl;
 	}
 	else{
+		//if function, take vars declared in subscopes and rename them
+		//TODO name mangling
+			
+	
 		//print stats
 		for (auto st = _stats.rbegin(); st != _stats.rend(); ++st)
 		{
@@ -105,6 +114,7 @@ void Scope::generateIR(std::ofstream &outFile){
 }
 
 
+Scope* Scope::currentFunctionParent = NULL;
 
  std::vector<Symbol*> Scope::getVars(){
  	std::vector<Symbol*> ret;
@@ -130,4 +140,6 @@ std::cout << s << std::endl;
 std::vector<Scope*> Scope::scopeStack= std::vector<Scope*>();
 int Scope::scopeCounter=0;
 int Scope::tabCounter=0;
+
+
 

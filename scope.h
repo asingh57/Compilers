@@ -45,13 +45,14 @@ public:
 private:
 	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope
 	Scope* _parentScope;//parent scope
+	std::vector<Scope*> _childrenScope;
 	std::string _name;//scope name (auto generated
 	Stat* _associatedStat;//associated parent statement if applicable
 	std::vector<Stat*> _stats; //sub-statements inside scope
 	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL);
 	
-	
 public:
+	static Scope* currentFunctionParent;
 	static std::vector<Scope*>scopeStack;
 	static int scopeCounter;//counter for creating new scopes
 	static int tabCounter;//keeps count of scope tabs
@@ -95,7 +96,7 @@ public:
 	}
 	
 	//get symbol by name
-	Symbol* getSymbol(std::string name, bool checkParents=true);
+	Symbol* getSymbol(std::string name, std::string &scopeName ,bool checkParents=true);
 	
 	
 	//print all symbols
@@ -105,6 +106,11 @@ public:
 	
 	
 	 std::vector<Symbol*> getVars();
+	 
+	 
+	void mangleNames();
+	
+	void mangleVars();
 };
 
 

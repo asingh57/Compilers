@@ -370,6 +370,7 @@ public:
 		}
 	}
 	
+	
 	void printSymbols() override{
 		
 		logger("printing return");
@@ -381,6 +382,11 @@ public:
 	Scope* _scope;
 	StatSubScope(Scope* scope):Stat(STAT_SUBSCOPE),_scope(scope){
 	
+	}
+	
+	void printIR(std::ofstream &outFile) override{
+		//TODO transfer vars to parent scopes
+		_scope->generateIR(outFile);
 	}
 	
 	void printSymbols() override{

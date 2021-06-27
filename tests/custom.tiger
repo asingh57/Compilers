@@ -2,7 +2,7 @@
 program fib
 let
     type catList = array [8] of int;
-    type catList2 = int;
+    type catList2 = catList3;
     type catList3 = catList;
     static result : int :=9;
     var test : catList := 10;
@@ -17,7 +17,12 @@ begin
     function main() : int 
     begin
     	
-    	fib();
+    	let 
+    		var t : catList := 10;
+   		var test : catList := 10;
+    	begin
+    		n := 69;
+    	end
     
         return 0;
     end

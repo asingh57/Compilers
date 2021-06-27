@@ -16,10 +16,10 @@ start_program fib
 
         start_function main
         int main ()
-        int-list: _t3
+        int-list: _t4
         main:
-            call, fib
-            return, _t3, , 
+                assign, n, _t3, 
+            return, _t4, , 
         end_function main
 
 end_program fib

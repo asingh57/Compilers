@@ -1,3 +1,5 @@
+#ifndef _SYMBOLTABLE
+#define _SYMBOLTABLE
 #include "stat.h"
 
 #include <map>
@@ -6,7 +8,27 @@
 #include <vector>
 #include <cstring>
 
+enum IRErrorCodes{
+	 SEMANTIC_ERROR= 4
+};
 
+enum IRErrorMessageID{
+	IRERROR_NO_SUCH_TYPE,
+	IRERROR_NO_ARRAY_ALLOWED_VAR,
+	IRERROR_NO_SUCH_VARIABLE,
+	IRERROR_ZERO_SIZED_ARRAY,
+	IRERROR_NOT_ASSIGNABLE_TYPE,
+};
+
+
+void printErrorAndExit(int line, int col, IRErrorMessageID msg);
+
+
+class ErrorCheckingTask{
+public:
+	static std::vector<std::function<void()>> tasks;
+	
+};
 
 class SymbolTableGenerator : public TigerBaseListener{
 public:
@@ -43,30 +65,7 @@ void printSymbolTable(){
 	int arrayLen = 0;
 	Type deriveFromType;
 	std::string deriveFromSymbolName;
-	if(ctx->type()->INTLIT()){
-		//integer literal: this is an array
-		isArray=true;
-		arrayLen = std::stoi (ctx->type()->INTLIT()->getText());
-		deriveFromType=TYPE_INT;
-	}		
-	else if(ctx->type()->type_id()){
-		//type is int
-		deriveFromType=TYPE_INT;
-	}
-	else if(ctx->type()->ID()){
-		//another type
-		//TODO look this up in current symbol table
-		/*auto rvalSymbol = currentScope->getSymbol();
-		if(!rvalSymbol){
-		
-			auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
-			auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
-			printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
-		}*/
-		deriveFromType=TYPE_TYPEDEF;
-		deriveFromSymbolName = ctx->type()->ID()->getText();
-		
-	}
+	
 	auto sym = new SymbolTypedef(
 		name,
 		isArray, 
@@ -74,6 +73,49 @@ void printSymbolTable(){
 		deriveFromType, 
 		deriveFromSymbolName
 		);
+	if(ctx->type()->INTLIT()){
+		//integer literal: this is an array
+		isArray=true;
+		arrayLen = std::stoi (ctx->type()->INTLIT()->getText());
+		int lineNum =  ctx->type()->INTLIT()->getSymbol()->getLine();
+		int charPos =  ctx->type()->INTLIT()->getSymbol()->getCharPositionInLine();
+		ErrorCheckingTask::tasks.push_back([arrayLen,lineNum,charPos](){
+			if(arrayLen<=0){
+				printErrorAndExit(lineNum,charPos, IRERROR_ZERO_SIZED_ARRAY);				
+			}		
+		});
+		
+		deriveFromType=TYPE_INT;
+	}		
+	else if(ctx->type()->type_id()){
+		//type is int
+		deriveFromType=TYPE_INT;
+	}
+	else if(ctx->type()->ID()){
+	
+	
+		int lineNum =  ctx->type()->ID()->getSymbol()->getLine();
+		int charPos =  ctx->type()->ID()->getSymbol()->getCharPositionInLine();
+		deriveFromSymbolName = ctx->type()->ID()->getText();
+		Scope* back = Scope::scopeStack.back();
+		ErrorCheckingTask::tasks.push_back([deriveFromSymbolName,lineNum,charPos,back,sym](){
+			std::string scopeName;
+			auto res = back->getSymbol(deriveFromSymbolName, scopeName);
+			if(res==nullptr){
+				printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_TYPE);				
+			}
+			else if(res->getType()!=TYPE_TYPEDEF){
+				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
+			}
+			else{
+				sym->_deriveFromSymbolName+=scopeName;
+			}
+		});
+	
+		deriveFromType=TYPE_TYPEDEF;
+		
+	}
+	sym->_deriveFromSymbolName = deriveFromSymbolName;
   }
   
 
@@ -102,12 +144,12 @@ void printSymbolTable(){
 
 	
 	if(ctx->type()->INTLIT()){
-		//TODO error handling integer literal: this is an array NOT allowed according to 3.3 of spec
-		/*
-		auto lineNum = ctx->type()->ARRAY()->getSymbol()->getLine();
-		auto colNum = ctx->type()->ARRAY()->getSymbol()->getCharPositionInLine();
-		printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
-		*/
+		// error handling integer literal: this is an array NOT allowed according to 3.3 of spec		
+		int lineNum =  ctx->type()->ARRAY()->getSymbol()->getLine();
+		int charPos =  ctx->type()->ARRAY()->getSymbol()->getCharPositionInLine();
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+			printErrorAndExit(lineNum,charPos, IRERROR_NO_ARRAY_ALLOWED_VAR);		
+		});
 		
 	}		
 	else if(ctx->type()->type_id()){
@@ -705,3 +747,5 @@ void printSymbolTable(){
 
 
 };
+
+#endif

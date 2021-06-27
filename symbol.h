@@ -111,11 +111,11 @@ public:
 
 
 class SymbolTypedef : public Symbol{
+public: 
 	bool _isArray;
 	int _arrayLen; 
 	Type _deriveFromType; 
 	std::string _deriveFromSymbolName;
-public: 
 	SymbolTypedef(
 	std::string name,
 	bool isArray = false, 
