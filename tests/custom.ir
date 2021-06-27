@@ -8,18 +8,7 @@ start_program fib
             assign, p, _t0, 
         _Scope2forCondition:
             brneq, n, p, _Scope2forEnd
-                assign, x, _t3, 
-                goto, _Scope2forEnd, , 
-                assign, r, _t4, 
-                goto, _Scope2forEnd, , 
-            _Scope3whileCondition:
-            brneq, i, _true, _Scope3whileEnd
-                goto, _Scope3whileEnd, , 
-                assign, x, _t5, 
-                call, fib, a
-                goto, _Scope3whileEnd, , 
-                goto, _Scope3whileCondition, , 
-            _Scope3whileEnd:
+                return, , , 
             add, p, 1, p
             goto, _Scope2forCondition, , 
         _Scope2forEnd:
@@ -27,9 +16,10 @@ start_program fib
 
         start_function main
         int main ()
-        int-list: _t6
+        int-list: _t3
         main:
             call, fib
+            return, _t3, , 
         end_function main
 
 end_program fib

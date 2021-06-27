@@ -359,6 +359,17 @@ public:
 	
 	}
 	
+	void printIR(std::ofstream &outFile) override{
+		Scope::tabs(outFile);
+		if(_retVal){
+			//TODO resolve retVal
+			outFile<< formatIR("return", _retVal->_var)<<"\n";
+		}
+		else{
+			outFile<< formatIR("return")<<"\n";		
+		}
+	}
+	
 	void printSymbols() override{
 		
 		logger("printing return");

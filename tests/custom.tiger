@@ -10,16 +10,7 @@ begin
     function fib (n : int, naaa : int, nn : catList) : int
     begin
             for p := 1 to n+33 do
-            	x := 12;
-            	break;
-            	r := 16;
-            	break;
-            	while i do
-            	break;
-            	x := 64;
-            	fib(a);
-            	break;
-            	enddo;
+            	return;
             enddo;            
     end
 
