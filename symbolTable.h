@@ -25,7 +25,7 @@ enum IRErrorMessageID{
 	IRERROR_COMPARATORS_NON_ASSOCIATIVE,
 	IRERROR_PROCEDURE_NON_NULL_RETURN,
 	IRERROR_FUNCTION_NO_RETURN_VAL,
-	IRERROR_ARRAY_RVAL,
+	IRERROR_ARRAY_OPERATOR,
 	IRERROR_INDEX_ON_NON_ARRAY
 	
 };
@@ -478,11 +478,17 @@ void printSymbolTable(){
   	bool hasInvalidIndex= false;
 	int lineNum = ctx->ASSIGN()->getSymbol()->getLine();
 	int charPos =  ctx->ASSIGN()->getSymbol()->getCharPositionInLine();
+	
+	
+	bool isArrayRHS=false;
+	
   	if(!ASTNode::astStack.back()->isIntegerChain(hasInvalidIndex)){
-		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+		/*ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
-		});
+		});*/
+		isArrayRHS=true;
+		
   	}
   	if(hasInvalidIndex){
   		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
@@ -506,13 +512,29 @@ void printSymbolTable(){
 	}
   	st->_lvalues.push_back(std::make_pair(ctx->lvalue()->ID()->getSymbol()->getText(),index));
   	
+  	{
+  	//TODO
+  	//check if array lhs matches rhs
+  	
+  	}
+  	
+  	
+  	
   	while(tail && tail->lvalue()){
   		index= NULL;
   		if(tail->lvalue()->lvalue_tail()){
 			index=ASTNode::astStack.back();
 			ASTNode::astStack.pop_back();
 		}
-  		st->_lvalues.push_back(std::make_pair(tail->lvalue()->ID()->getSymbol()->getText(),index));  		
+  		st->_lvalues.push_back(std::make_pair(tail->lvalue()->ID()->getSymbol()->getText(),index));  	
+  		
+  		{
+  		//TODO
+	  	//check if array lhs matches rhs
+	  	
+	  	}
+  		
+  			
   		tail = tail->l_tail();
   	}
   	
@@ -761,12 +783,17 @@ void printSymbolTable(){
   	while(logicalExt && logicalExt->compare_op_expr() ){//then we have power operators
    		 logger("creating logical op");
    		 auto nd = new ASTNode();
-   		 ASTNode::astStack.push_back(nd); 
+	 	int lineNum;
+		int charPos;
    		 if(logicalExt->AND()){
-   		 	nd->_op = OPERATOR_AND;   	
+   		 	nd->_op = OPERATOR_AND;   
+   		 	lineNum = logicalExt->AND()->getSymbol()->getLine();
+   		 	charPos =  logicalExt->AND()->getSymbol()->getCharPositionInLine();	
   		}
   		else{
    		 	nd->_op = OPERATOR_OR;  
+   		 	lineNum = logicalExt->OR()->getSymbol()->getLine();
+   		 	charPos =  logicalExt->OR()->getSymbol()->getCharPositionInLine();
   			
   		}
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
@@ -776,9 +803,32 @@ void printSymbolTable(){
    		 auto v2 =  ASTNode::astStack.back();   
    		 ASTNode::astStack.pop_back();
    		 nd->_left = v2;
-   		 nd->_right = v1;   		 
+   		 nd->_right = v1;   	
+   		 
+   		 bool hasInvalidIndex= false;
+		bool isArrayRHS=false;	 		
+ 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+			});
+			isArrayRHS=true;
+			
+
+	  	}
+	  	if(hasInvalidIndex){
+	  	
+
+	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+			});
+	  	} 	 
    		 		 		
    		 logicalExt= logicalExt->logical_op_expr_ext();
+   		 ASTNode::astStack.push_back(nd); 
    	}  	
   	
   }
@@ -793,7 +843,6 @@ void printSymbolTable(){
   	while(compareExt && compareExt->add_op_expr() ){//then we have power operators
    		 logger("creating compare op");
    		 auto nd = new ASTNode();
-   		 ASTNode::astStack.push_back(nd); 
    		 
    		 
 	 	int lineNum;
@@ -845,6 +894,32 @@ void printSymbolTable(){
 				printErrorAndExit(lineNum,charPos, IRERROR_COMPARATORS_NON_ASSOCIATIVE);
 			});
    		 }
+   		 
+   		 bool hasInvalidIndex= false;
+		bool isArrayRHS=false;	 		
+ 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+			});
+			isArrayRHS=true;
+			
+
+	  	}
+	  	if(hasInvalidIndex){
+	  	
+
+	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+			});
+	  	} 
+	  	
+	  	
+	  	
+   		 ASTNode::astStack.push_back(nd); 		
    	}
   }
 
@@ -852,16 +927,22 @@ void printSymbolTable(){
   	TigerParser::Add_op_expr_extContext * addExt=ctx->add_op_expr_ext();  
 
   	
+   		
   
   	while(addExt && addExt->mult_op_expr() ){//then we have power operators
+  		bool hasInvalidIndex= false;
+   		int lineNum, charPos;
    		 logger("creating add/sub op");
    		 auto nd = new ASTNode();
-   		 ASTNode::astStack.push_back(nd); 
    		 if(addExt->PLUS()){
-   		 	nd->_op = OPERATOR_PLUS;   	
+   		 	nd->_op = OPERATOR_PLUS; 
+			lineNum = addExt->PLUS()->getSymbol()->getLine();
+			charPos =  addExt->PLUS()->getSymbol()->getCharPositionInLine();  	
   		}
   		else{
   			nd->_op = OPERATOR_MINUS; 
+			lineNum = addExt->MINUS()->getSymbol()->getLine();
+			charPos =  addExt->MINUS()->getSymbol()->getCharPositionInLine();
   		}
    		 
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
@@ -873,40 +954,105 @@ void printSymbolTable(){
    		 nd->_left = v2;
    		 nd->_right = v1;   		 
    		 		 		
+   		 	
+		
+		bool isArrayRHS=false;	 		
+ 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+			});
+			isArrayRHS=true;
+			
+
+	  	}
+	  	if(hasInvalidIndex){
+	  	
+
+	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+			});
+	  	} 		
+   		 		 		
    		 addExt= addExt->add_op_expr_ext();
+   		 ASTNode::astStack.push_back(nd); 
    	}
   
   
   }
 
   virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { 
-  	TigerParser::Mult_op_expr_extContext * mulExt=ctx->mult_op_expr_ext();  
+  	TigerParser::Mult_op_expr_extContext * mulExt=ctx->mult_op_expr_ext(); 
   	auto op = OPERATOR_MULT;
   	
   
   	while(mulExt && mulExt->pow_op_expr() ){//then we have power operators
-   		 logger("creating mul/div op");
-   		 auto nd = new ASTNode();
-   		 ASTNode::astStack.push_back(nd); 
-   		 if(mulExt->MULT()){
-   		 	nd->_op = OPERATOR_MULT;   	
-  		}
-  		else{
-  			nd->_op = OPERATOR_DIV; 
-  		}
-   		 
+   		 logger("creating mult op");
+   		 auto nd = new ASTNode(); 
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();
+   		 auto v1 =  ASTNode::astStack.back();   		 
    		 ASTNode::astStack.pop_back();
    		 auto v2 =  ASTNode::astStack.back();   
    		 ASTNode::astStack.pop_back();
+   		 
+   		 
+   		 //assert v1 and v2 are not arrays
+   		bool hasInvalidIndex= false;
+   		int lineNum, charPos;
+   		if(mulExt->MULT()){
+		lineNum = mulExt->MULT()->getSymbol()->getLine();
+		charPos =  mulExt->MULT()->getSymbol()->getCharPositionInLine();
+   		op = OPERATOR_MULT;
+   		}
+   		else{
+		lineNum = mulExt->DIV()->getSymbol()->getLine();
+		charPos =  mulExt->DIV()->getSymbol()->getCharPositionInLine();
+   		op = OPERATOR_DIV;
+   		
+   		}
+   		 nd->_op = op;
+		
+		
+		bool isArrayRHS=false;
+		
+
+	  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+			});
+			isArrayRHS=true;
+			
+
+	  	}
+	  	if(hasInvalidIndex){
+	  	
+
+	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+
+				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+			});
+	  	}
+   		 
+   		 ASTNode::astStack.push_back(nd); 
+   		 
    		 nd->_left = v2;
    		 nd->_right = v1;
    		 
    		 		 		
    		 mulExt= mulExt->mult_op_expr_ext();
    	}
+  	
+  	
+  	
+  	
+  	
   }
 
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
@@ -917,18 +1063,46 @@ void printSymbolTable(){
    		 logger("creating pow op");
    		 auto nd = new ASTNode();
    		 nd->_op = OPERATOR_POW;
-   		 ASTNode::astStack.push_back(nd);  
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();
+   		 auto v1 =  ASTNode::astStack.back();   		 
    		 ASTNode::astStack.pop_back();
    		 auto v2 =  ASTNode::astStack.back();   
    		 ASTNode::astStack.pop_back();
+   		 
+   		 
+   		 //assert v1 and v2 are not arrays
+   		bool hasInvalidIndex= false;
+		int lineNum = powExt->POW()->getSymbol()->getLine();
+		int charPos =  powExt->POW()->getSymbol()->getCharPositionInLine();
+		
+		
+		bool isArrayRHS=false;
+
+	  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+			
+				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+			});
+			isArrayRHS=true;
+			
+	  	}
+
+	  	if(hasInvalidIndex){
+	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+			
+				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+			});
+	  	}
+   		 
+   		 
    		 nd->_left = v2;
    		 nd->_right = v1;
    		 
    		 		 		
    		 powExt= powExt->pow_op_expr_ext();
+   		 ASTNode::astStack.push_back(nd);  
    	}
   
   }
@@ -949,6 +1123,7 @@ void printSymbolTable(){
    		nd->_isLeaf = true;
    		ASTNode::astStack.push_back(nd);
    	
+
    	}
   	
   }
@@ -985,6 +1160,7 @@ void printSymbolTable(){
 		nd->_isLeaf = true;
 		ASTNode::astStack.pop_back();
 	}
+
 	ASTNode::astStack.push_back(nd);
   }
 

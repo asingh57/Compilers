@@ -66,9 +66,9 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "Function cannot return without return value";
 		break;
 		}
-		case IRERROR_ARRAY_RVAL:
+		case IRERROR_ARRAY_OPERATOR:
 		{
-		desc = "Rvalue cannot be array";
+		desc = "binary operators not allowed on array type";
 		break;
 		}
 		case IRERROR_INDEX_ON_NON_ARRAY:

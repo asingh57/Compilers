@@ -1,25 +1,12 @@
 start_program fib
     static-int-list: result
 
-        start_function fib
-        void fib (int n, int naaa, int nn, int p)
-        int-list: _t0, _t1, _t2, n, naaa, nn, p
-        fib:
-            return, , , 
-        _Scope3whileCondition:
-        brneq, n, _true, _Scope3whileEnd
-            goto, _Scope3whileEnd, , 
-            return, , , 
-            goto, _Scope3whileCondition, , 
-        _Scope3whileEnd:
-        end_function fib
-
         start_function main
         int main ()
-        int-list: _t6
+        int-list: _t2
         main:
-                assign, t, r, 
-            return, _t6, , 
+                assign, x, _t1, 
+            return, _t2, , 
         end_function main
 
 end_program fib

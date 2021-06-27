@@ -44,9 +44,9 @@ class ASTNode{
 			bool res=true;
 			std::string scopeName;
 
+
 			if(dynamic_cast<SymbolVariable*>(_scope->getSymbol(_var,scopeName))->isArray()){
 				if(_hasIndex){
-
 					res = true;
 				}
 				else{
@@ -55,18 +55,20 @@ class ASTNode{
 				}
 			}
 			else if(_hasIndex){
+
 				//has an index on an integer type
 				indexOnNonArray=true;
 			}
 			
+
 			if(_left){
+
 
 
 				res = res &&  _left->isIntegerChain(indexOnNonArray);
 
 			}
 			if(_right){
-
 
 				res = res &&  _right->isIntegerChain(indexOnNonArray);
 
