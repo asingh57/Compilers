@@ -2,7 +2,7 @@
 program fib
 let
     type catList = array [8] of int;
-    type catList2 = catList3;
+    type catList = catList3;
     type catList3 = catList;
     static result : int :=9;
 begin

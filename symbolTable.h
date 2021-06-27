@@ -65,6 +65,17 @@ void printSymbolTable(){
   virtual void enterType_declaration(TigerParser::Type_declarationContext * ctx) override {
   	//add type declarations to last scope
   	auto name = ctx->ID()->getText();
+  	
+  	int lineNum = ctx->ID()->getSymbol()->getLine();
+	int charPos =  ctx->ID()->getSymbol()->getCharPositionInLine();
+	std::string scopeName;
+	auto res = Scope::scopeStack.back()->getSymbol(ctx->ID()->getText(), scopeName,false);
+	if(res!=nullptr){
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+			printErrorAndExit(lineNum,charPos, IRERROR_SYMBOL_ALREADY_EXISTS);	
+		});
+	}
+  	
 	bool isArray= false;
 	int arrayLen = 0;
 	Type deriveFromType;
