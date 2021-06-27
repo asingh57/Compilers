@@ -92,6 +92,12 @@ void Scope::generateIR(std::ofstream &outFile){
 	}
 	else{
 		//print stats
+		for (auto st = _stats.rbegin(); st != _stats.rend(); ++st)
+		{
+			(*st)->printIR(outFile);
+		}
+		
+		
 		
 	
 	}

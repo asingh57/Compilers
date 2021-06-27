@@ -20,7 +20,18 @@ public:
 	}
 	
 	virtual void printSymbols(){}
+	
+	virtual void printIR(std::ofstream &outFile){
+	
+	}
+	
+	
+	static std::string formatIR(std::string a = "",std::string b = "",std::string c = "",std::string d = ""){
+		return a + ", " +b+ ", " +c +", " + d;
+	}
 };
+
+
 
 
 enum Operator{
@@ -74,6 +85,25 @@ public:
 		
 	}
 	
+	void printIR(std::ofstream &outFile) override{
+
+		for(int i=_lvalues.size()-1; i>=0 ; i--){
+			
+			
+			if(i==_lvalues.size()-1){
+				//TODO resolve expression
+				Scope::tabs(outFile);
+				outFile << formatIR("assign", _lvalues[i].first, _assignedExpr->_var);
+				outFile<<"\n";
+			}
+			else{
+				Scope::tabs(outFile);
+				outFile << formatIR("assign", _lvalues[i].first,_lvalues[i+1].first);
+				outFile<<"\n";
+			}
+		}
+	}
+	
 	void printSymbols() override{
 		//don't print anything
 		logger("printing assignment");
@@ -87,6 +117,20 @@ public:
 	Scope* _ifScope;
 	StatIfStmt(ASTNode* condition, Scope* ifScope):Stat(STAT_IF), _condition(condition), _ifScope(ifScope){
 	
+	}
+	
+	void printIR(std::ofstream &outFile) override{
+		Scope::tabs(outFile);
+		//TODO output expr
+		auto elseLabel = _ifScope->getName()+"if";
+		outFile<< formatIR("brneq",_condition->_var,"_true",elseLabel);
+		outFile<<"\n";
+		_ifScope->generateIR(outFile);
+		Scope::tabCounter--;
+		Scope::tabs(outFile);
+		outFile << elseLabel << ":";
+		Scope::tabCounter++;
+		outFile<<"\n";
 	}
 	
 	void printSymbols() override{
@@ -105,6 +149,24 @@ public:
 	StatIfElseStmt(ASTNode* condition, Scope* ifScope, Scope* elseScope):Stat(STAT_IFELSE), _condition(condition), _ifScope(ifScope),_elseScope(elseScope){
 	
 	}
+	
+	void printIR(std::ofstream &outFile) override{
+		Scope::tabs(outFile);
+		//TODO output expr
+		auto elseLabel = _ifScope->getName()+"if";
+		outFile<< formatIR("brneq",_condition->_var,"_true",elseLabel);
+		outFile<<"\n";
+		_ifScope->generateIR(outFile);
+		Scope::tabCounter--;
+		Scope::tabs(outFile);
+		outFile << elseLabel << ":";
+		Scope::tabCounter++;
+		outFile<<"\n";
+		_elseScope->generateIR(outFile);
+	}
+	
+	
+	
 	
 	void printSymbols() override{
 		

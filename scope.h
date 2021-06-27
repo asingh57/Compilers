@@ -67,7 +67,7 @@ public:
 	}
 	//scope factory
 	static Scope* create(Scope* parent=NULL){
-		auto sc = new Scope("Scope" + std::to_string(scopeCounter++), parent);
+		auto sc = new Scope("_Scope" + std::to_string(scopeCounter++), parent);
 		scopeStack.push_back(sc);
 		return sc;
 	}
