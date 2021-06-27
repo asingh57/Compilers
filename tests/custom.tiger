@@ -9,7 +9,7 @@ let
 begin
     function fib (n : int, naaa : int, nn : catList) : int
     begin
-            while p do
+            for p := 1 to n+33 do
             	x := 12;
             	r := 16;
             enddo;

@@ -240,6 +240,44 @@ public:
 		logger("printing for");
 		_forScope->printSymbols();
 	}
+	
+	void printIR(std::ofstream &outFile) override{
+		
+		auto forStart = _forScope->getName() +"forCondition";
+		auto forEnd = _forScope->getName() +"forEnd";
+		
+		
+		//TODO put precondition here
+		Scope::tabs(outFile);
+		outFile << formatIR("assign",_assignVar, _from->_var) << "\n";
+		
+		Scope::tabCounter--;
+		Scope::tabs(outFile);
+		outFile << forStart <<":\n";	
+		Scope::tabCounter++;
+		//TODO put condition here and skip if condition not met
+		Scope::tabs(outFile);
+		outFile<< formatIR("brneq",_to->_var,_assignVar,forEnd) <<"\n";
+		
+		//output scope
+		_forScope->generateIR(outFile);
+				
+		//post condition here, which is ++
+		Scope::tabs(outFile);
+		outFile << formatIR("add",_assignVar, "1", _assignVar) << "\n";
+		
+		//jump to start
+		Scope::tabs(outFile);
+		outFile<< formatIR("goto",forStart) <<"\n";
+		
+		Scope::tabCounter--;	
+		Scope::tabs(outFile);	
+		outFile << forEnd <<":\n";
+		Scope::tabCounter++;
+		
+		
+		
+	}
 
 };
 class StatFnCall :Stat{
