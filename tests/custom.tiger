@@ -16,7 +16,7 @@ begin
     		var x2 : int;
 
     	begin
-    		x := x[0] & x2;
+    		x := x[0] & x;
     	end
     
         return 0;

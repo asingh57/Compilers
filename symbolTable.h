@@ -472,17 +472,19 @@ void printSymbolTable(){
 
   virtual void exitAssignment_stat(TigerParser::Assignment_statContext * ctx) override {
   	//create stat and AUTO push to stats
-  	StatAssignment *st = new StatAssignment(ASTNode::astStack.back());
+  	auto bk =ASTNode::astStack.back();
+  	StatAssignment *st = new StatAssignment(bk);
   	
   	//make sure rval is not an array
-  	bool hasInvalidIndex= false;
 	int lineNum = ctx->ASSIGN()->getSymbol()->getLine();
 	int charPos =  ctx->ASSIGN()->getSymbol()->getCharPositionInLine();
 	
 	
-	bool isArrayRHS=false;
 	
-  	if(!ASTNode::astStack.back()->isIntegerChain(hasInvalidIndex)){
+  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,bk](){
+	bool isArrayRHS=false;
+  	bool hasInvalidIndex= false;
+  	if(!bk->isIntegerChain(hasInvalidIndex)){
 		/*ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
@@ -491,11 +493,11 @@ void printSymbolTable(){
 		
   	}
   	if(hasInvalidIndex){
-  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-		});
   	}
+  	});
+  	
   	
   	//assign stat rval = last astnode and pop that node
   	ASTNode::astStack.pop_back();
@@ -805,27 +807,25 @@ void printSymbolTable(){
    		 nd->_left = v2;
    		 nd->_right = v1;   	
    		 
-   		 bool hasInvalidIndex= false;
-		bool isArrayRHS=false;	 		
- 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+   		
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
+	   		bool hasInvalidIndex= false;
+			bool isArrayRHS=false;
 
+		  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
 
-			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+				isArrayRHS=true;
+				
+		  	}
 
-				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
-			});
-			isArrayRHS=true;
-			
-
-	  	}
-	  	if(hasInvalidIndex){
-	  	
-
-	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
-
-				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-			});
-	  	} 	 
+		  	if(hasInvalidIndex){
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		  	}
+   		 
+		}); 
    		 		 		
    		 logicalExt= logicalExt->logical_op_expr_ext();
    		 ASTNode::astStack.push_back(nd); 
@@ -895,27 +895,25 @@ void printSymbolTable(){
 			});
    		 }
    		 
-   		 bool hasInvalidIndex= false;
-		bool isArrayRHS=false;	 		
- 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+   		 
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
+	   		bool hasInvalidIndex= false;
+			bool isArrayRHS=false;
 
+		  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
 
-			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+				isArrayRHS=true;
+				
+		  	}
 
-				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
-			});
-			isArrayRHS=true;
-			
-
-	  	}
-	  	if(hasInvalidIndex){
-	  	
-
-	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
-
-				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-			});
-	  	} 
+		  	if(hasInvalidIndex){
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		  	}
+   		 
+		});
 	  	
 	  	
 	  	
@@ -930,7 +928,7 @@ void printSymbolTable(){
    		
   
   	while(addExt && addExt->mult_op_expr() ){//then we have power operators
-  		bool hasInvalidIndex= false;
+
    		int lineNum, charPos;
    		 logger("creating add/sub op");
    		 auto nd = new ASTNode();
@@ -955,27 +953,24 @@ void printSymbolTable(){
    		 nd->_right = v1;   		 
    		 		 		
    		 	
-		
-		bool isArrayRHS=false;	 		
- 		if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
+	   		bool hasInvalidIndex= false;
+			bool isArrayRHS=false;
 
+		  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
 
-			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+				isArrayRHS=true;
+				
+		  	}
 
-				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
-			});
-			isArrayRHS=true;
-			
-
-	  	}
-	  	if(hasInvalidIndex){
-	  	
-
-	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
-
-				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-			});
-	  	} 		
+		  	if(hasInvalidIndex){
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		  	}
+   		 
+		});
    		 		 		
    		 addExt= addExt->add_op_expr_ext();
    		 ASTNode::astStack.push_back(nd); 
@@ -1001,7 +996,7 @@ void printSymbolTable(){
    		 
    		 
    		 //assert v1 and v2 are not arrays
-   		bool hasInvalidIndex= false;
+
    		int lineNum, charPos;
    		if(mulExt->MULT()){
 		lineNum = mulExt->MULT()->getSymbol()->getLine();
@@ -1017,28 +1012,27 @@ void printSymbolTable(){
    		 nd->_op = op;
 		
 		
-		bool isArrayRHS=false;
+
 		
 
-	  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+	  	ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
+	   		bool hasInvalidIndex= false;
+			bool isArrayRHS=false;
 
+		  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
 
-			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+				isArrayRHS=true;
+				
+		  	}
 
-				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
-			});
-			isArrayRHS=true;
-			
-
-	  	}
-	  	if(hasInvalidIndex){
-	  	
-
-	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
-
-				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-			});
-	  	}
+		  	if(hasInvalidIndex){
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		  	}
+   		 
+		});
    		 
    		 ASTNode::astStack.push_back(nd); 
    		 
@@ -1072,30 +1066,28 @@ void printSymbolTable(){
    		 
    		 
    		 //assert v1 and v2 are not arrays
-   		bool hasInvalidIndex= false;
 		int lineNum = powExt->POW()->getSymbol()->getLine();
 		int charPos =  powExt->POW()->getSymbol()->getCharPositionInLine();
 		
 		
-		bool isArrayRHS=false;
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
+	   		bool hasInvalidIndex= false;
+			bool isArrayRHS=false;
 
-	  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
+		  	if(!(v1->isIntegerChain(hasInvalidIndex) && v2->isIntegerChain(hasInvalidIndex))){
 
-			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
-			
-				printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
-			});
-			isArrayRHS=true;
-			
-	  	}
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_OPERATOR);
+				isArrayRHS=true;
+				
+		  	}
 
-	  	if(hasInvalidIndex){
-	  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
-			
-				printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
-			});
-	  	}
+		  	if(hasInvalidIndex){
+				
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		  	}
    		 
+		});
    		 
    		 nd->_left = v2;
    		 nd->_right = v1;
