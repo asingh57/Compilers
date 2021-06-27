@@ -838,8 +838,8 @@ public:
   public:
     Pow_op_exprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Expr_no_opContext *expr_no_op();
     Pow_op_expr_extContext *pow_op_expr_ext();
+    Expr_no_opContext *expr_no_op();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -852,8 +852,8 @@ public:
   public:
     Pow_op_expr_extContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    Expr_no_opContext *expr_no_op();
     Pow_op_expr_extContext *pow_op_expr_ext();
+    Expr_no_opContext *expr_no_op();
     antlr4::tree::TerminalNode *POW();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -862,7 +862,7 @@ public:
   };
 
   Pow_op_expr_extContext* pow_op_expr_ext();
-
+  Pow_op_expr_extContext* pow_op_expr_ext(int precedence);
   class  Expr_no_opContext : public antlr4::ParserRuleContext {
   public:
     Expr_no_opContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -951,6 +951,9 @@ public:
 
   Lvalue_tailContext* lvalue_tail();
 
+
+  virtual bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;
+  bool pow_op_expr_extSempred(Pow_op_expr_extContext *_localctx, size_t predicateIndex);
 
 private:
   static std::vector<antlr4::dfa::DFA> _decisionToDFA;

@@ -130,8 +130,8 @@ add_op_expr: mult_op_expr add_op_expr_ext;
 add_op_expr_ext: ( PLUS | MINUS ) mult_op_expr add_op_expr_ext | /*e*/;
 mult_op_expr: pow_op_expr mult_op_expr_ext;
 mult_op_expr_ext: ( MULT | DIV ) pow_op_expr mult_op_expr_ext | /*e*/;
-pow_op_expr: expr_no_op pow_op_expr_ext ;
-pow_op_expr_ext : ( POW ) expr_no_op pow_op_expr_ext | /*e*/;
+pow_op_expr: pow_op_expr_ext expr_no_op ;
+pow_op_expr_ext : pow_op_expr_ext expr_no_op ( POW ) | /*e*/;
 //create expr but without binary operator
 expr_no_op: constant | lvalue | OPENPAREN expr CLOSEPAREN;
 

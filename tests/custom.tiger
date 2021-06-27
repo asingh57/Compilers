@@ -20,7 +20,7 @@ begin
     		var t : catList := 10;
    		var test : catList := 10;
     	begin
-    		n := 69;
+    		n := 3**6**55**test;
     	end
     
         return 0;

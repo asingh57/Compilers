@@ -2,7 +2,7 @@ start_program fib
     static-int-list: result
 
         start_function fib
-        void fib (int n, int naaa, int nn)
+        int fib (int n, int naaa, int nn)
         int-list: _t0, _t1, _t2, n, naaa, nn
         fib:
             assign, p, _t0, 
@@ -15,11 +15,11 @@ start_program fib
         end_function fib
 
         start_function main
-        void main ()
-        int-list: _t4
+        int main ()
+        int-list: _t9
         main:
                 assign, n, _t3, 
-            return, _t4, , 
+            return, _t9, , 
         end_function main
 
 end_program fib
