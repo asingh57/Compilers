@@ -291,6 +291,31 @@ public:
 	
 	}
 	
+	
+	void printIR(std::ofstream &outFile) override{
+		
+		
+		Scope::tabs(outFile);
+		if(_lvalue.size()>0){
+			//TODO resolve _lvalueIndex
+			outFile << "callr, " << _lvalue;
+		}
+		else{
+			outFile << "call";			
+		}
+		outFile <<", " << _fnName;
+		
+		for (auto par = _fnCallParams.rbegin(); par != _fnCallParams.rend(); ++par)
+		{
+			outFile << ", " << (*par)->_var;
+		
+		}
+		
+		
+		outFile<< "\n";
+	}
+	
+	
 	void printSymbols() override{
 		
 		logger("printing fn call");
@@ -303,6 +328,10 @@ public:
 
 	StatBreak():Stat(STAT_BREAK){
 	
+	}
+	
+	void printIR(std::ofstream &outFile) override{
+		//todo
 	}
 	
 	void printSymbols() override{

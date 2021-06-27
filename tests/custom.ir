@@ -19,6 +19,7 @@ start_program fib
         int main ()
         int-list: _t5
         main:
+            call, fib
         end_function main
 
 end_program fib

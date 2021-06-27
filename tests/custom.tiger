@@ -18,6 +18,9 @@ begin
 
     function main() : int 
     begin
+    	
+    	fib();
+    
         return 0;
     end
 end
