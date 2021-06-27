@@ -7,7 +7,7 @@ start_program fib
         fib:
             return, , , 
         _Scope3whileCondition:
-        brneq, n_Scope1, _true, _Scope3whileEnd
+        brneq, n, _true, _Scope3whileEnd
             goto, _Scope3whileEnd, , 
             return, , , 
             goto, _Scope3whileCondition, , 
@@ -16,10 +16,10 @@ start_program fib
 
         start_function main
         int main ()
-        int-list: _t8
+        int-list: _t6
         main:
-                assign, t, _t3_Scope5, 
-            return, _t8_Scope4, , 
+                assign, t, r, 
+            return, _t6, , 
         end_function main
 
 end_program fib

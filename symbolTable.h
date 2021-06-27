@@ -24,7 +24,9 @@ enum IRErrorMessageID{
 	IRERROR_ILLEGAL_BREAK_STATEMENT,
 	IRERROR_COMPARATORS_NON_ASSOCIATIVE,
 	IRERROR_PROCEDURE_NON_NULL_RETURN,
-	IRERROR_FUNCTION_NO_RETURN_VAL
+	IRERROR_FUNCTION_NO_RETURN_VAL,
+	IRERROR_ARRAY_RVAL,
+	IRERROR_INDEX_ON_NON_ARRAY
 	
 };
 
@@ -127,7 +129,7 @@ void printSymbolTable(){
 				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
 			}
 			else{
-				sym->_deriveFromSymbolName=deriveFromSymbolName+scopeName;
+				sym->_deriveFromSymbolName=deriveFromSymbolName;//+scopeName;
 			}
 		});
 	
@@ -231,7 +233,7 @@ void printSymbolTable(){
 			}
 			else{
 				for(auto var : *vars){
-					var->_deriveFromSymbolName=deriveFromSymbolName+scopeName;				
+					var->_deriveFromSymbolName=deriveFromSymbolName;//+scopeName;				
 				}
 			}
 		});
@@ -308,7 +310,7 @@ void printSymbolTable(){
 						printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
 					}
 					else{
-						sym->_returnSymbol=aliasName+scopeName;	
+						sym->_returnSymbol=aliasName;//+scopeName;	
 					}
 				});
 				retType=TYPE_TYPEDEF;
@@ -375,7 +377,7 @@ void printSymbolTable(){
 						}
 						else{
 							//sym->_returnSymbol=aliasName+scopeName;	
-							var->_deriveFromSymbolName=deriveFromSymbolName+scopeName;
+							var->_deriveFromSymbolName=deriveFromSymbolName;//+scopeName;
 						}
 					});
 					var->_deriveFromSymbolName=deriveFromSymbolName;
@@ -471,8 +473,27 @@ void printSymbolTable(){
   virtual void exitAssignment_stat(TigerParser::Assignment_statContext * ctx) override {
   	//create stat and AUTO push to stats
   	StatAssignment *st = new StatAssignment(ASTNode::astStack.back());
+  	
+  	//make sure rval is not an array
+  	bool hasInvalidIndex= false;
+	int lineNum = ctx->ASSIGN()->getSymbol()->getLine();
+	int charPos =  ctx->ASSIGN()->getSymbol()->getCharPositionInLine();
+  	if(!ASTNode::astStack.back()->isIntegerChain(hasInvalidIndex)){
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+		
+			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
+		});
+  	}
+  	if(hasInvalidIndex){
+  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+		
+			printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		});
+  	}
+  	
   	//assign stat rval = last astnode and pop that node
   	ASTNode::astStack.pop_back();
+  	
   	
   	
   	//set lvalues
@@ -596,7 +617,7 @@ void printSymbolTable(){
 			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
 		}
 		else{
-			stFor->_assignVar=varName+scopeName;
+			stFor->_assignVar=varName;//+scopeName;
 		}
 	});
   	
@@ -924,7 +945,7 @@ void printSymbolTable(){
    		std::string scopeName;
 		Scope* back = Scope::scopeStack.back();
 		auto res = back->getSymbol(nd->_var, scopeName);
-		nd->_var=nd->_var+scopeName;
+		nd->_var=nd->_var;//+scopeName;
    		nd->_isLeaf = true;
    		ASTNode::astStack.push_back(nd);
    	
@@ -953,7 +974,7 @@ void printSymbolTable(){
 			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
 		}
 		else{
-			nd->_var=nd->_var+scopeName;
+			nd->_var=nd->_var;//+scopeName;
 		}
 	});
 	

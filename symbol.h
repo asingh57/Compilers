@@ -33,6 +33,67 @@ enum StorageClass{
 	STORAGE_STATIC
 };
 
+
+class SymbolTypedef : public Symbol{
+public: 
+	bool _isArray;
+	int _arrayLen; 
+	Type _deriveFromType; 
+	std::string _deriveFromSymbolName;
+	SymbolTypedef(
+	std::string name,
+	bool isArray = false, 
+	int arrayLen=0, 
+	Type deriveFromType=TYPE_INT, 
+	std::string deriveFromSymbolName=""
+	)
+	: 
+		Symbol(name,TYPE_TYPEDEF), 
+		_isArray(isArray),
+		_arrayLen(arrayLen),
+		_deriveFromType(deriveFromType),
+		_deriveFromSymbolName(deriveFromSymbolName)
+		{}
+		
+		
+	
+	void printSymbol() override {
+		
+		logger("print typedef");
+		Scope::tabs();
+		
+		std::cout << _name <<", type";
+		if(_deriveFromType == TYPE_INT){
+			std::cout << ", int";
+		}
+		else if(_deriveFromType == TYPE_TYPEDEF){
+			std::cout << ", " << _deriveFromSymbolName;
+		}
+		
+		if(_isArray){
+			std::cout << ",array , " << _arrayLen;
+		}
+		
+		std::cout << std::endl;
+	
+	};
+	
+	
+	bool isArray(){
+		if(_isArray){
+			return true;
+		}
+		if(_deriveFromType== TYPE_INT){
+			return false;
+		}
+		std::string scopeName;
+		SymbolTypedef* subtype = dynamic_cast<SymbolTypedef*>(_scope->getSymbol(_deriveFromSymbolName,scopeName));
+		return subtype->isArray();
+	
+	}
+};
+
+
 class SymbolVariable : public Symbol{
 
 public: 
@@ -106,55 +167,23 @@ public:
 		return val;
 	}
 	
+	bool isArray(){
+		if(_deriveFromType==TYPE_INT){
+			return false;
+		}
+		else if(_deriveFromType==TYPE_TYPEDEF){
+			std::string scopeName;
+			SymbolTypedef* typed = dynamic_cast<SymbolTypedef*>(_scope->getSymbol(_deriveFromSymbolName,scopeName));
+			if(typed->isArray()){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	
 };
-
-
-class SymbolTypedef : public Symbol{
-public: 
-	bool _isArray;
-	int _arrayLen; 
-	Type _deriveFromType; 
-	std::string _deriveFromSymbolName;
-	SymbolTypedef(
-	std::string name,
-	bool isArray = false, 
-	int arrayLen=0, 
-	Type deriveFromType=TYPE_INT, 
-	std::string deriveFromSymbolName=""
-	)
-	: 
-		Symbol(name,TYPE_TYPEDEF), 
-		_isArray(isArray),
-		_arrayLen(arrayLen),
-		_deriveFromType(deriveFromType),
-		_deriveFromSymbolName(deriveFromSymbolName)
-		{}
-		
-		
-	
-	void printSymbol() override {
-		
-		logger("print typedef");
-		Scope::tabs();
-		
-		std::cout << _name <<", type";
-		if(_deriveFromType == TYPE_INT){
-			std::cout << ", int";
-		}
-		else if(_deriveFromType == TYPE_TYPEDEF){
-			std::cout << ", " << _deriveFromSymbolName;
-		}
-		
-		if(_isArray){
-			std::cout << ",array , " << _arrayLen;
-		}
-		
-		std::cout << std::endl;
-	
-	};
-};
-
 
 
 class SymbolFunc : public Symbol{

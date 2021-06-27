@@ -25,9 +25,9 @@ begin
     	let 
     		var result : catList;
     		var t : catList := 10;
-   		var test : catList := 10;
+   		var r : int := 10;
     	begin
-    		t := (3 < 11 )< 16;
+    		t := r[69] == r[5];
     	end
     
         return 0;
