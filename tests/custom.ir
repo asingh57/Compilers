@@ -16,10 +16,10 @@ start_program fib
 
         start_function main
         int main ()
-        int-list: _t9
+        int-list: _t8
         main:
                 assign, t, _t3_Scope5, 
-            return, _t9_Scope4, , 
+            return, _t8_Scope4, , 
         end_function main
 
 end_program fib

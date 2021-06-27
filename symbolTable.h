@@ -22,6 +22,7 @@ enum IRErrorMessageID{
 	IRERROR_NOT_ASSIGNABLE_VAR,
 	IRERROR_SYMBOL_ALREADY_EXISTS,
 	IRERROR_ILLEGAL_BREAK_STATEMENT,
+	IRERROR_COMPARATORS_NON_ASSOCIATIVE,
 	
 };
 
@@ -741,27 +742,46 @@ void printSymbolTable(){
 
   	//EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ
   
+  	int count = 0;
+  
   	while(compareExt && compareExt->add_op_expr() ){//then we have power operators
    		 logger("creating compare op");
    		 auto nd = new ASTNode();
    		 ASTNode::astStack.push_back(nd); 
+   		 
+   		 
+	 	int lineNum;
+		int charPos;
+   		 
    		 if(compareExt->EQUAL()){
-   		 	nd->_op = OPERATOR_EQ;   	
+   		 	nd->_op = OPERATOR_EQ;   
+   		 	lineNum = compareExt->EQUAL()->getSymbol()->getLine();
+   		 	charPos =  compareExt->EQUAL()->getSymbol()->getCharPositionInLine();	
   		}
   		else if(compareExt->NEQUAL()){
-   		 	nd->_op = OPERATOR_NEQ;   	
+   		 	nd->_op = OPERATOR_NEQ; 
+   		 	lineNum = compareExt->NEQUAL()->getSymbol()->getLine();
+   		 	charPos =  compareExt->NEQUAL()->getSymbol()->getCharPositionInLine();  	
   		}
   		else if(compareExt->LESS()){
-   		 	nd->_op = OPERATOR_LT;   	
+   		 	nd->_op = OPERATOR_LT;    
+   		 	lineNum = compareExt->LESS()->getSymbol()->getLine();
+   		 	charPos =  compareExt->LESS()->getSymbol()->getCharPositionInLine(); 	
   		}
   		else if(compareExt->GREAT()){
-  			nd->_op = OPERATOR_GT; 
+  			nd->_op = OPERATOR_GT;     
+   		 	lineNum = compareExt->GREAT()->getSymbol()->getLine();
+   		 	charPos =  compareExt->GREAT()->getSymbol()->getCharPositionInLine(); 	
   		}
   		else if(compareExt->LESSEQ()){
-  			nd->_op = OPERATOR_LTE;  		
+  			nd->_op = OPERATOR_LTE;  	
+   		 	lineNum = compareExt->LESSEQ()->getSymbol()->getLine();
+   		 	charPos =  compareExt->LESSEQ()->getSymbol()->getCharPositionInLine(); 	
   		}
   		else if(compareExt->GREATEQ()){
-  			nd->_op = OPERATOR_GTE;    		
+  			nd->_op = OPERATOR_GTE;  
+   		 	lineNum = compareExt->GREATEQ()->getSymbol()->getLine();
+   		 	charPos =  compareExt->GREATEQ()->getSymbol()->getCharPositionInLine();   		
   		}
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
@@ -773,6 +793,12 @@ void printSymbolTable(){
    		 nd->_right = v1;   		 
    		 		 		
    		 compareExt= compareExt->compare_op_expr_ext();
+   		 count++;
+   		 if(count >=2){
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+				printErrorAndExit(lineNum,charPos, IRERROR_COMPARATORS_NON_ASSOCIATIVE);
+			});
+   		 }
    	}
   }
 

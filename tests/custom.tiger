@@ -27,7 +27,7 @@ begin
     		var t : catList := 10;
    		var test : catList := 10;
     	begin
-    		t := 3**6**55**t;
+    		t := (3 < 11 )< 16;
     	end
     
         return 0;

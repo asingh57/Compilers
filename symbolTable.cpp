@@ -51,6 +51,11 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "Illegal break statement, no parent loop present";
 		break;
 		}
+		case IRERROR_COMPARATORS_NON_ASSOCIATIVE:
+		{
+		desc = "comparison operators are non associative";
+		break;
+		}
 		
 	
 	}
