@@ -18,6 +18,7 @@ enum IRErrorMessageID{
 	IRERROR_NO_SUCH_VARIABLE,
 	IRERROR_ZERO_SIZED_ARRAY,
 	IRERROR_NOT_ASSIGNABLE_TYPE,
+	IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN,
 };
 
 
@@ -108,13 +109,16 @@ void printSymbolTable(){
 				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
 			}
 			else{
-				sym->_deriveFromSymbolName+=scopeName;
+				sym->_deriveFromSymbolName=deriveFromSymbolName+scopeName;
 			}
 		});
 	
 		deriveFromType=TYPE_TYPEDEF;
 		
 	}
+	sym->_isArray = isArray;
+	sym->_arrayLen = arrayLen;
+	sym->_deriveFromType = deriveFromType;
 	sym->_deriveFromSymbolName = deriveFromSymbolName;
   }
   
@@ -136,11 +140,22 @@ void printSymbolTable(){
 	}
 	varNames.push_back(idlist->ID()->getText());
 	
+	Scope* back = Scope::scopeStack.back();
 	storageclass= STORAGE_VAR;
 	if(ctx->storage_class()->STATIC()){
 		//local var
 		storageclass = STORAGE_STATIC;
 	}
+	else if(back->_programName.size()){//this is the main scope, everything must be static
+		int lineNum =  ctx->storage_class()->VAR()->getSymbol()->getLine();
+		int charPos =  ctx->storage_class()->VAR()->getSymbol()->getCharPositionInLine();
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){			
+			printErrorAndExit(lineNum,charPos, IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN);		
+		});
+	
+	}
+
+	std::vector<SymbolVariable *> *vars = new std::vector<SymbolVariable *>();
 
 	
 	if(ctx->type()->INTLIT()){
@@ -158,15 +173,27 @@ void printSymbolTable(){
 	}
 	else if(ctx->type()->ID()){
 		//another type
-		//TODO look this up in current symbol table
-		/*
-		auto rvalSymbol = currentScope->getSymbol(ctx->type()->ID()->getText());
-		if(!rvalSymbol){
+		// look this up in current symbol table
 		
-			auto lineNum = ctx->type()->ID()->getSymbol()->getLine();
-			auto colNum = ctx->type()->ID()->getSymbol()->getCharPositionInLine();
-			printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
-		}*/
+		int lineNum =  ctx->type()->ID()->getSymbol()->getLine();
+		int charPos =  ctx->type()->ID()->getSymbol()->getCharPositionInLine();
+		deriveFromSymbolName = ctx->type()->ID()->getText();
+		ErrorCheckingTask::tasks.push_back([deriveFromSymbolName,lineNum,charPos,back,vars](){
+			std::string scopeName;
+			auto res = back->getSymbol(deriveFromSymbolName, scopeName);
+			if(res==nullptr){
+				printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_TYPE);				
+			}
+			else if(res->getType()!=TYPE_TYPEDEF){
+				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
+			}
+			else{
+				for(auto var : *vars){
+					var->_deriveFromSymbolName=deriveFromSymbolName+scopeName;				
+				}
+			}
+		});
+		
 		deriveFromType=TYPE_TYPEDEF;
 		deriveFromSymbolName = ctx->type()->ID()->getText();		
 	}
@@ -189,6 +216,7 @@ void printSymbolTable(){
 		hasValue ,
 		defaultValue/*gets assigned to zero if StorageClass  static*/);
 
+		vars->push_back(sym);
 	}
   	
   	
@@ -202,15 +230,20 @@ void printSymbolTable(){
 	  	//create symbol for function	
 	  	auto retType = TYPE_VOID;
 	  	std::string aliasName = "";
+		Scope* back = Scope::scopeStack.back();
+	  	SymbolFunc * sym = new SymbolFunc(name,retType,aliasName);
 	  	if(ctx->ret_type() && ctx->ret_type()->type()){
 			auto type = ctx->ret_type()->type();
 			if(type->INTLIT()){
-					//integer literal: this is an array NOT ALLOWED TODO move to semantic analysis
-					/*					
+					//integer literal: this is an array NOT ALLOWED
+										
 					auto lineNum = type->ARRAY()->getSymbol()->getLine();
-					auto colNum = type->ARRAY()->getSymbol()->getCharPositionInLine();
-					printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
-					*/
+					auto charPos = type->ARRAY()->getSymbol()->getCharPositionInLine();
+					ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+						
+						printErrorAndExit(lineNum,charPos, IRERROR_NO_ARRAY_ALLOWED_VAR);
+					});
+					
 			}		
 			else if(type->type_id()){
 				//type is int
@@ -219,25 +252,36 @@ void printSymbolTable(){
 			else if(type->ID()){
 				//another type
 				//look this up in current symbol table move to semantic analysis
-				/*
-				auto rvalSymbol = currentScope->getSymbol();
-				if(!rvalSymbol){
 				
-					auto lineNum = type->ID()->getSymbol()->getLine();
-					auto colNum = type->ID()->getSymbol()->getCharPositionInLine();
-					printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
-				}*/
-				retType=TYPE_TYPEDEF;
+				int lineNum = type->ID()->getSymbol()->getLine();
+				int charPos =  type->ID()->getSymbol()->getCharPositionInLine();
 				aliasName = type->ID()->getText();
+				ErrorCheckingTask::tasks.push_back([aliasName,lineNum,charPos,back,sym](){
+					std::string scopeName;
+					auto res = back->getSymbol(aliasName, scopeName);
+					if(res==nullptr){
+						printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_TYPE);				
+					}
+					else if(res->getType()!=TYPE_TYPEDEF){
+						printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
+					}
+					else{
+						sym->_returnSymbol=aliasName+scopeName;	
+					}
+				});
+				retType=TYPE_TYPEDEF;
 				
 			}
 		}
-	  	SymbolFunc * sym = new SymbolFunc(name,retType,aliasName);
+		sym->_returnType=retType;
+		sym->_returnSymbol=aliasName;
 	  	sym->setAssociatedScope(Scope::create(Scope::scopeStack.back()));
 	  	
   		if(ctx->param_list()){
 			auto parList = ctx->param_list()->param_list_tail();
 			auto par = ctx->param_list()->param();
+				
+			//now add this symbol
 			while(par){
 								
 				bool hasValue = false;
@@ -248,33 +292,7 @@ void printSymbolTable(){
 				auto type = par->type();
 				auto deriveFromType = TYPE_INT;
 				std::string deriveFromSymbolName = "";
-				if(type->INTLIT()){
-					//TODO move to semantic analysis
-					//integer literal: this is an array NOT ALLOWED
-					/*
-					auto lineNum = type->ARRAY()->getSymbol()->getLine();
-					auto colNum = type->ARRAY()->getSymbol()->getCharPositionInLine();
-					printErrorAndExit(lineNum,colNum, IRERROR_NO_ARRAY_ALLOWED_VAR);
-					*/
-				}		
-				else if(type->type_id()){
-					//type is int
-					deriveFromType=TYPE_INT;
-				}
-				else if(type->ID()){
-					//todo move to semantic analysis
-					/*auto rvalSymbol = currentScope->getSymbol(type->ID()->getText());
-					if(!rvalSymbol){
-					
-						auto lineNum = type->ID()->getSymbol()->getLine();
-						auto colNum = type->ID()->getSymbol()->getCharPositionInLine();
-						printErrorAndExit(lineNum,colNum, IRERROR_NO_SUCH_TYPE);
-					}*/				
-					//another type
-					deriveFromType=TYPE_TYPEDEF;
-					deriveFromSymbolName = type->ID()->getText();					
-				}		
-				//now add this symbol
+				
 				SymbolVariable *var = new SymbolVariable(
 				name, 
 				deriveFromType, 
@@ -282,6 +300,52 @@ void printSymbolTable(){
 				storageclass, 
 				hasValue ,
 				0);
+				if(type->INTLIT()){
+					//move to semantic analysis
+					//integer literal: this is an array NOT ALLOWED					
+										
+					auto lineNum = type->ARRAY()->getSymbol()->getLine();
+					auto charPos = type->ARRAY()->getSymbol()->getCharPositionInLine();
+					ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
+						
+						printErrorAndExit(lineNum,charPos, IRERROR_NO_ARRAY_ALLOWED_VAR);
+					});
+				}		
+				else if(type->type_id()){
+					//type is int
+					deriveFromType=TYPE_INT;
+				}
+				else if(type->ID()){
+					// move to semantic analysis
+					int lineNum = type->ID()->getSymbol()->getLine();
+					int charPos =  type->ID()->getSymbol()->getCharPositionInLine();
+					deriveFromSymbolName = type->ID()->getText();
+					ErrorCheckingTask::tasks.push_back([deriveFromSymbolName,lineNum,charPos,back,var](){
+						std::string scopeName;
+						auto res = back->getSymbol(deriveFromSymbolName, scopeName);
+						if(res==nullptr){
+							printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_TYPE);				
+						}
+						else if(res->getType()!=TYPE_TYPEDEF){
+							printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_TYPE);				
+						}
+						else{
+							//sym->_returnSymbol=aliasName+scopeName;	
+							var->_deriveFromSymbolName=deriveFromSymbolName+scopeName;
+						}
+					});
+					var->_deriveFromSymbolName=deriveFromSymbolName;
+								
+					//another type
+					deriveFromType=TYPE_TYPEDEF;
+					
+									
+				}	
+				var->_deriveFromType=deriveFromType;
+				var->_deriveFromSymbolName = deriveFromSymbolName;
+				var->_storageclass= storageclass;
+				var->_hasValue= hasValue;
+				
 				sym->addParam(var);		
 				par=parList->param();
 				parList=parList->param_list_tail();

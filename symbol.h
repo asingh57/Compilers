@@ -34,13 +34,13 @@ enum StorageClass{
 };
 
 class SymbolVariable : public Symbol{
-private:
+
+public: 
 	Type _deriveFromType;
 	std::string _deriveFromSymbolName;
 	StorageClass _storageclass;
 	bool _hasValue;
 	int _defaultValue;
-public: 
 	SymbolVariable(
 	std::string name,
 	Type deriveFromType=TYPE_INT, 
@@ -159,11 +159,11 @@ public:
 
 class SymbolFunc : public Symbol{
 
+public: 
 	Type _returnType; 
 	std::string _returnSymbol;
 	std::vector<SymbolVariable* > _params;
 	Scope* associatedScope;
-public: 
 	SymbolFunc(std::string name,
 	Type returnType=TYPE_VOID, 
 	std::string returnSymbol=""/*fill this if return type is TYPE_TYPEDEF*/

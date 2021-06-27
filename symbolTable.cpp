@@ -24,10 +24,17 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		case IRERROR_ZERO_SIZED_ARRAY:
 		{
 		desc = "non positive sized array not allowed";
+		break;
 		}
 		case IRERROR_NOT_ASSIGNABLE_TYPE:
 		{
 		desc = "not an assignable type (cannot be a var or function)";
+		break;
+		}
+		case IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN:
+		{
+		desc = "non static vars not allowed in main scope";
+		break;
 		}
 	
 	}

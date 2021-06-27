@@ -5,9 +5,8 @@ let
     type catList2 = catList3;
     type catList3 = catList;
     static result : int :=9;
-    var test : catList := 10;
 begin
-    function fib (n : int, naaa : int, nn : catList) : int
+    function fib (n : int, naaa : int, nn : catList) : catList3
     begin
             for p := 1 to n+33 do
             	return;

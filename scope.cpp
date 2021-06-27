@@ -13,7 +13,7 @@ Scope::Scope(std::string name, Scope* parentScope, Stat* associatedStat) : _prog
 Symbol* Scope::getSymbol(std::string name, std::string &scopeName, bool checkParents){
 		auto search= _symbolsMap.find(name);
 		if(search!=_symbolsMap.end()){
-			scopeName = _name;
+			scopeName += _name;
 			return search->second;
 		}
 		
