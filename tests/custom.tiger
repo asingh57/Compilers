@@ -6,7 +6,7 @@ let
     type catList3 = catList;
     static result : int :=9;
 begin
-    function fib (n : int, naaa : int, nn : catList, p : int) : catList3
+    function fib (n : int, naaa : int, nn : catList, p : int)
     begin
             for p := 1 to n+33 do
             	return;

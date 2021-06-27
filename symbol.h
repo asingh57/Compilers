@@ -160,6 +160,7 @@ public:
 class SymbolFunc : public Symbol{
 
 public: 
+	static SymbolFunc* lastFunction;
 	Type _returnType; 
 	std::string _returnSymbol;
 	std::vector<SymbolVariable* > _params;

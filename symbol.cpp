@@ -16,4 +16,4 @@ Symbol::Symbol(Type type){
 }	
 
 
-
+SymbolFunc* SymbolFunc::lastFunction = nullptr;

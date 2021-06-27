@@ -56,6 +56,16 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "comparison operators are non associative";
 		break;
 		}
+		case IRERROR_PROCEDURE_NON_NULL_RETURN:
+		{
+		desc = "Procedure cannot have return value";
+		break;
+		}
+		case IRERROR_FUNCTION_NO_RETURN_VAL:
+		{
+		desc = "Function cannot return without return value";
+		break;
+		}
 		
 	
 	}

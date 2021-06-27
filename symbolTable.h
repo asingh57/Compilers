@@ -23,6 +23,8 @@ enum IRErrorMessageID{
 	IRERROR_SYMBOL_ALREADY_EXISTS,
 	IRERROR_ILLEGAL_BREAK_STATEMENT,
 	IRERROR_COMPARATORS_NON_ASSOCIATIVE,
+	IRERROR_PROCEDURE_NON_NULL_RETURN,
+	IRERROR_FUNCTION_NO_RETURN_VAL
 	
 };
 
@@ -317,6 +319,8 @@ void printSymbolTable(){
 		sym->_returnSymbol=aliasName;
 	  	sym->setAssociatedScope(Scope::create(Scope::scopeStack.back()));
 	  	
+	  	SymbolFunc::lastFunction = sym;
+	  	
   		if(ctx->param_list()){
 			auto parList = ctx->param_list()->param_list_tail();
 			auto par = ctx->param_list()->param();
@@ -401,6 +405,7 @@ void printSymbolTable(){
   virtual void exitFunct(TigerParser::FunctContext * ctx) override { 
   	//pop scope
   	Scope::scopeStack.pop_back();
+	SymbolFunc::lastFunction = NULL;
   }
 
 /*
@@ -656,13 +661,33 @@ void printSymbolTable(){
   }
 
   virtual void exitReturn_stat(TigerParser::Return_statContext * ctx) override { 
-  	ASTNode* returnVal = NULL;
+  	ASTNode* returnVal = nullptr;
   	
   	//if opt_return-> take last astnode
   	if(ctx->opt_return() && ctx->opt_return()->expr()){
   		returnVal=ASTNode::astStack.back();
   		ASTNode::astStack.pop_back();
   	}
+  	auto fn = SymbolFunc::lastFunction;
+  	
+	int lineNum = ctx->RETURN()->getSymbol()->getLine();
+	int charPos =  ctx->RETURN()->getSymbol()->getCharPositionInLine();
+	
+  	if(fn->_returnType==TYPE_VOID && returnVal!=nullptr){
+  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+			printErrorAndExit(lineNum,charPos, IRERROR_PROCEDURE_NON_NULL_RETURN);	
+		});
+  	}
+  	else if(fn->_returnType!=TYPE_VOID && returnVal==nullptr){
+  		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+			printErrorAndExit(lineNum,charPos, IRERROR_FUNCTION_NO_RETURN_VAL);	
+		});
+  	}
+  	else if(fn->_returnType!=TYPE_VOID){
+  	//TODO deep analysis of return type
+  	
+  	}
+  	
   
   	//create stat with above
   	auto stReturn = new StatReturn(returnVal);

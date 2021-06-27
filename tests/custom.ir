@@ -2,7 +2,7 @@ start_program fib
     static-int-list: result
 
         start_function fib
-        int fib (int n, int naaa, int nn, int p)
+        void fib (int n, int naaa, int nn, int p)
         int-list: _t0, _t1, _t2, n, naaa, nn, p
         fib:
             return, , , 
