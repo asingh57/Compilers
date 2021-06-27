@@ -17,10 +17,11 @@ begin
     begin
     	
     	let 
+    		var result : catList;
     		var t : catList := 10;
    		var test : catList := 10;
     	begin
-    		t := 3**6**55**n;
+    		t := 3**6**55**t;
     	end
     
         return 0;

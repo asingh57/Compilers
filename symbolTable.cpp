@@ -41,6 +41,11 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "types and functions cannot be assigned as rval";
 		break;
 		}
+		case IRERROR_SYMBOL_ALREADY_EXISTS:
+		{
+		desc = "Symbol already defined in this scope";
+		break;
+		}
 		
 	
 	}

@@ -20,6 +20,7 @@ enum IRErrorMessageID{
 	IRERROR_NOT_ASSIGNABLE_TYPE,
 	IRERROR_NONSTATICVAR_NOT_ALLOWED_MAIN,
 	IRERROR_NOT_ASSIGNABLE_VAR,
+	IRERROR_SYMBOL_ALREADY_EXISTS,
 	
 };
 
@@ -134,15 +135,39 @@ void printSymbolTable(){
 	bool hasValue=false;
 	int defaultValue=0;
 	
+	auto back = Scope::scopeStack.back();
 	
 	auto idlist = ctx->id_list();
 	while(idlist->id_list()){
+		//check if this var exists in this scope
+		int lineNum = idlist->ID()->getSymbol()->getLine();
+		int charPos =  idlist->ID()->getSymbol()->getCharPositionInLine();
+		std::string scopeName;
+		auto res = back->getSymbol(idlist->ID()->getText(), scopeName,false);
+		if(res!=nullptr || std::find(varNames.begin(), varNames.end(),idlist->ID()->getText())!=varNames.end()){
+
+			ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+				printErrorAndExit(lineNum,charPos, IRERROR_SYMBOL_ALREADY_EXISTS);	
+			});
+		}
 		varNames.push_back(idlist->ID()->getText());
+		
 		idlist= idlist->id_list();
+	}
+	
+	//check if this var exists in this scope
+	int lineNum = idlist->ID()->getSymbol()->getLine();
+	int charPos =  idlist->ID()->getSymbol()->getCharPositionInLine();
+	std::string scopeName;
+	auto res = back->getSymbol(idlist->ID()->getText(), scopeName,false);
+	if(res!=nullptr || std::find(varNames.begin(), varNames.end(),idlist->ID()->getText())!=varNames.end()){
+
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos](){				
+			printErrorAndExit(lineNum,charPos, IRERROR_SYMBOL_ALREADY_EXISTS);	
+		});
 	}
 	varNames.push_back(idlist->ID()->getText());
 	
-	Scope* back = Scope::scopeStack.back();
 	storageclass= STORAGE_VAR;
 	if(ctx->storage_class()->STATIC()){
 		//local var
