@@ -186,9 +186,11 @@ int main(int argc, char *argv[]){
 		symT.printSymbolTable();
 	}
 	
+	SemanticEnforcer semE(&symT);//does semantic enforcement
+  	tree::ParseTreeWalker::DEFAULT.walk(&semE, tree);
+  	
+  	
 	if(outputIR){
-		SemanticEnforcer semE(&symT);//does semantic enforcement
-	  	tree::ParseTreeWalker::DEFAULT.walk(&semE, tree);
 	
 	
 		std::string irOutFile = inputFileName;
