@@ -47,16 +47,24 @@ public:
 	
 	void printIR(std::ofstream &outFile) override{
 
+		//std::cout <<"printing assignment " << _name << " _lvalues.size() "<<_lvalues.size()<<std::endl; 
+
+		if(_assignedExpr){
+			_assignedExpr->printIR(outFile);
+		}
+
 		for(int i=_lvalues.size()-1; i>=0 ; i--){
 			
 			
+				//TODO resolve second
 			if(i==_lvalues.size()-1){
-				//TODO resolve expression
+				//std::cout <<"----- " << _name <<std::endl; 
 				Scope::tabs(outFile);
 				outFile << formatIR("assign", _lvalues[i].first, _assignedExpr->_var);
 				outFile<<"\n";
 			}
 			else{
+				//std::cout <<"222" << _name <<std::endl; 
 				Scope::tabs(outFile);
 				outFile << formatIR("assign", _lvalues[i].first,_lvalues[i+1].first);
 				outFile<<"\n";
@@ -89,7 +97,7 @@ public:
 			
 			
 			//std::cout << "pair lvalu " <<_name <<std::endl;	
-			std::make_pair( Scope::getMangledName(pair.first), pair.second );
+			newlvalues.push_back(std::make_pair( Scope::getMangledName(pair.first), pair.second ));
 		}
 		_lvalues.clear();
 		

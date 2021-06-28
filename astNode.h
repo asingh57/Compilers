@@ -116,7 +116,14 @@ class ASTNode{
 		logger("printing ast");
 		}
 		
+		
+		
+		void printIR(std::ofstream &outFile){
+		
+		}
+		
 };
+
 
 
 

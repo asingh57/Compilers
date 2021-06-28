@@ -2,9 +2,18 @@ start_program int_assign
     static-int-list: 
 
         start_function main
-        int main ()
+        int main()
         int-list: _t0_Scope2, _t1_Scope2, _t2_Scope1, a_Scope2, b_Scope2, c_Scope2, d_Scope2, e_Scope2, f_Scope2
         main:
+            assign, _t0_Scope2, 1, 
+            assign, _t1_Scope2, 2, 
+            assign, _t2_Scope1, 0, 
+            assign, d_Scope2, 3, 
+            assign, e_Scope2, 4, 
+            assign, f_Scope2, 4, 
+                assign, a_Scope2, _t0_Scope2, 
+                assign, c_Scope2, _t1_Scope2, 
+                assign, b_Scope2, c_Scope2, 
                 call, printi, a_Scope2
                 call, printi, b_Scope2
                 call, printi, c_Scope2
