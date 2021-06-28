@@ -1,0 +1,25 @@
+start_program recursive_fib
+    static-int-list: result_Scope0
+
+        start_function fib
+        int fib (int n_Scope1)
+        int-list: _t0_Scope2, _t1_Scope2, _t2_Scope4, _t3_Scope4, _t4_Scope4, _t5_Scope4, _t6_Scope4, n_Scope1, tmp1_Scope2, tmp2_Scope2
+        fib:
+                brneq, tmp2_Scope2, _true, _Scope3if
+                    return, n_Scope1, , 
+            _Scope3if:
+                    callr, tmp1_Scope2, fib, _t3_Scope4
+                    callr, tmp2_Scope2, fib, _t5_Scope4
+                    return, _t6_Scope4, , 
+        end_function fib
+
+        start_function main
+        int main ()
+        int-list: _t7_Scope5, _t8_Scope5
+        main:
+            callr, result_Scope0, fib, _t7_Scope5
+            call, printi, result_Scope0
+            return, _t8_Scope5, , 
+        end_function main
+
+end_program recursive_fib

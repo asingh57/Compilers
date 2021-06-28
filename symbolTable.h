@@ -680,7 +680,8 @@ void printSymbolTable(){
   	
   	auto elseScope = Scope::scopeStack.back();
   	//pop num stats equal to number of stats in stat_seq_else: this is the ELSE statements
-  	auto cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
+  	auto cnt = countStats(ctx->stat_seq_else()->stat_seq());
+  	
   	logger("exit ifelse");
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
@@ -689,7 +690,7 @@ void printSymbolTable(){
   	
   	auto ifScope = Scope::scopeStack.back();
   	//pop num stats equal to number of stats in stat_seq_then: this is the THEN statements
-  	cnt = countStats(ctx->stat_seq_else()->stat_seq());
+  	cnt = countStats(ctx->if_stat_lhs()->stat_seq_then()->stat_seq());
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}
