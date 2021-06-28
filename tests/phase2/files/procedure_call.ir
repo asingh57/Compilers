@@ -1,0 +1,23 @@
+start_program procedure_call
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t1_Scope2, _t2_Scope2
+        main:
+            assign, _t1_Scope2, 10, 
+            assign, _t2_Scope2, 0, 
+            call, printSquare, _t1_Scope2
+            return, _t2_Scope2, , 
+        end_function main
+
+        start_function printSquare
+        void printSquare(int x_Scope1)
+        int-list: _t0_Scope1, x_Scope1
+        printSquare:
+            mult, x_Scope1, x_Scope1, _t0_Scope1
+            call, printi, _t0_Scope1
+            return, , , 
+        end_function printSquare
+
+end_program procedure_call

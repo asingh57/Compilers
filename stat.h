@@ -446,6 +446,11 @@ public:
 	void printIR(std::ofstream &outFile) override{
 		
 		
+		for (auto par :_fnCallParams)
+		{
+			par->printIR(outFile);
+		
+		}
 		Scope::tabs(outFile);
 		if(_lvalue.size()>0){
 			//TODO resolve _lvalueIndex
