@@ -79,8 +79,11 @@ public:
 	};
 	
 	
-	bool isArray(){
+	bool isArray(int *len=nullptr){
 		if(_isArray){
+			if(len!=nullptr){
+				*len=_arrayLen;		
+			}
 			return true;
 		}
 		if(_deriveFromType== TYPE_INT){
@@ -88,7 +91,7 @@ public:
 		}
 		std::string scopeName;
 		SymbolTypedef* subtype = dynamic_cast<SymbolTypedef*>(_scope->getSymbol(_deriveFromSymbolName,scopeName));
-		return subtype->isArray();
+		return subtype->isArray(len);
 	
 	}
 };
@@ -167,14 +170,14 @@ public:
 		return val;
 	}
 	
-	bool isArray(){
+	bool isArray(int *len=nullptr){
 		if(_deriveFromType==TYPE_INT){
 			return false;
 		}
 		else if(_deriveFromType==TYPE_TYPEDEF){
 			std::string scopeName;
 			SymbolTypedef* typed = dynamic_cast<SymbolTypedef*>(_scope->getSymbol(_deriveFromSymbolName,scopeName));
-			if(typed->isArray()){
+			if(typed->isArray(len)){
 				return true;
 			}
 		}

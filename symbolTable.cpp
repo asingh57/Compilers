@@ -76,6 +76,11 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "index on a non array type";
 		break;
 		}
+		case IRERROR_TYPE_MISMATCH:
+		{
+		desc = "arrays of different sizes cannot be assigned to each other";
+		break;
+		}
 		
 	
 	}

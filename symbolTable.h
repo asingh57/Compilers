@@ -26,7 +26,8 @@ enum IRErrorMessageID{
 	IRERROR_PROCEDURE_NON_NULL_RETURN,
 	IRERROR_FUNCTION_NO_RETURN_VAL,
 	IRERROR_ARRAY_OPERATOR,
-	IRERROR_INDEX_ON_NON_ARRAY
+	IRERROR_INDEX_ON_NON_ARRAY,
+	IRERROR_TYPE_MISMATCH
 	
 };
 
@@ -475,21 +476,22 @@ void printSymbolTable(){
   	auto bk =ASTNode::astStack.back();
   	StatAssignment *st = new StatAssignment(bk);
   	
-  	//make sure rval is not an array
+  	//make sure rval type matches lval type
 	int lineNum = ctx->ASSIGN()->getSymbol()->getLine();
 	int charPos =  ctx->ASSIGN()->getSymbol()->getCharPositionInLine();
 	
 	
+	bool* isArrayRHS=new bool;
+	*isArrayRHS=false;
 	
-  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,bk](){
-	bool isArrayRHS=false;
+  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,bk,isArrayRHS](){
   	bool hasInvalidIndex= false;
   	if(!bk->isIntegerChain(hasInvalidIndex)){
 		/*ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
 		});*/
-		isArrayRHS=true;
+		*isArrayRHS=true;
 		
   	}
   	if(hasInvalidIndex){
@@ -505,38 +507,118 @@ void printSymbolTable(){
   	
   	
   	//set lvalues
-  	ASTNode* index= NULL;
+  	ASTNode* index= nullptr;
   	//TODO lvalue indices
   	auto tail = ctx->l_tail();	
-  	if(ctx->lvalue()->lvalue_tail()){
+  	if(ctx->lvalue()->lvalue_tail() && ctx->lvalue()->lvalue_tail()->expr()){
 		index=ASTNode::astStack.back();
+
 		ASTNode::astStack.pop_back();
 	}
-  	st->_lvalues.push_back(std::make_pair(ctx->lvalue()->ID()->getSymbol()->getText(),index));
+	auto nameLHS= ctx->lvalue()->ID()->getSymbol()->getText();
+  	st->_lvalues.push_back(std::make_pair(nameLHS,index));
+  	lineNum = ctx->lvalue()->ID()->getSymbol()->getLine();
+	charPos =  ctx->lvalue()->ID()->getSymbol()->getCharPositionInLine();
   	
-  	{
-  	//TODO
-  	//check if array lhs matches rhs
+  	auto sc = Scope::scopeStack.back();
   	
-  	}
-  	
-  	
+  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,isArrayRHS,nameLHS,sc, index](){
+		
+		//check if var exists		
+		std::string scName;
+		auto res = sc->getSymbol(nameLHS,scName);
+		if(!res){
+			printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);
+		}		
+		else if(res->getType()!=TYPE_VARIABLE){
+			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
+		}		
+		
+		int l1ArrSz = -1;
+		auto l1 = dynamic_cast<SymbolVariable*>(sc->getSymbol(nameLHS,scName));
+		l1->isArray(&l1ArrSz);
+		
+		if((l1ArrSz== -1 && index!=nullptr)){
+			//cant index on non array type
+			printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+		}
+	});
+	
+	auto oldNameLHS = nameLHS;
+	auto oldIndex = index;
   	
   	while(tail && tail->lvalue()){
-  		index= NULL;
-  		if(tail->lvalue()->lvalue_tail()){
+  		index= nullptr;
+  		if(tail->lvalue()->lvalue_tail() && tail->lvalue()->lvalue_tail()->expr()){
 			index=ASTNode::astStack.back();
+
 			ASTNode::astStack.pop_back();
 		}
-  		st->_lvalues.push_back(std::make_pair(tail->lvalue()->ID()->getSymbol()->getText(),index));  	
+		nameLHS= tail->lvalue()->ID()->getSymbol()->getText();
+  		st->_lvalues.push_back(std::make_pair(nameLHS,index));  	
+  		lineNum = tail->lvalue()->ID()->getSymbol()->getLine();
+		charPos =  tail->lvalue()->ID()->getSymbol()->getCharPositionInLine();
   		
-  		{
-  		//TODO
-	  	//check if array lhs matches rhs
-	  	
-	  	}
   		
-  			
+	  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,isArrayRHS,nameLHS,sc,index,oldNameLHS,oldIndex](){
+			
+			//check if var exists		
+			std::string scName;
+			auto res = sc->getSymbol(nameLHS,scName);
+			if(!res){
+				printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);
+			}		
+			else if(res->getType()!=TYPE_VARIABLE){
+				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
+			}
+			else{
+				//todo check if array shapes match
+				
+				int l1ArrSz = -1;
+				auto l1 = dynamic_cast<SymbolVariable*>(sc->getSymbol(oldNameLHS,scName));
+				l1->isArray(&l1ArrSz);
+				
+				
+				int l2ArrSz = -1;				
+				auto l2 = dynamic_cast<SymbolVariable*>(sc->getSymbol(nameLHS,scName));			
+				l2->isArray(&l2ArrSz);
+				
+				
+				if(l2ArrSz== -1 && index!=nullptr){
+					//cant index on non array type
+					printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
+				}
+				else if(l2ArrSz != -1 && l1ArrSz != -1  && index!=nullptr && oldIndex!=nullptr){
+					//both index arrays even if different sizes, valid
+
+				}
+				else if((l2ArrSz!=-1&&index!=nullptr && l1ArrSz==-1 && oldIndex==nullptr)
+					||
+					(l1ArrSz!=-1&&oldIndex!=nullptr && l2ArrSz==-1 && index==nullptr)
+				)
+				{
+					//one index array, one integer, valid					
+				
+				}
+				else if(l2ArrSz == -1 && l1ArrSz == -1  && index==nullptr && oldIndex==nullptr){
+					//integer assignments, valid
+
+				}
+				else if(l2ArrSz == l1ArrSz && l1ArrSz!=-1 && index==nullptr && oldIndex==nullptr){
+					//array to array assignments, valid
+
+				}
+				else{
+					//size mismatch
+					printErrorAndExit(lineNum,charPos, IRERROR_TYPE_MISMATCH);
+				}
+				
+			}
+			
+			
+		});
+  		oldNameLHS = nameLHS;
+  		oldIndex = index;
   		tail = tail->l_tail();
   	}
   	
@@ -681,7 +763,7 @@ void printSymbolTable(){
   	if(ctx->opt_prefix() && ctx->opt_prefix()->lvalue()){
   		fnCall->_lvalue = ctx->opt_prefix()->lvalue()->ID()->getText();
   		
-  		if(ctx->opt_prefix()->lvalue()->lvalue_tail()){
+  		if(ctx->opt_prefix()->lvalue()->lvalue_tail() && ctx->opt_prefix()->lvalue()->lvalue_tail()->expr()){
   			fnCall->_lvalueIndex=ASTNode::astStack.back();
   			ASTNode::astStack.pop_back();
   		}
