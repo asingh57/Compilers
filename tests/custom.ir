@@ -1,12 +1,12 @@
-start_program fib
-    static-int-list: result
+start_program invalid_for_loop
+    static-int-list: 
 
         start_function main
         int main ()
-        int-list: _t0
+        int-list: _t3
         main:
-                assign, x3, x, 
-            return, _t0, , 
+                assign, count, _t2, 
+            return, _t3, , 
         end_function main
 
-end_program fib
+end_program invalid_for_loop

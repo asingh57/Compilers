@@ -27,7 +27,8 @@ enum IRErrorMessageID{
 	IRERROR_FUNCTION_NO_RETURN_VAL,
 	IRERROR_ARRAY_OPERATOR,
 	IRERROR_INDEX_ON_NON_ARRAY,
-	IRERROR_TYPE_MISMATCH
+	IRERROR_TYPE_MISMATCH,
+	IRERROR_FOR_TO_CONDITIONS_NOT_INT
 	
 };
 
@@ -749,7 +750,7 @@ void printSymbolTable(){
   	int lineNum = ctx->ID()->getSymbol()->getLine();
 	int charPos =  ctx->ID()->getSymbol()->getCharPositionInLine();
 	Scope* back = Scope::scopeStack.back();
-	ErrorCheckingTask::tasks.push_back([lineNum,varName,charPos,back,stFor](){
+	ErrorCheckingTask::tasks.push_back([lineNum,varName,charPos,back,stFor,to,from](){
 		std::string scopeName;
 		auto res = back->getSymbol(varName, scopeName);
 		if(res==nullptr){
@@ -761,6 +762,15 @@ void printSymbolTable(){
 		else{
 			stFor->_assignVar=varName;//+scopeName;
 		}
+		
+		bool indexOnNonArray;
+		if(!to->isIntegerChain(indexOnNonArray) || !from->isIntegerChain(indexOnNonArray)){
+			
+			printErrorAndExit(lineNum,charPos, IRERROR_FOR_TO_CONDITIONS_NOT_INT);
+		}
+		
+		
+		
 	});
   	
   	//pop count of stat_seq_for  	

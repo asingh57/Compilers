@@ -81,6 +81,11 @@ void printErrorAndExit(int line, int col, IRErrorMessageID msg){
 		desc = "arrays of different sizes cannot be assigned to each other";
 		break;
 		}
+		case IRERROR_FOR_TO_CONDITIONS_NOT_INT:
+		{
+		desc = "for and to values for for statement must be integer values";
+		break;
+		}
 		
 	
 	}
