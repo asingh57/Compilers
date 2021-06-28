@@ -180,18 +180,27 @@ public:
 	}
 	
 	void printIR(std::ofstream &outFile) override{
+		_condition->printIR(outFile);
 		Scope::tabs(outFile);
-		//TODO output expr
-		auto elseLabel = _ifScope->getName()+"if";
-		outFile<< formatIR("brneq",_condition->_var,"_true",elseLabel);
+
+		auto elseLabel = _ifScope->getName()+"iffailed";
+		auto end = _ifScope->getName()+"ifend";
+		outFile<< formatIR("breq",_condition->_var,"1",elseLabel);
 		outFile<<"\n";
 		_ifScope->generateIR(outFile);
+		outFile<< formatIR("goto",end);
+		outFile<<"\n";
 		Scope::tabCounter--;
 		Scope::tabs(outFile);
 		outFile << elseLabel << ":";
-		Scope::tabCounter++;
 		outFile<<"\n";
+		Scope::tabCounter++;
 		_elseScope->generateIR(outFile);
+		
+		Scope::tabCounter--;		
+		outFile << end << ":";
+		outFile<<"\n";
+		Scope::tabCounter++;
 	}
 	
 	
