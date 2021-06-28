@@ -38,26 +38,26 @@ class ASTNode{
 		void mangle(){
 		
 		
-			std::cout <<"mangling astnode "<<_var << std::endl; 
+			//std::cout <<"mangling astnode "<<_var << std::endl; 
 			if(_var.size()){
 				_var=Scope::getMangledName(_var);			
 			}
-			std::cout <<"left "<<_var << std::endl;
+			//std::cout <<"left "<<_var << std::endl;
 			if(_left){
 				_left->mangle();
 			}
-			std::cout <<"right "<<_var << std::endl;
+			//std::cout <<"right "<<_var << std::endl;
 			
 			if(_right){
 				_right->mangle();
 			}
 			
-			std::cout <<"index "<<_var << std::endl;
+			//std::cout <<"index "<<_var << std::endl;
 			if(_index){
 				_index->mangle();
 			}
 			
-			std::cout <<"done "<<_var << std::endl;
+			//std::cout <<"done "<<_var << std::endl;
 		}
 		
 		ASTNode(ASTNode* parent=NULL): _var("") ,_parent(parent), _index(NULL), _hasIndex(false), _left(NULL), _right(NULL), _isLeaf(false), _scope(Scope::scopeStack.back()){

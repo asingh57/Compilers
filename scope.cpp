@@ -130,25 +130,25 @@ Scope* Scope::currentFunctionParent = NULL;
 
 
 void Scope::mangle(){
-	std::cout <<"mangling " << _name << std::endl;
+	//std::cout <<"mangling " << _name << std::endl;
 	
 	if( _programName.size() /*main*/){
 	
-		std::cout << "set top scope" <<_name <<std::endl;
+		//std::cout << "set top scope" <<_name <<std::endl;
 		topLevelScope= this;
 	}
 
 	std::vector<std::string> unmangledSymbols;	
 	for(auto const& [symbolName, symbol] : _symbolsMap){
 		if(symbol->getType()==TYPE_VARIABLE){
-			std::cout << "collect symbols for mangling in var,scope" << symbolName << " " <<_name <<std::endl;
+			//std::cout << "collect symbols for mangling in var,scope" << symbolName << " " <<_name <<std::endl;
 			pushToNameMangling(symbolName, _name);
 			unmangledSymbols.push_back(symbolName);				
 		}		
 	}
 	
 	for(auto unmng : unmangledSymbols){
-		std::cout << "find unmangled sym scope"<< unmng << " " <<_name <<std::endl;		
+		//std::cout << "find unmangled sym scope"<< unmng << " " <<_name <<std::endl;		
 		auto it=_symbolsMap.find(unmng);	
 		topLevelScope->_symbolsMap[getMangledName(unmng)]=_symbolsMap[unmng];
 		_symbolsMap[unmng]->_name = getMangledName(unmng);
@@ -164,18 +164,18 @@ void Scope::mangle(){
 		}
 	}
 	
-		std::cout << "mangle stats in" <<_name <<std::endl;	
+		//std::cout << "mangle stats in" <<_name <<std::endl;	
 	for(auto st: _stats){
 		
 		st->mangle();		
 	}
-	std::cout << "mangle stats done, now pop" <<_name <<std::endl;	
+	//std::cout << "mangle stats done, now pop" <<_name <<std::endl;	
 	
 	
 	
 	popScopeFromNameMangling(_name);
 	
-	std::cout << "popped name" <<_name <<std::endl;	
+	//std::cout << "popped name" <<_name <<std::endl;	
 }
 
 

@@ -72,42 +72,42 @@ public:
 	
 	void mangle() override{
 		
-		std::cout << "mangle assignment stat " <<_name <<std::endl;	
+		//std::cout << "mangle assignment stat " <<_name <<std::endl;	
 	
 		std::vector<std::pair<std::string, ASTNode*>> newlvalues;
 		
 		
-		std::cout << "mangle lvalues " <<_name <<std::endl;	
+		//std::cout << "mangle lvalues " <<_name <<std::endl;	
 		
 		for(auto pair : _lvalues){
 		
-			std::cout << "mangle lval " <<_name << "pair first " << pair.first <<std::endl;	
+			//std::cout << "mangle lval " <<_name << "pair first " << pair.first <<std::endl;	
 			if(pair.second){
 				pair.second->mangle();
 			}
 			
 			
 			
-			std::cout << "pair lvalu " <<_name <<std::endl;	
+			//std::cout << "pair lvalu " <<_name <<std::endl;	
 			std::make_pair( Scope::getMangledName(pair.first), pair.second );
 		}
 		_lvalues.clear();
 		
 		for( auto p : newlvalues){
 		
-			std::cout << "transfer new lvalues " <<_name <<std::endl;	
+			//std::cout << "transfer new lvalues " <<_name <<std::endl;	
 			_lvalues.push_back(p);
 		}
 		
 		
 		if(_assignedExpr){
 		
-			std::cout << "assigned expr mangle  " <<_name <<std::endl;	
+			//std::cout << "assigned expr mangle  " <<_name <<std::endl;	
 			_assignedExpr->mangle();		
 		}
 		
 		
-		std::cout << "mangle done for  " <<_name <<std::endl;	
+		//std::cout << "mangle done for  " <<_name <<std::endl;	
 	}
 
 };
@@ -145,17 +145,17 @@ public:
 	void mangle() override{
 		if(_condition){
 		
-		std::cout << "mangle condition ifstm " <<_name <<std::endl;	
+		//std::cout << "mangle condition ifstm " <<_name <<std::endl;	
 			_condition->mangle();
 		}
 		if(_ifScope){
 		
-		std::cout << "mangle scope ifstmt " <<_name <<std::endl;	
+		//std::cout << "mangle scope ifstmt " <<_name <<std::endl;	
 			_ifScope->mangle();
 		}
 		
 		
-		std::cout << "mangle done ifstm " <<_name <<std::endl;	
+		//std::cout << "mangle done ifstm " <<_name <<std::endl;	
 		
 	}
 	
@@ -202,21 +202,21 @@ public:
 	void mangle() override{
 		if(_condition){
 		
-		std::cout << "mangle cond ifelse " <<_name <<std::endl;	
+		//std::cout << "mangle cond ifelse " <<_name <<std::endl;	
 			_condition->mangle();
 		}
 		if(_ifScope){
 		
-		std::cout << "mangle if of ifelse " <<_name <<std::endl;	
+		//std::cout << "mangle if of ifelse " <<_name <<std::endl;	
 			_ifScope->mangle();
 		}
 		if(_elseScope){
 		
-		std::cout << "mangle else ifelse " <<_name <<std::endl;	
+		//std::cout << "mangle else ifelse " <<_name <<std::endl;	
 			_elseScope->mangle();
 		}
 		
-		std::cout << "mangle ifelse done " <<_name <<std::endl;	
+		//std::cout << "mangle ifelse done " <<_name <<std::endl;	
 		
 	}
 };
@@ -274,21 +274,21 @@ public:
 	
 	void mangle() override{
 	
-		std::cout << "mangle while " <<_name <<std::endl;	
+		//std::cout << "mangle while " <<_name <<std::endl;	
 		if(_condition){
 		
-		std::cout << "mangle cond while " <<_name <<std::endl;	
+		//std::cout << "mangle cond while " <<_name <<std::endl;	
 			_condition->mangle();
 		
 		}
 		if(_whileScope){
 		
-		std::cout << "mangle while scope " <<_name <<std::endl;	
+		//std::cout << "mangle while scope " <<_name <<std::endl;	
 			_whileScope->mangle();
 		
 		}
 		
-		std::cout << "mangle while done " <<_name <<std::endl;	
+		//std::cout << "mangle while done " <<_name <<std::endl;	
 	}
 
 };
@@ -306,32 +306,32 @@ public:
 	
 	void mangle() override{
 	
-		std::cout << "mangle for " <<_name <<std::endl;	
+		//std::cout << "mangle for " <<_name <<std::endl;	
 		if(_from){
 		
-		std::cout << "mangle from " <<_name <<std::endl;	
+		//std::cout << "mangle from " <<_name <<std::endl;	
 			_from->mangle();
 		}
 		if(_to){
 		
-		std::cout << "mangle to " <<_name <<std::endl;	
+		//std::cout << "mangle to " <<_name <<std::endl;	
 			_to->mangle();
 		
 		}
 		if(_assignVar.size()){
 		
-		std::cout << "mangle for assign " <<_name <<std::endl;	
+		//std::cout << "mangle for assign " <<_name <<std::endl;	
 			_assignVar = Scope::getMangledName(_assignVar);
 		}
 		
 		if(_forScope){
 		
-		std::cout << "mangle for scope " <<_name <<std::endl;	
+		//std::cout << "mangle for scope " <<_name <<std::endl;	
 			_forScope->mangle();
 		}
 		
 		
-		std::cout << "mangle for done " <<_name <<std::endl;	
+		//std::cout << "mangle for done " <<_name <<std::endl;	
 		
 	}
 	
@@ -400,26 +400,26 @@ public:
 	
 	void mangle() override{
 	
-		std::cout << "mangle fncall " <<_name <<std::endl;	
+		//std::cout << "mangle fncall " <<_name <<std::endl;	
 		for(auto par : _fnCallParams){
 		
-			std::cout << "mangle fnpar " <<_name <<std::endl;	
+			//std::cout << "mangle fnpar " <<_name <<std::endl;	
 			par->mangle();
 		}
 		if(_lvalue.size()){
 		
 			
-		std::cout << "mangle lval of call " <<_name <<std::endl;	
+		//std::cout << "mangle lval of call " <<_name <<std::endl;	
 			_lvalue = Scope::getMangledName(_lvalue);
 		}
 		if(_lvalueIndex){	
 		
-		std::cout << "mangle lval idx call " <<_name <<std::endl;		
+		//std::cout << "mangle lval idx call " <<_name <<std::endl;		
 			_lvalueIndex->mangle();
 		}
 		
 		
-		std::cout << "mangle fn call done " <<_name <<std::endl;	
+		//std::cout << "mangle fn call done " <<_name <<std::endl;	
 		
 	
 	}
@@ -484,14 +484,14 @@ public:
 	
 	void mangle() override{
 	
-		std::cout << "mangle ret " <<_name <<std::endl;	
+		//std::cout << "mangle ret " <<_name <<std::endl;	
 		if(_retVal){
 		
-		std::cout << "mangle retval " <<_name <<std::endl;	
+		//std::cout << "mangle retval " <<_name <<std::endl;	
 			_retVal->mangle();
 		
 		}	
-		std::cout << "mangle done " <<_name <<std::endl;	
+		//std::cout << "mangle done " <<_name <<std::endl;	
 	}
 	
 	void printIR(std::ofstream &outFile) override{
@@ -521,12 +521,12 @@ public:
 	
 	void mangle() override{
 	
-		std::cout << "mangle subscope " <<_name <<std::endl;	
+		//std::cout << "mangle subscope " <<_name <<std::endl;	
 		if(_scope){
 			_scope->mangle();
 		}	
 		
-		std::cout << "mangle done subscope " <<_name <<std::endl;	
+		//std::cout << "mangle done subscope " <<_name <<std::endl;	
 	}
 	
 	void printIR(std::ofstream &outFile) override{
