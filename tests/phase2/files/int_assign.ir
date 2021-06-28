@@ -5,13 +5,13 @@ start_program int_assign
         int main ()
         int-list: _t0_Scope2, _t1_Scope2, _t2_Scope1, a_Scope2, b_Scope2, c_Scope2, d_Scope2, e_Scope2, f_Scope2
         main:
-                call, printi, a
-                call, printi, b
-                call, printi, c
-                call, printi, d
-                call, printi, e
-                call, printi, f
-            return, _t2, , 
+                call, printi, a_Scope2
+                call, printi, b_Scope2
+                call, printi, c_Scope2
+                call, printi, d_Scope2
+                call, printi, e_Scope2
+                call, printi, f_Scope2
+            return, _t2_Scope1, , 
         end_function main
 
 end_program int_assign

@@ -84,6 +84,8 @@ public:
 	}
 	
 	static std::string getMangledName(std::string name){
+		
+		std::cout << "get mangled name for " << name <<std::endl;
 		return name+nameMangling[name].back();
 	}
 	
