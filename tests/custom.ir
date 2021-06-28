@@ -3,11 +3,10 @@ start_program fib
 
         start_function main
         int main ()
-        int-list: _t1
+        int-list: _t0
         main:
-                assign, x, _t0, 
                 assign, x3, x, 
-            return, _t1, , 
+            return, _t0, , 
         end_function main
 
 end_program fib

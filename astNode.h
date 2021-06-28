@@ -38,14 +38,14 @@ class ASTNode{
 		
 		}
 		
-		bool isIntegerChain(bool &indexOnNonArray){
+		bool isIntegerChain(bool &indexOnNonArray, int* arraySz=NULL){
 			
 			
 			bool res=true;
 			std::string scopeName;
 
 
-			if(dynamic_cast<SymbolVariable*>(_scope->getSymbol(_var,scopeName))->isArray()){
+			if(dynamic_cast<SymbolVariable*>(_scope->getSymbol(_var,scopeName))->isArray(arraySz)){
 				if(_hasIndex){
 					res = true;
 				}
@@ -65,12 +65,12 @@ class ASTNode{
 
 
 
-				res = res &&  _left->isIntegerChain(indexOnNonArray);
+				res = res &&  _left->isIntegerChain(indexOnNonArray,arraySz);
 
 			}
 			if(_right){
 
-				res = res &&  _right->isIntegerChain(indexOnNonArray);
+				res = res &&  _right->isIntegerChain(indexOnNonArray,arraySz);
 
 			}
 			

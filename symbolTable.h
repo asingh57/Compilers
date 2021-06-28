@@ -484,15 +484,19 @@ void printSymbolTable(){
 	bool* isArrayRHS=new bool;
 	*isArrayRHS=false;
 	
-  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,bk,isArrayRHS](){
+	int* arrSzRHS = new int;
+	*arrSzRHS = -1;
+	
+	bool hasIndexRHS= bk->_hasIndex;
+	
+  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,bk,isArrayRHS,arrSzRHS](){
   	bool hasInvalidIndex= false;
-  	if(!bk->isIntegerChain(hasInvalidIndex)){
+  	if(!bk->isIntegerChain(hasInvalidIndex,arrSzRHS)){
 		/*ErrorCheckingTask::tasks.push_back([lineNum,charPos](){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
-		});*/
-		*isArrayRHS=true;
-		
+		});*/		
+		*isArrayRHS = true;
   	}
   	if(hasInvalidIndex){
 		
@@ -522,7 +526,7 @@ void printSymbolTable(){
   	
   	auto sc = Scope::scopeStack.back();
   	
-  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,isArrayRHS,nameLHS,sc, index](){
+  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,isArrayRHS,arrSzRHS,hasIndexRHS,nameLHS,sc, index](){
 		
 		//check if var exists		
 		std::string scName;
@@ -542,6 +546,35 @@ void printSymbolTable(){
 			//cant index on non array type
 			printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
 		}
+		else if(hasIndexRHS && l1ArrSz != -1  && index!=nullptr && *isArrayRHS){
+			//both index arrays even if different sizes, valid
+
+		}
+		else if((*isArrayRHS && hasIndexRHS && l1ArrSz==-1 && index==nullptr)
+			||
+			(l1ArrSz!=-1&&index!=nullptr && !*isArrayRHS && !hasIndexRHS)
+		)
+		{
+			//one index array, one integer, valid					
+		
+		}
+		else if(l1ArrSz==-1 && index==nullptr && !*isArrayRHS && !hasIndexRHS){
+			//integer assignments, valid
+
+		}
+		else if(*arrSzRHS == l1ArrSz && l1ArrSz!=-1 && index==nullptr && !hasIndexRHS){
+			//array to array assignments, valid
+
+		}
+		else{
+			//size mismatch
+			printErrorAndExit(lineNum,charPos, IRERROR_TYPE_MISMATCH);
+		}
+		
+		
+		
+		
+		
 	});
 	
 	auto oldNameLHS = nameLHS;
@@ -560,7 +593,7 @@ void printSymbolTable(){
 		charPos =  tail->lvalue()->ID()->getSymbol()->getCharPositionInLine();
   		
   		
-	  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,isArrayRHS,nameLHS,sc,index,oldNameLHS,oldIndex](){
+	  	ErrorCheckingTask::tasks.push_back([lineNum,charPos,nameLHS,sc,index,oldNameLHS,oldIndex](){
 			
 			//check if var exists		
 			std::string scName;
@@ -619,6 +652,9 @@ void printSymbolTable(){
 		});
   		oldNameLHS = nameLHS;
   		oldIndex = index;
+  		
+  		
+  		
   		tail = tail->l_tail();
   	}
   	

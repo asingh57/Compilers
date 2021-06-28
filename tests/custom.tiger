@@ -17,7 +17,7 @@ begin
     		var x2 : int;
 
     	begin
-    		x3 := x := 3;
+    		x3 := x;
     	end
     
         return 0;
