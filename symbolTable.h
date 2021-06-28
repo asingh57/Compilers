@@ -745,6 +745,11 @@ void printSymbolTable(){
   	auto varName= ctx->ID()->getText();
   	
   	
+  	//pop count of stat_seq_for  	
+  	auto cnt = countStats(ctx->stat_seq_for()->stat_seq());
+  	for(int i=0; i< cnt; i++){
+  		popLastStatAndAddToCurrentScope();
+  	}  	
   	
   	//create stat and add the nodes, as well as the last scope
   	auto stFor= new StatFor(varName, from, to, Scope::scopeStack.back());
@@ -777,12 +782,6 @@ void printSymbolTable(){
 		
 	});
   	
-  	//pop count of stat_seq_for  	
-  	auto cnt = countStats(ctx->stat_seq_for()->stat_seq());
-  	logger("exit for");
-  	for(int i=0; i< cnt; i++){
-  		popLastStatAndAddToCurrentScope();
-  	}  	
   	
   	Scope::scopeStack.pop_back();
   	StatBreak::loopCounter--;

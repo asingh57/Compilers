@@ -362,7 +362,6 @@ public:
 	}
 	
 	void printIR(std::ofstream &outFile) override{
-		
 		auto forStart = _forScope->getName() +"forCondition";
 		auto forEnd = _forScope->getName() +"forEnd";
 		
@@ -378,7 +377,7 @@ public:
 		
 		_to->printIR(outFile);
 		Scope::tabs(outFile);
-		outFile<< formatIR("breq",_to->_var,_assignVar,forEnd) <<"\n";
+		outFile<< formatIR("brgt",_assignVar,_to->_var,forEnd) <<"\n";
 		
 		//push to endlist
 		endList.push_back(forEnd);

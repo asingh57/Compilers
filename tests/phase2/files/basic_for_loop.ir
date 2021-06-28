@@ -1,0 +1,21 @@
+start_program basic_for_loop
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t0_Scope2, _t1_Scope2, _t2_Scope1, i_Scope2
+        main:
+            assign, _t0_Scope2, 1, 
+            assign, _t1_Scope2, 4, 
+            assign, _t2_Scope1, 0, 
+                assign, i_Scope2, _t0_Scope2, 
+            _Scope3forCondition:
+                brgt, i_Scope2, _t1_Scope2, _Scope3forEnd
+                    call, printi, i_Scope2
+                add, i_Scope2, 1, i_Scope2
+                goto, _Scope3forCondition, , 
+            _Scope3forEnd:
+            return, _t2_Scope1, , 
+        end_function main
+
+end_program basic_for_loop
