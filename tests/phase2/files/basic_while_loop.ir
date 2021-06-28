@@ -1,0 +1,30 @@
+start_program basic_while_loop
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t0_Scope2, _t1_Scope2, _t2_Scope2, _t3_Scope3, _t4_Scope3, _t5_Scope1, i_Scope2
+        main:
+            assign, _t0_Scope2, 0, 
+            assign, _t1_Scope2, 3, 
+            assign, _t3_Scope3, 1, 
+            assign, _t5_Scope1, 0, 
+                assign, i_Scope2, _t0_Scope2, 
+            _Scope3whileCondition:
+            brlt, i_Scope2, _t1_Scope2, _brltfalse0
+            assign, _t2_Scope2, 1, 
+            goto, _brltend0, , 
+_brltfalse0:
+            assign, _t2_Scope2, 0, 
+_brltend0:
+
+            breq, _t2_Scope2, 1, _Scope3whileEnd
+                call, printi, i_Scope2
+                add, i_Scope2, _t3_Scope3, _t4_Scope3
+                assign, i_Scope2, _t4_Scope3, 
+                goto, _Scope3whileCondition, , 
+            _Scope3whileEnd:
+            return, _t5_Scope1, , 
+        end_function main
+
+end_program basic_while_loop

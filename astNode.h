@@ -69,6 +69,9 @@ class ASTNode{
 		
 		void printIR(std::ofstream &outFile){
 			//todo handle _index
+			
+			//std::cout <<"_var "<<_var<<std::endl;
+		
 		
 			if(!_isLeaf && _left && _right){
 				_left->printIR(outFile);
@@ -157,6 +160,10 @@ class ASTNode{
 					};
 					
 				};
+			}
+			else{	
+			//std::cout <<"is leaf" <<std::endl;
+			
 			}
 		
 		}

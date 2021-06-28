@@ -476,6 +476,10 @@ void printSymbolTable(){
   	//create stat and AUTO push to stats
   	auto bk =ASTNode::astStack.back();
   	StatAssignment *st = new StatAssignment(bk);
+  	//assign stat rval = last astnode and pop that node
+  	ASTNode::astStack.pop_back();
+  	
+  	
   	
   	//make sure rval type matches lval type
 	int lineNum = ctx->ASSIGN()->getSymbol()->getLine();
@@ -511,8 +515,6 @@ void printSymbolTable(){
   	});
   	
   	
-  	//assign stat rval = last astnode and pop that node
-  	ASTNode::astStack.pop_back();
   	
   	
   	
@@ -521,6 +523,7 @@ void printSymbolTable(){
   	//TODO lvalue indices
   	auto tail = ctx->l_tail();	
   	if(ctx->lvalue()->lvalue_tail() && ctx->lvalue()->lvalue_tail()->expr()){
+
 		index=ASTNode::astStack.back();
 
 		ASTNode::astStack.pop_back();
@@ -587,6 +590,7 @@ void printSymbolTable(){
   	while(tail && tail->lvalue()){
   		index= nullptr;
   		if(tail->lvalue()->lvalue_tail() && tail->lvalue()->lvalue_tail()->expr()){
+
 			index=ASTNode::astStack.back();
 
 			ASTNode::astStack.pop_back();
@@ -715,6 +719,7 @@ void printSymbolTable(){
   	//pop num stats equal to number of stats in stat_seq_while: these are the statements
   	auto cnt = countStats(ctx->stat_seq_while()->stat_seq());
   	logger("exit while");
+
   	for(int i=0; i< cnt; i++){
   		popLastStatAndAddToCurrentScope();
   	}
@@ -984,6 +989,7 @@ void printSymbolTable(){
    		 nodesReversed.push_back(nd);
    	}  	
    	if(init){
+
    		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   	
@@ -1099,6 +1105,8 @@ void printSymbolTable(){
    	
    		
    	if(init){
+	
+
    		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   }
@@ -1183,6 +1191,7 @@ void printSymbolTable(){
    	
 	
    	if(init){
+
    		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   
@@ -1272,6 +1281,7 @@ void printSymbolTable(){
    	
    		
    	if(init){
+
    		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
 	
@@ -1351,6 +1361,7 @@ void printSymbolTable(){
    	
    		
    	if(init){
+
    		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   }
@@ -1369,47 +1380,55 @@ void printSymbolTable(){
 		auto res = back->getSymbol(nd->_var, scopeName);
 		nd->_var=nd->_var;//+scopeName;
    		nd->_isLeaf = true;
-   		ASTNode::astStack.push_back(nd);
-   	
+   		
+   		
+	
 
+   		ASTNode::astStack.push_back(nd);
+   	}
+   	else if(ctx->lvalue()){
+   		auto ctxNew = ctx->lvalue();
+	   	logger("creating lvalue");
+	  	auto nd = new ASTNode();
+		//use existing var
+		nd->_var = ctxNew->ID()->getText();
+		
+		//check if this var exists
+		int lineNum = ctxNew->ID()->getSymbol()->getLine();
+		int charPos =  ctxNew->ID()->getSymbol()->getCharPositionInLine();
+		Scope* back = Scope::scopeStack.back();
+		ErrorCheckingTask::tasks.push_back([lineNum,charPos,nd,back](){
+			std::string scopeName;
+			auto res = back->getSymbol(nd->_var, scopeName);
+			if(res==nullptr){
+				printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);				
+			}
+			else if(res->getType()!=TYPE_VARIABLE){
+				printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
+			}
+			else{
+				nd->_var=nd->_var;//+scopeName;
+			}
+		});
+		
+		
+		if(ctxNew->lvalue_tail() && ctxNew->lvalue_tail()->expr()){  		
+			nd->_hasIndex= true;		
+			nd->_index = ASTNode::astStack.back();
+			nd->_isLeaf = true;
+			ASTNode::astStack.pop_back();
+		}
+		
+
+
+		ASTNode::astStack.push_back(nd);
    	}
   	
   }
   
   
   void exitLvalue(TigerParser::LvalueContext * ctx) override { 
-   	logger("creating lvalue");
-  	auto nd = new ASTNode();
-	//use existing var
-	nd->_var = ctx->ID()->getText();
-	
-	//check if this var exists
-	int lineNum = ctx->ID()->getSymbol()->getLine();
-	int charPos =  ctx->ID()->getSymbol()->getCharPositionInLine();
-	Scope* back = Scope::scopeStack.back();
-	ErrorCheckingTask::tasks.push_back([lineNum,charPos,nd,back](){
-		std::string scopeName;
-		auto res = back->getSymbol(nd->_var, scopeName);
-		if(res==nullptr){
-			printErrorAndExit(lineNum,charPos, IRERROR_NO_SUCH_VARIABLE);				
-		}
-		else if(res->getType()!=TYPE_VARIABLE){
-			printErrorAndExit(lineNum,charPos, IRERROR_NOT_ASSIGNABLE_VAR);				
-		}
-		else{
-			nd->_var=nd->_var;//+scopeName;
-		}
-	});
-	
-	
-	if(ctx->lvalue_tail() && ctx->lvalue_tail()->expr()){  		
-		nd->_hasIndex= true;		
-		nd->_index = ASTNode::astStack.back();
-		nd->_isLeaf = true;
-		ASTNode::astStack.pop_back();
-	}
-
-	ASTNode::astStack.push_back(nd);
+   	
   }
 
 
