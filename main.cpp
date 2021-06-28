@@ -181,15 +181,16 @@ int main(int argc, char *argv[]){
 	SymbolTableGenerator symT;//collects function names
   	tree::ParseTreeWalker::DEFAULT.walk(&symT, tree);
 	
-	SemanticEnforcer semE(&symT);//does semantic enforcement
-  	tree::ParseTreeWalker::DEFAULT.walk(&semE, tree);
-	
-	
 	if(printSymbolTable){
 	
 		symT.printSymbolTable();
 	}
+	
 	if(outputIR){
+		SemanticEnforcer semE(&symT);//does semantic enforcement
+	  	tree::ParseTreeWalker::DEFAULT.walk(&semE, tree);
+	
+	
 		std::string irOutFile = inputFileName;
 		irOutFile=irOutFile.substr(0,irOutFile.find_last_of('.'))+".ir";
 		IRGenerator ig(&symT);
