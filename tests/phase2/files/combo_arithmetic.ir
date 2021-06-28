@@ -1,0 +1,72 @@
+start_program combo_arithmetic
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t0_Scope2, _t10_Scope2, _t11_Scope2, _t12_Scope2, _t13_Scope2, _t14_Scope2, _t15_Scope2, _t16_Scope2, _t17_Scope2, _t18_Scope2, _t19_Scope2, _t1_Scope2, _t20_Scope2, _t21_Scope2, _t22_Scope2, _t23_Scope2, _t24_Scope2, _t25_Scope2, _t26_Scope2, _t27_Scope2, _t28_Scope2, _t29_Scope2, _t2_Scope2, _t30_Scope2, _t31_Scope2, _t32_Scope2, _t33_Scope2, _t34_Scope2, _t35_Scope2, _t36_Scope2, _t37_Scope2, _t38_Scope2, _t39_Scope2, _t3_Scope2, _t40_Scope1, _t4_Scope2, _t5_Scope2, _t6_Scope2, _t7_Scope2, _t8_Scope2, _t9_Scope2, a_Scope2, b_Scope2, c_Scope2
+        main:
+            assign, _t0_Scope2, 100, 
+            assign, _t12_Scope2, 100, 
+            assign, _t13_Scope2, 50, 
+            assign, _t14_Scope2, 25, 
+            assign, _t17_Scope2, 100, 
+            assign, _t18_Scope2, 50, 
+            assign, _t19_Scope2, 25, 
+            assign, _t28_Scope2, 200, 
+            assign, _t29_Scope2, 4, 
+            assign, _t31_Scope2, 25, 
+            assign, _t32_Scope2, 5, 
+            assign, _t35_Scope2, 100, 
+            assign, _t37_Scope2, 7, 
+            assign, _t3_Scope2, 100, 
+            assign, _t40_Scope1, 0, 
+            assign, _t6_Scope2, 100, 
+            assign, _t9_Scope2, 500, 
+            assign, a_Scope2, 5, 
+            assign, b_Scope2, 50, 
+                add, _t0_Scope2, a_Scope2, _t1_Scope2
+                add, _t1_Scope2, b_Scope2, _t2_Scope2
+                assign, c_Scope2, _t2_Scope2, 
+                call, printi, c_Scope2
+                sub, _t3_Scope2, a_Scope2, _t4_Scope2
+                sub, _t4_Scope2, b_Scope2, _t5_Scope2
+                assign, c_Scope2, _t5_Scope2, 
+                call, printi, c_Scope2
+                mult, _t6_Scope2, a_Scope2, _t7_Scope2
+                mult, _t7_Scope2, b_Scope2, _t8_Scope2
+                assign, c_Scope2, _t8_Scope2, 
+                call, printi, c_Scope2
+                div, _t9_Scope2, a_Scope2, _t10_Scope2
+                div, _t10_Scope2, b_Scope2, _t11_Scope2
+                assign, c_Scope2, _t11_Scope2, 
+                call, printi, c_Scope2
+                sub, _t12_Scope2, _t13_Scope2, _t15_Scope2
+                add, _t15_Scope2, _t14_Scope2, _t16_Scope2
+                assign, c_Scope2, _t16_Scope2, 
+                call, printi, c_Scope2
+                div, _t17_Scope2, _t18_Scope2, _t20_Scope2
+                mult, _t20_Scope2, _t19_Scope2, _t21_Scope2
+                assign, c_Scope2, _t21_Scope2, 
+                call, printi, c_Scope2
+                mult, a_Scope2, b_Scope2, _t22_Scope2
+                add, _t22_Scope2, a_Scope2, _t24_Scope2
+                add, _t24_Scope2, b_Scope2, _t25_Scope2
+                sub, _t25_Scope2, a_Scope2, _t26_Scope2
+                div, b_Scope2, a_Scope2, _t23_Scope2
+                sub, _t26_Scope2, _t23_Scope2, _t27_Scope2
+                assign, c_Scope2, _t27_Scope2, 
+                call, printi, c_Scope2
+                div, _t28_Scope2, _t29_Scope2, _t30_Scope2
+                div, _t31_Scope2, _t32_Scope2, _t33_Scope2
+                sub, _t30_Scope2, _t33_Scope2, _t34_Scope2
+                assign, c_Scope2, _t34_Scope2, 
+                call, printi, c_Scope2
+                mult, b_Scope2, a_Scope2, _t36_Scope2
+                sub, _t35_Scope2, _t36_Scope2, _t38_Scope2
+                add, _t38_Scope2, _t37_Scope2, _t39_Scope2
+                assign, c_Scope2, _t39_Scope2, 
+                call, printi, c_Scope2
+            return, _t40_Scope1, , 
+        end_function main
+
+end_program combo_arithmetic

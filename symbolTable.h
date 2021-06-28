@@ -913,8 +913,30 @@ void printSymbolTable(){
   virtual void exitLogical_op_expr(TigerParser::Logical_op_exprContext * ctx) override { 
   	TigerParser::Logical_op_expr_extContext * logicalExt=ctx->logical_op_expr_ext();  
 
+	
+	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
+
+	bool init = false;
+	while(logicalExt && logicalExt->compare_op_expr() ){
+		if(!init){
+			init= true;
+	   		auto v =  ASTNode::astStack.back();
+	   		ASTNode::astStack.pop_back();
+	   		nodesReversed.push_back(v); 
+		}
+   		 logicalExt= logicalExt->logical_op_expr_ext();
+   		auto v =  ASTNode::astStack.back();
+   		ASTNode::astStack.pop_back();
+   		nodesReversed.push_back(v); 
+	}
+   		
+  	logicalExt=ctx->logical_op_expr_ext();
+
+
+
   
   	while(logicalExt && logicalExt->compare_op_expr() ){//then we have power operators
+
    		 logger("creating logical op");
    		 auto nd = new ASTNode();
 	 	int lineNum;
@@ -932,12 +954,12 @@ void printSymbolTable(){
   		}
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();
-   		 ASTNode::astStack.pop_back();
-   		 auto v2 =  ASTNode::astStack.back();   
-   		 ASTNode::astStack.pop_back();
-   		 nd->_left = v2;
-   		 nd->_right = v1;   	
+   		 auto v1 =  nodesReversed.back();
+   		 nodesReversed.pop_back();
+   		 auto v2 =  nodesReversed.back();   
+   		 nodesReversed.pop_back();
+   		 nd->_left = v1;
+   		 nd->_right = v2;   	
    		 
    		
 		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
@@ -960,8 +982,11 @@ void printSymbolTable(){
 		}); 
    		 		 		
    		 logicalExt= logicalExt->logical_op_expr_ext();
-   		 ASTNode::astStack.push_back(nd); 
+   		 nodesReversed.push_back(nd);
    	}  	
+   	if(init){
+   		ASTNode::astStack.push_back(nodesReversed.back()); 
+   	}
   	
   }
 
@@ -969,6 +994,26 @@ void printSymbolTable(){
   	TigerParser::Compare_op_expr_extContext * compareExt=ctx->compare_op_expr_ext();  
 
   	//EQUAL | NEQUAL | LESS | GREAT | LESSEQ | GREATEQ
+  	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
+
+	bool init = false;
+	while(compareExt && compareExt->add_op_expr() ){
+		if(!init){
+			init= true;
+	   		auto v =  ASTNode::astStack.back();
+	   		ASTNode::astStack.pop_back();
+	   		nodesReversed.push_back(v); 
+		}
+   		 		 		
+   		 compareExt= compareExt->compare_op_expr_ext();
+   		auto v =  ASTNode::astStack.back();
+   		ASTNode::astStack.pop_back();
+   		nodesReversed.push_back(v); 
+	}
+   		
+  	compareExt=ctx->compare_op_expr_ext();
+  
+  
   
   	int count = 0;
   
@@ -1012,12 +1057,13 @@ void printSymbolTable(){
   		}
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();
-   		 ASTNode::astStack.pop_back();
-   		 auto v2 =  ASTNode::astStack.back();   
-   		 ASTNode::astStack.pop_back();
-   		 nd->_left = v2;
-   		 nd->_right = v1;   		 
+   		 
+		 auto v1 =  nodesReversed.back();
+   		 nodesReversed.pop_back();
+   		 auto v2 =  nodesReversed.back();   
+   		 nodesReversed.pop_back();
+   		 nd->_left = v1;
+   		 nd->_right = v2;   		 
    		 		 		
    		 compareExt= compareExt->compare_op_expr_ext();
    		 count++;
@@ -1049,20 +1095,41 @@ void printSymbolTable(){
 	  	
 	  	
 	  	
-   		 ASTNode::astStack.push_back(nd); 		
+   		 nodesReversed.push_back(nd);
+   	}
+   	
+   		
+   	if(init){
+   		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   }
 
   virtual void exitAdd_op_expr(TigerParser::Add_op_exprContext * ctx) override { 
   	TigerParser::Add_op_expr_extContext * addExt=ctx->add_op_expr_ext();  
 
+	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
+
+	bool init = false;
+	while(addExt && addExt->mult_op_expr() ){
+		if(!init){
+			init= true;
+	   		auto v =  ASTNode::astStack.back();
+	   		ASTNode::astStack.pop_back();
+	   		nodesReversed.push_back(v); 
+		}
+   		addExt= addExt->add_op_expr_ext();
+   		auto v =  ASTNode::astStack.back();
+   		ASTNode::astStack.pop_back();
+   		nodesReversed.push_back(v); 
+	}
+
   	
    		
-  
+  	addExt=ctx->add_op_expr_ext();
   	while(addExt && addExt->mult_op_expr() ){//then we have power operators
 
    		int lineNum, charPos;
-   		 logger("creating add/sub op");
+   		 logger("creating add/sub op wiht");
    		 auto nd = new ASTNode();
    		 if(addExt->PLUS()){
    		 	nd->_op = OPERATOR_PLUS; 
@@ -1077,13 +1144,16 @@ void printSymbolTable(){
    		 
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();
-   		 ASTNode::astStack.pop_back();
-   		 auto v2 =  ASTNode::astStack.back();   
-   		 ASTNode::astStack.pop_back();
-   		 nd->_left = v2;
-   		 nd->_right = v1;   		 
-   		 		 		
+   		// std::cout <<"output var=" << v->getName()<< std::endl;
+   		 
+   		 auto v1 =  nodesReversed.back();
+   		 nodesReversed.pop_back();
+   		 auto v2 =  nodesReversed.back();   
+   		 nodesReversed.pop_back();
+   		 nd->_left = v1;
+   		 nd->_right = v2;   		 
+   		 		 
+   		 //std::cout <<"left,right ops are= " << v2->_var <<" "  << v1->_var<< std::endl;		
    		 	
 		ErrorCheckingTask::tasks.push_back([lineNum,charPos, v1, v2](){
 	   		bool hasInvalidIndex= false;
@@ -1105,7 +1175,16 @@ void printSymbolTable(){
 		});
    		 		 		
    		 addExt= addExt->add_op_expr_ext();
-   		 ASTNode::astStack.push_back(nd); 
+   		 //nodesReversed.push_back(nd);
+   		 
+   		 //std::cout <<"node " <<nd->_var <<" is a combination of " <<v1->_var  <<" and " <<v2->_var << std::endl;
+   		 
+   		 nodesReversed.push_back(nd);
+   	}
+   	
+	
+   	if(init){
+   		ASTNode::astStack.push_back(nodesReversed.back()); 
    	}
   
   
@@ -1114,17 +1193,33 @@ void printSymbolTable(){
   virtual void exitMult_op_expr(TigerParser::Mult_op_exprContext * ctx) override { 
   	TigerParser::Mult_op_expr_extContext * mulExt=ctx->mult_op_expr_ext(); 
   	auto op = OPERATOR_MULT;
-  	
+  	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
+
+	bool init = false;
+	while(mulExt && mulExt->pow_op_expr()){
+		if(!init){
+			init= true;
+	   		auto v =  ASTNode::astStack.back();
+	   		ASTNode::astStack.pop_back();
+	   		nodesReversed.push_back(v); 
+		}
+   		 mulExt= mulExt->mult_op_expr_ext();
+   		auto v =  ASTNode::astStack.back();
+   		ASTNode::astStack.pop_back();
+   		nodesReversed.push_back(v); 
+	}
+   		
+  	mulExt=ctx->mult_op_expr_ext(); 
   
   	while(mulExt && mulExt->pow_op_expr() ){//then we have power operators
    		 logger("creating mult op");
    		 auto nd = new ASTNode(); 
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();   		 
-   		 ASTNode::astStack.pop_back();
-   		 auto v2 =  ASTNode::astStack.back();   
-   		 ASTNode::astStack.pop_back();
+   		 auto v1 =  nodesReversed.back();
+   		 nodesReversed.pop_back();
+   		 auto v2 =  nodesReversed.back();   
+   		 nodesReversed.pop_back();
    		 
    		 
    		 //assert v1 and v2 are not arrays
@@ -1166,14 +1261,21 @@ void printSymbolTable(){
    		 
 		});
    		 
-   		 ASTNode::astStack.push_back(nd); 
    		 
-   		 nd->_left = v2;
-   		 nd->_right = v1;
+   		 nd->_left = v1;
+   		 nd->_right = v2;
    		 
    		 		 		
    		 mulExt= mulExt->mult_op_expr_ext();
+   		 
+   		 nodesReversed.push_back(nd);
    	}
+   	
+   		
+   	if(init){
+   		ASTNode::astStack.push_back(nodesReversed.back()); 
+   	}
+	
   	
   	
   	
@@ -1184,6 +1286,23 @@ void printSymbolTable(){
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
   	TigerParser::Pow_op_expr_extContext * powExt=ctx->pow_op_expr_ext();
   	
+	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
+
+	bool init = false;
+	while(powExt && powExt->expr_no_op() ){
+		if(!init){
+			init= true;
+	   		auto v =  ASTNode::astStack.back();
+	   		ASTNode::astStack.pop_back();
+	   		nodesReversed.push_back(v); 
+		}
+   		powExt= powExt->pow_op_expr_ext();
+   		auto v =  ASTNode::astStack.back();
+   		ASTNode::astStack.pop_back();
+   		nodesReversed.push_back(v); 
+	}
+   		
+  	powExt=ctx->pow_op_expr_ext();
   
   	while(powExt && powExt->expr_no_op() ){//then we have power operators
    		 logger("creating pow op");
@@ -1191,10 +1310,11 @@ void printSymbolTable(){
    		 nd->_op = OPERATOR_POW;
    		 auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,0);
    	  	 nd->_var= v->getName(); 
-   		 auto v1 =  ASTNode::astStack.back();   		 
-   		 ASTNode::astStack.pop_back();
-   		 auto v2 =  ASTNode::astStack.back();   
-   		 ASTNode::astStack.pop_back();
+   		 
+		auto v1 =  nodesReversed.back();
+   		 nodesReversed.pop_back();
+   		 auto v2 =  nodesReversed.back();   
+   		 nodesReversed.pop_back();
    		 
    		 
    		 //assert v1 and v2 are not arrays
@@ -1221,14 +1341,19 @@ void printSymbolTable(){
    		 
 		});
    		 
-   		 nd->_left = v2;
-   		 nd->_right = v1;
+   		 nd->_left = v1;
+   		 nd->_right = v2;
    		 
    		 		 		
    		 powExt= powExt->pow_op_expr_ext();
-   		 ASTNode::astStack.push_back(nd);  
+   		 
+   		 nodesReversed.push_back(nd);
    	}
-  
+   	
+   		
+   	if(init){
+   		ASTNode::astStack.push_back(nodesReversed.back()); 
+   	}
   }
 
   virtual void exitExpr_no_op(TigerParser::Expr_no_opContext * ctx) override { 
