@@ -256,9 +256,11 @@ public:
 		Scope::tabCounter--;
 		Scope::tabs(outFile);
 		outFile << whileStart <<":\n";	
-		//TODO put condition here and skip if condition not met
+		
+		_condition->printIR(outFile);
+		
 		Scope::tabs(outFile);
-		outFile<< formatIR("brneq",_condition->_var,"_true",whileEnd) <<"\n";
+		outFile<< formatIR("breq",_condition->_var,"1",whileEnd) <<"\n";
 		
 		//push end
 		endList.push_back(whileEnd);
@@ -365,7 +367,7 @@ public:
 		auto forEnd = _forScope->getName() +"forEnd";
 		
 		
-		//TODO put precondition here
+		_from->printIR(outFile);
 		Scope::tabs(outFile);
 		outFile << formatIR("assign",_assignVar, _from->_var) << "\n";
 		
@@ -373,9 +375,10 @@ public:
 		Scope::tabs(outFile);
 		outFile << forStart <<":\n";	
 		Scope::tabCounter++;
-		//TODO put condition here and skip if condition not met
+		
+		_to->printIR(outFile);
 		Scope::tabs(outFile);
-		outFile<< formatIR("brneq",_to->_var,_assignVar,forEnd) <<"\n";
+		outFile<< formatIR("breq",_to->_var,_assignVar,forEnd) <<"\n";
 		
 		//push to endlist
 		endList.push_back(forEnd);
