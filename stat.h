@@ -521,7 +521,7 @@ public:
 	void printIR(std::ofstream &outFile) override{
 		Scope::tabs(outFile);
 		if(_retVal){
-			//TODO resolve retVal
+			_retVal->printIR(outFile);
 			outFile<< formatIR("return", _retVal->_var)<<"\n";
 		}
 		else{
