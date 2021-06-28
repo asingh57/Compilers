@@ -7,10 +7,10 @@
 
 class Symbol{
 protected:
-std::string _name;
 Scope* _scope;
 Type _type;
 public:
+std::string _name;
 static int counter;
 	Symbol(std::string name, Type type);
 	Symbol(Type type);

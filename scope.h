@@ -41,6 +41,7 @@ class Scope{
 	friend class Symbol;
 public:
 	std::string _programName;
+	static Scope* topLevelScope;
 	
 private:
 	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope
@@ -82,6 +83,10 @@ public:
 		}		
 	}
 	
+	static std::string getMangledName(std::string name){
+		return name+nameMangling[name].back();
+	}
+	
 
 	static Scope* currentFunctionParent;
 	static std::vector<Scope*>scopeStack;
@@ -105,9 +110,7 @@ public:
 	}
 	
 	
-	void mangle(){
-		
-	}
+	void mangle();
 	
 	
 	std::string getName(){

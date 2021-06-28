@@ -26,6 +26,9 @@ public:
 	
 	}
 	
+	virtual void mangle(){
+	
+	}
 	
 	static std::string formatIR(std::string a = "",std::string b = "",std::string c = "",std::string d = ""){
 		return a + ", " +b+ ", " +c +", " + d;
@@ -65,6 +68,26 @@ public:
 		//don't print anything
 		logger("printing assignment");
 	}
+	
+	
+	void mangle() override{
+		std::vector<std::pair<std::string, ASTNode*>> newlvalues;
+		
+		for(auto pair : _lvalues){
+			pair.second->mangle();
+			std::make_pair( Scope::getMangledName(pair.first), pair.second );
+		}
+		_lvalues.clear();
+		
+		for( auto p : newlvalues){
+			_lvalues.push_back(p);
+		}
+		
+		
+		if(_assignedExpr){
+			_assignedExpr->mangle();		
+		}
+	}
 
 };
 
@@ -96,6 +119,19 @@ public:
 		//print subscope
 		_ifScope->printSymbols();		
 	}
+	
+	
+	void mangle() override{
+		if(_condition){
+			_condition->mangle();
+		}
+		if(_ifScope){
+			_ifScope->mangle();
+		}
+		
+	}
+	
+	
 };
 
 class StatIfElseStmt : Stat{
@@ -131,6 +167,22 @@ public:
 		//print subscopes
 		_ifScope->printSymbols();
 		_elseScope->printSymbols();
+	}
+	
+	
+	
+	void mangle() override{
+		if(_condition){
+			_condition->mangle();
+		}
+		if(_ifScope){
+			_ifScope->mangle();
+		}
+		if(_elseScope){
+			_elseScope->mangle();
+		}
+		
+		
 	}
 };
 
@@ -183,6 +235,18 @@ public:
 		logger("printing while");
 		_whileScope->printSymbols();
 	}
+	
+	
+	void mangle() override{
+		if(_condition){
+			_condition->mangle();
+		
+		}
+		if(_whileScope){
+			_whileScope->mangle();
+		
+		}
+	}
 
 };
 
@@ -194,6 +258,26 @@ public:
 	Scope* _forScope;
 	StatFor(std::string assignVar, ASTNode* from, ASTNode* to, Scope* forScope):Stat(STAT_FOR),_from(from),_to(to),_assignVar(assignVar),_forScope(forScope){
 	
+	}
+	
+	
+	void mangle() override{
+		if(_from){
+			_from->mangle();
+		}
+		if(_to){
+			_to->mangle();
+		
+		}
+		if(_assignVar.size()){
+			_assignVar = Scope::getMangledName(_assignVar);
+		}
+		
+		if(_forScope){
+		
+			_forScope->mangle();
+		}
+		
 	}
 	
 	
@@ -259,6 +343,20 @@ public:
 	}
 	
 	
+	void mangle() override{
+		for(auto par : _fnCallParams){
+			par->mangle();
+		}
+		if(_lvalue.size()){
+			_lvalue = Scope::getMangledName(_lvalue);
+		}
+		if(_lvalueIndex){		
+			_lvalueIndex->mangle();
+		}
+		
+	
+	}
+	
 	void printIR(std::ofstream &outFile) override{
 		
 		
@@ -316,6 +414,14 @@ public:
 	
 	}
 	
+	
+	void mangle() override{
+		if(_retVal){
+			_retVal->mangle();
+		
+		}	
+	}
+	
 	void printIR(std::ofstream &outFile) override{
 		Scope::tabs(outFile);
 		if(_retVal){
@@ -339,6 +445,12 @@ public:
 	Scope* _scope;
 	StatSubScope(Scope* scope):Stat(STAT_SUBSCOPE),_scope(scope){
 	
+	}
+	
+	void mangle() override{
+		if(_scope){
+			_scope->mangle();
+		}	
 	}
 	
 	void printIR(std::ofstream &outFile) override{
