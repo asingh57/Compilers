@@ -1,6 +1,6 @@
 #ifndef _ASTNODE
 #define _ASTNODE
-
+#include "stat.h"
 
 enum Operator{
 	OPERATOR_PLUS,
@@ -33,7 +33,70 @@ class ASTNode{
 		ASTNode* _parent; //parent AST node
 		Scope* _scope;
 		
+		static std::string formatIR(std::string a = "",std::string b = "",std::string c = "",std::string d = ""){
+			return a + ", " +b+ ", " +c +", " + d;
+		}
 		
+		void printIR(std::ofstream &outFile){
+			//todo handle _index
+		
+			if(!_isLeaf && _left && _right){
+				_left->printIR(outFile);
+				_right->printIR(outFile);
+			
+				switch(_op){
+					case OPERATOR_PLUS:
+					{
+						Scope::tabs(outFile);
+						outFile << formatIR("add", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						
+						break;
+					};
+					case OPERATOR_MINUS:
+					{
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("sub", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						break;
+					};
+					case OPERATOR_MULT:
+					{
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("mult", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						break;
+					};
+					case OPERATOR_DIV:
+					{
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("div", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						break;
+					};
+					case OPERATOR_AND:
+					{
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("and", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						break;
+					};
+					case OPERATOR_OR:
+					{
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("or", _left->_var, _right->_var, _var);
+						outFile <<std::endl;
+						break;
+					};
+				};
+			}
+		
+		}
 		
 		void mangle(){
 		
@@ -118,9 +181,6 @@ class ASTNode{
 		
 		
 		
-		void printIR(std::ofstream &outFile){
-		
-		}
 		
 };
 
