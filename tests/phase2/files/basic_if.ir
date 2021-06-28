@@ -1,0 +1,27 @@
+start_program basic_if
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t0_Scope1, _t1_Scope1, _t2_Scope1, _t3_Scope2, _t4_Scope1, _t5_Scope1
+        main:
+            assign, _t0_Scope1, 1, 
+            assign, _t1_Scope1, 0, 
+            assign, _t3_Scope2, 1, 
+            assign, _t4_Scope1, 0, 
+            assign, _t5_Scope1, 0, 
+            brgt, _t0_Scope1, _t1_Scope1, _brgtfalse0
+            assign, _t2_Scope1, 1, 
+            goto, _brgtend0, , 
+_brgtfalse0:
+            assign, _t2_Scope1, 0, 
+_brgtend0:
+
+            breq, _t2_Scope1, 1, _Scope2ifFailed
+                call, printi, _t3_Scope2
+        _Scope2ifFailed:
+            call, printi, _t4_Scope1
+            return, _t5_Scope1, , 
+        end_function main
+
+end_program basic_if

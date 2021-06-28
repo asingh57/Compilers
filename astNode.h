@@ -37,6 +37,36 @@ class ASTNode{
 			return a + ", " +b+ ", " +c +", " + d;
 		}
 		
+		static int branchCounter;
+		
+		static void outputCondition(std::string outVar, std::string left, std::string right, std::string branch, std::ofstream &outFile){
+		
+						
+			std::string brct = std::to_string(branchCounter++);
+			std::string notTrue = "_"+branch+"false"+brct;
+			std::string end = "_"+branch+"end"+brct;
+			
+			Scope::tabs(outFile);
+			outFile << formatIR(branch,  left ,right, notTrue)<<"\n";
+			
+			Scope::tabs(outFile);
+			outFile << formatIR("assign", outVar ,"1") << "\n";
+			
+			Scope::tabs(outFile);
+			outFile << formatIR("goto",end)<<"\n"	;					
+			
+			outFile << notTrue << ":" << "\n";
+			
+			Scope::tabs(outFile);
+			outFile << formatIR("assign", outVar ,"0") << "\n";
+			
+			outFile << end << ":" << "\n";
+			
+			//outFile << formatIR("or", _left->_var, _right->_var, _var);
+			outFile <<std::endl;
+		}
+		
+		
 		void printIR(std::ofstream &outFile){
 			//todo handle _index
 		
@@ -93,6 +123,39 @@ class ASTNode{
 						outFile <<std::endl;
 						break;
 					};
+					
+					
+					case OPERATOR_LT:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "brlt" ,outFile);
+						break;
+					};
+					case OPERATOR_GT:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "brgt" ,outFile);
+						break;
+					};
+					case OPERATOR_LTE:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "brleq" ,outFile);
+						break;
+					};
+					case OPERATOR_GTE:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "brgeq" ,outFile);
+						break;
+					};
+					case OPERATOR_EQ:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "breq" ,outFile);
+						break;
+					};
+					case OPERATOR_NEQ:
+					{
+						outputCondition(_var, _left->_var, _right->_var, "brneq" ,outFile);
+						break;
+					};
+					
 				};
 			}
 		
