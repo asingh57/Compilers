@@ -142,4 +142,4 @@ int Scope::scopeCounter=0;
 int Scope::tabCounter=0;
 
 
-
+std::map<std::string,std::vector<std::string>> Scope::nameMangling = {};

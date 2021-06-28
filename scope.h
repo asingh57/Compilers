@@ -52,6 +52,37 @@ private:
 	Scope(std::string name, Scope* parentScope=NULL, Stat* associatedStat=NULL);
 	
 public:
+
+	static std::map<std::string,std::vector<std::string>> nameMangling;
+
+	static bool hasEnding (std::string const &fullString, std::string const &ending) {
+	    if (fullString.length() >= ending.length()) {
+		return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+	    } else {
+		return false;
+	    }
+	}
+
+
+	static void pushToNameMangling(std::string varName, std::string scopeName){
+		auto it = nameMangling.find(varName);
+		if(it == nameMangling.end()){
+			nameMangling[varName]=std::vector<std::string>();
+		}
+		nameMangling[varName].push_back(scopeName);		
+	}
+	
+	static void popScopeFromNameMangling(std::string scopeName){
+		for (auto const& [varName, varStack] : nameMangling)
+		{
+			if (varStack.size() && varStack.back().compare(scopeName) == 0){
+				//scope value is present for var name
+				nameMangling[varName].pop_back();
+			}
+		}		
+	}
+	
+
 	static Scope* currentFunctionParent;
 	static std::vector<Scope*>scopeStack;
 	static int scopeCounter;//counter for creating new scopes
@@ -71,6 +102,11 @@ public:
 		auto sc = new Scope("_Scope" + std::to_string(scopeCounter++), parent);
 		scopeStack.push_back(sc);
 		return sc;
+	}
+	
+	
+	void mangle(){
+		
 	}
 	
 	

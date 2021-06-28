@@ -19,7 +19,8 @@ private:
 
 public:
 	IRGenerator(SymbolTableGenerator* symTable):globalScope(symTable->getTopLevelScope()){
-	
+		//first we must mangle all symbols
+		globalScope->mangle();
 	}
 	
 	void run(std::string outFile){

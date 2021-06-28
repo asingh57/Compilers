@@ -190,7 +190,7 @@ int main(int argc, char *argv[]){
   	
   	
 	if(outputIR){
-	
+		
 	
 		std::string irOutFile = inputFileName;
 		irOutFile=irOutFile.substr(0,irOutFile.find_last_of('.'))+".ir";
