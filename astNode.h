@@ -67,15 +67,20 @@ class ASTNode{
 		bool isIntegerChain(bool &indexOnNonArray, int* arraySz=NULL){
 			
 			
+			//std::cout << "check if " << _var << "is array" << std::endl;
+			
 			bool res=true;
 			std::string scopeName;
 
 
 			if(dynamic_cast<SymbolVariable*>(_scope->getSymbol(_var,scopeName))->isArray(arraySz)){
 				if(_hasIndex){
+				
+					//std::cout << _var << "has index" << std::endl;
 					res = true;
 				}
 				else{
+					//std::cout << _var << "has no index" << std::endl;
 
 					res = false;				
 				}

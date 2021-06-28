@@ -1,0 +1,12 @@
+start_program selection_sort
+    static-int-list: 
+
+        start_function main
+        int main ()
+        int-list: _t0_Scope2, _t10_Scope2, _t11_Scope2, _t12_Scope2, _t13_Scope2, _t14_Scope2, _t15_Scope2, _t16_Scope2, _t17_Scope2, _t18_Scope2, _t19_Scope2, _t1_Scope2, _t25_Scope2, _t26_Scope2, _t27_Scope2, _t28_Scope1, _t2_Scope2, _t3_Scope2, _t4_Scope2, _t5_Scope2, _t6_Scope2, _t7_Scope2, _t8_Scope2, _t9_Scope2, cats_Scope2, first_Scope2, index_Scope2, lowestIndex_Scope2, size_Scope2, smallest_Scope2, subIndex_Scope2, temp_Scope2, x_Scope2
+        main:
+                call, printi, cats_Scope2
+            return, _t28_Scope1, , 
+        end_function main
+
+end_program selection_sort

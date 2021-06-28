@@ -171,17 +171,23 @@ public:
 	}
 	
 	bool isArray(int *len=nullptr){
+		
+		//std::cout << "check if " << _name << "is array" << std::endl;
 		if(_deriveFromType==TYPE_INT){
+			//std::cout << "no" << std::endl;
 			return false;
 		}
 		else if(_deriveFromType==TYPE_TYPEDEF){
 			std::string scopeName;
 			SymbolTypedef* typed = dynamic_cast<SymbolTypedef*>(_scope->getSymbol(_deriveFromSymbolName,scopeName));
 			if(typed->isArray(len)){
+				//std::cout << "yes" << std::endl;
 				return true;
 			}
 		}
 		
+		
+			//std::cout << "nooo" << std::endl;
 		return false;
 	}
 	

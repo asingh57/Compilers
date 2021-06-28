@@ -497,7 +497,12 @@ void printSymbolTable(){
 		
 			printErrorAndExit(lineNum,charPos, IRERROR_ARRAY_RVAL);
 		});*/		
+		//std::cout << bk->_var <<" is array" << std::endl;
 		*isArrayRHS = true;
+  	}
+  	else{
+		//std::cout << bk->_var <<" is not array" << std::endl;
+  		
   	}
   	if(hasInvalidIndex){
 		
@@ -543,25 +548,23 @@ void printSymbolTable(){
 		auto l1 = dynamic_cast<SymbolVariable*>(sc->getSymbol(nameLHS,scName));
 		l1->isArray(&l1ArrSz);
 		
+		//std::cout << "l1ArrSz " << l1ArrSz << " index " << (index==nullptr?"null ":"notnull ") << "hasIndexRHS " << hasIndexRHS << " *isArrayRHS " << (*isArrayRHS?"rhs array":"rhs not array") << std::endl;
+		
 		if((l1ArrSz== -1 && index!=nullptr)){
 			//cant index on non array type
 			printErrorAndExit(lineNum,charPos, IRERROR_INDEX_ON_NON_ARRAY);
 		}
-		else if(hasIndexRHS && l1ArrSz != -1  && index!=nullptr && *isArrayRHS){
+		else if(l1ArrSz != -1  && index!=nullptr && !*isArrayRHS){
 			//both index arrays even if different sizes, valid
 
 		}
-		else if((*isArrayRHS && hasIndexRHS && l1ArrSz==-1 && index==nullptr)
+		else if((!*isArrayRHS && l1ArrSz==-1 && index==nullptr)
 			||
-			(l1ArrSz!=-1&&index!=nullptr && !*isArrayRHS && !hasIndexRHS)
+			(l1ArrSz!=-1&&index!=nullptr && !*isArrayRHS)
 		)
 		{
 			//one index array, one integer, valid					
 		
-		}
-		else if(l1ArrSz==-1 && index==nullptr && !*isArrayRHS && !hasIndexRHS){
-			//integer assignments, valid
-
 		}
 		else if(*arrSzRHS == l1ArrSz && l1ArrSz!=-1 && index==nullptr && !hasIndexRHS){
 			//array to array assignments, valid
