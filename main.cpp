@@ -96,7 +96,6 @@ int main(int argc, char *argv[]){
 			printSymbolTable= true;
 		}
 		else {
-			std::cout << "??" << arg << std::endl;
 			return LEXPARSE_ERROR_IN_PROG_ARGS;
 		}
 	}

@@ -1,0 +1,20 @@
+start_program int_assign
+    static-int-list: 
+
+        start_function main
+        int main ()
+        int-list: _t2
+        main:
+                assign, a, _t0, 
+                assign, c, _t1, 
+                assign, b, c, 
+                call, printi, a
+                call, printi, b
+                call, printi, c
+                call, printi, d
+                call, printi, e
+                call, printi, f
+            return, _t2, , 
+        end_function main
+
+end_program int_assign
