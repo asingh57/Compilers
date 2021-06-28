@@ -96,10 +96,28 @@ void Scope::generateIR(std::ofstream &outFile){
 		outFile << "end_program "+ _programName<< std::endl;
 	}
 	else{
-		//if function, take vars declared in subscopes and rename them
-		//TODO name mangling
-			
-	
+		//if vars have assigned values, output them
+		for(auto const& [key, val] : _symbolsMap){
+			if(val->getType()==TYPE_VARIABLE){
+				auto var = dynamic_cast<SymbolVariable*>(val);
+				std::string name= var->_name;
+				//staticList.push_back(name);
+				
+				int len = -1;
+				if(var->_hasValue){
+					if(var->isArray(&len)){
+						//todo handle assignment of array
+					}
+					else{
+						tabs(outFile);
+						outFile << Stat::formatIR("assign", name, std::to_string(var->_defaultValue));
+						outFile << "\n";
+					}
+				}
+				
+			}
+		}
+		
 		//print stats
 		for (auto st = _stats.rbegin(); st != _stats.rend(); ++st)
 		{

@@ -1,0 +1,14 @@
+start_program lib_call
+    static-int-list: 
+
+        start_function main
+        int main()
+        int-list: _t0_Scope1, _t1_Scope1
+        main:
+            assign, _t0_Scope1, 1, 
+            assign, _t1_Scope1, 0, 
+            call, printi, _t0_Scope1
+            return, _t1_Scope1, , 
+        end_function main
+
+end_program lib_call

@@ -160,10 +160,9 @@ public:
 		
 		val = _name;
 		
-		if(_deriveFromType==TYPE_TYPEDEF){
-			//TODO resolve type and add array if needed;
-			
-			
+		int len = -1;
+		if(isArray(&len)){
+			val+="["+std::to_string(len)+"]";
 		}
 		
 		
@@ -258,7 +257,7 @@ public:
 		else{ //todo resolve type
 			outFile <<"int";
 		}
-		outFile << " "<< _name <<" (";
+		outFile << " "<< _name <<"(";
 		
 		for(int i=0; i<_params.size(); i++){
 			outFile <<"int ";
