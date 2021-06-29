@@ -1,0 +1,56 @@
+start_program slope
+    static-int-list: _powStart, _powEnd, _arrayLoad, denominator_Scope0, intercept_Scope0, numerator_Scope0, slope_Scope0, x1_Scope0, x2_Scope0, y1_Scope0, y2_Scope0
+
+        start_function main
+        int main()
+        int-list: _t0_Scope1, _t10_Scope1, _t11_Scope1, _t12_Scope1, _t13_Scope1, _t14_Scope1, _t15_Scope1, _t16_Scope1, _t17_Scope1, _t1_Scope1, _t2_Scope1, _t3_Scope1, _t4_Scope1, _t5_Scope1, _t6_Scope1, _t7_Scope1, _t8_Scope1, _t9_Scope1
+        main:
+            assign, denominator_Scope0, 0, 
+            assign, intercept_Scope0, 0, 
+            assign, numerator_Scope0, 0, 
+            assign, slope_Scope0, 0, 
+            assign, x1_Scope0, 0, 
+            assign, x2_Scope0, 0, 
+            assign, y1_Scope0, 0, 
+            assign, y2_Scope0, 0, 
+            assign, _t0_Scope1, 1, 
+            assign, _t13_Scope1, 1, 
+            assign, _t15_Scope1, 0, 
+            assign, _t17_Scope1, 0, 
+            assign, _t1_Scope1, 2, 
+            assign, _t7_Scope1, 7, 
+            assign, x1_Scope0, _t0_Scope1, 
+            assign, y1_Scope0, x1_Scope0, 
+            assign, x2_Scope0, _t1_Scope1, 
+            assign, y2_Scope0, x2_Scope0, 
+            sub, y2_Scope0, y1_Scope0, _t2_Scope1
+            assign, numerator_Scope0, _t2_Scope1, 
+            sub, x2_Scope0, x1_Scope0, _t3_Scope1
+            assign, denominator_Scope0, _t3_Scope1, 
+            div, numerator_Scope0, denominator_Scope0, _t4_Scope1
+            assign, slope_Scope0, _t4_Scope1, 
+            mult, slope_Scope0, x2_Scope0, _t5_Scope1
+            sub, y2_Scope0, _t5_Scope1, _t6_Scope1
+            assign, intercept_Scope0, _t6_Scope1, 
+            assign, x2_Scope0, _t7_Scope1, 
+            mult, slope_Scope0, x2_Scope0, _t8_Scope1
+            add, _t8_Scope1, intercept_Scope0, _t9_Scope1
+            assign, y2_Scope0, _t9_Scope1, 
+            sub, y2_Scope0, y1_Scope0, _t10_Scope1
+            sub, x2_Scope0, x1_Scope0, _t11_Scope1
+            div, _t10_Scope1, _t11_Scope1, _t12_Scope1
+            assign, slope_Scope0, _t12_Scope1, 
+            assign, _t14_Scope1, 0, 
+            brneq, slope_Scope0, _t13_Scope1, _after0
+assign, _t14_Scope1, 1, 
+            _after0:
+            call, printi, _t14_Scope1
+            assign, _t16_Scope1, 0, 
+            brneq, intercept_Scope0, _t15_Scope1, _after1
+assign, _t16_Scope1, 1, 
+            _after1:
+            call, printi, _t16_Scope1
+            return, _t17_Scope1, , 
+        end_function main
+
+end_program slope

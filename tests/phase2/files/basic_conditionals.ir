@@ -1,0 +1,77 @@
+start_program basic_conditionals
+    static-int-list: _powStart, _powEnd, _arrayLoad
+
+        start_function main
+        int main()
+        int-list: _t0_Scope2, _t10_Scope2, _t11_Scope6, _t12_Scope2, _t13_Scope2, _t14_Scope7, _t15_Scope8, _t16_Scope2, _t17_Scope2, _t18_Scope9, _t19_Scope10, _t1_Scope2, _t20_Scope1, _t2_Scope3, _t3_Scope2, _t4_Scope2, _t5_Scope4, _t6_Scope2, _t7_Scope2, _t8_Scope5, _t9_Scope2, a_Scope2, b_Scope2, c_Scope2
+        main:
+            assign, _t0_Scope2, 0, 
+            assign, _t11_Scope6, 4, 
+            assign, _t12_Scope2, 0, 
+            assign, _t14_Scope7, 5, 
+            assign, _t15_Scope8, 6, 
+            assign, _t16_Scope2, 0, 
+            assign, _t18_Scope9, 7, 
+            assign, _t19_Scope10, 8, 
+            assign, _t20_Scope1, 0, 
+            assign, _t2_Scope3, 1, 
+            assign, _t3_Scope2, 2, 
+            assign, _t5_Scope4, 2, 
+            assign, _t6_Scope2, 2, 
+            assign, _t8_Scope5, 3, 
+            assign, _t9_Scope2, 4, 
+            assign, a_Scope2, 1, 
+            assign, b_Scope2, 2, 
+            assign, c_Scope2, 3, 
+                assign, _t1_Scope2, 0, 
+                brleq, a_Scope2, _t0_Scope2, _after0
+assign, _t1_Scope2, 1, 
+                _after0:
+                breq, _t1_Scope2, 1, _Scope3ifFailed
+                    call, printi, _t2_Scope3
+            _Scope3ifFailed:
+                assign, _t4_Scope2, 0, 
+                brgeq, a_Scope2, _t3_Scope2, _after1
+assign, _t4_Scope2, 1, 
+                _after1:
+                breq, _t4_Scope2, 1, _Scope4ifFailed
+                    call, printi, _t5_Scope4
+            _Scope4ifFailed:
+                assign, _t7_Scope2, 0, 
+                brneq, b_Scope2, _t6_Scope2, _after2
+assign, _t7_Scope2, 1, 
+                _after2:
+                breq, _t7_Scope2, 1, _Scope5ifFailed
+                    call, printi, _t8_Scope5
+            _Scope5ifFailed:
+                assign, _t10_Scope2, 0, 
+                breq, b_Scope2, _t9_Scope2, _after3
+assign, _t10_Scope2, 1, 
+                _after3:
+                breq, _t10_Scope2, 1, _Scope6ifFailed
+                    call, printi, _t11_Scope6
+            _Scope6ifFailed:
+                assign, _t13_Scope2, 0, 
+                brlt, c_Scope2, _t12_Scope2, _after4
+assign, _t13_Scope2, 1, 
+                _after4:
+                breq, _t13_Scope2, 1, _Scope7iffailed
+                    call, printi, _t14_Scope7
+goto, _Scope7ifend, , 
+            _Scope7iffailed:
+                    call, printi, _t15_Scope8
+_Scope7ifend:
+                assign, _t17_Scope2, 0, 
+                brgt, c_Scope2, _t16_Scope2, _after5
+assign, _t17_Scope2, 1, 
+                _after5:
+                breq, _t17_Scope2, 1, _Scope9iffailed
+                    call, printi, _t18_Scope9
+goto, _Scope9ifend, , 
+            _Scope9iffailed:
+                    call, printi, _t19_Scope10
+_Scope9ifend:
+            return, _t20_Scope1, , 
+        end_function main
+
+end_program basic_conditionals

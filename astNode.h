@@ -42,7 +42,23 @@ class ASTNode{
 		
 		static void outputCondition(std::string outVar, std::string left, std::string right, std::string branch, std::ofstream &outFile){
 		
-						
+			
+			std::string brct = std::to_string(branchCounter++);
+			std::string after = "_after"+brct;
+			Scope::tabs(outFile);
+			outFile << formatIR("assign", outVar ,"0") << "\n";
+			
+			Scope::tabs(outFile);
+			outFile << formatIR(branch,  left ,right, after)<<"\n";
+			
+			outFile << formatIR("assign", outVar ,"1") << "\n";
+			
+		
+			Scope::tabs(outFile);
+			outFile << after << ":" << "\n";
+			
+			
+				/*		
 			std::string brct = std::to_string(branchCounter++);
 			std::string notTrue = "_"+branch+"false"+brct;
 			std::string end = "_"+branch+"end"+brct;
@@ -64,7 +80,9 @@ class ASTNode{
 			outFile << end << ":" << "\n";
 			
 			//outFile << formatIR("or", _left->_var, _right->_var, _var);
-			outFile <<std::endl;
+			outFile <<std::endl;*/
+			
+			
 		}
 		
 		
@@ -141,32 +159,33 @@ class ASTNode{
 					
 					case OPERATOR_LT:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "brlt" ,outFile);
+						outputCondition(_var, _left->_var, _right->_var, "brgeq" ,outFile);
 						break;
 					};
 					case OPERATOR_GT:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "brgt" ,outFile);
+						outputCondition(_var, _left->_var, _right->_var, "brleq" ,outFile);
 						break;
 					};
 					case OPERATOR_LTE:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "brleq" ,outFile);
+						outputCondition(_var, _left->_var, _right->_var, "brgt" ,outFile);
 						break;
 					};
 					case OPERATOR_GTE:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "brgeq" ,outFile);
+						outputCondition(_var, _left->_var, _right->_var, "brlt" ,outFile);
 						break;
 					};
 					case OPERATOR_EQ:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "breq" ,outFile);
+						//std::cout <<"test if left and right are equal " << _left->_var<<" " << _right->_var  << std::endl;
+						outputCondition(_var, _left->_var, _right->_var, "brneq" ,outFile);
 						break;
 					};
 					case OPERATOR_NEQ:
 					{
-						outputCondition(_var, _left->_var, _right->_var, "brneq" ,outFile);
+						outputCondition(_var, _left->_var, _right->_var, "breq" ,outFile);
 						break;
 					};
 					
