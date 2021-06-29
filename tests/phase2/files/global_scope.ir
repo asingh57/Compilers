@@ -1,0 +1,26 @@
+start_program global_scope
+    static-int-list: _powStart, _powEnd, _arrayLoad, sum_Scope0
+
+        start_function addToSum
+        void addToSum(int x_Scope1)
+        int-list: _t0_Scope1, x_Scope1
+        addToSum:
+            add, sum_Scope0, x_Scope1, _t0_Scope1
+            assign, sum_Scope0, _t0_Scope1, 
+        end_function addToSum
+
+        start_function main
+        int main()
+        int-list: _t1_Scope2, _t2_Scope2, _t3_Scope2
+        main:
+            assign, sum_Scope0, 5, 
+            assign, _t1_Scope2, 10, 
+            assign, _t2_Scope2, 20, 
+            assign, _t3_Scope2, 0, 
+            call, addToSum, _t1_Scope2
+            call, addToSum, _t2_Scope2
+            call, printi, sum_Scope0
+            return, _t3_Scope2, , 
+        end_function main
+
+end_program global_scope

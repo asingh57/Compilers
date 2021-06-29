@@ -64,7 +64,6 @@ void Scope::generateIR(std::ofstream &outFile){
 		Scope::tabs(outFile);
 		outFile << "static-int-list: "	;
 		//print all var names
-		std::vector<std::string> staticList; //pair of name and optionally an array length
 
 		staticList.push_back(Symbol::powStart);
 		staticList.push_back(Symbol::powEnd);
@@ -101,6 +100,45 @@ void Scope::generateIR(std::ofstream &outFile){
 		outFile << "end_program "+ _programName<< std::endl;
 	}
 	else{
+		
+		if(SymbolFunc::lastFunction && SymbolFunc::lastFunction->getName()=="main" && SymbolFunc::lastFunction->associatedScope == this){
+			//init statics in main scope
+			for(auto staticVarName: staticList){
+				if(staticVarName.compare(Symbol::powStart)==0 || staticVarName.compare(Symbol::powEnd)==0 || staticVarName.compare(Symbol::arrayLoad)==0){
+					//do nothing, these are our custom values
+				}
+				else{
+					std::string scnm = "";
+					auto var = dynamic_cast<SymbolVariable*>(getSymbol(staticVarName,scnm));
+					std::string name= var->_name;
+					//staticList.push_back(name);
+					
+					int len = -1;
+					if(var->_hasValue){
+						if(var->isArray(&len)){
+							//todo handle assignment of array
+							/*
+							int len = -1;
+							var->isArray(&len);
+							*/
+							
+							tabs(outFile);
+							outFile << Stat::formatIR("assign", name, std::to_string(len)/*arraysize*/, std::to_string(var->_defaultValue));
+							outFile << "\n";
+						}
+						else{
+							tabs(outFile);
+							outFile << Stat::formatIR("assign", name, std::to_string(var->_defaultValue));
+							outFile << "\n";
+						}
+					}
+					
+					
+				}
+			}
+		}
+	
+	
 		//if vars have assigned values, output them
 		for(auto const& [key, val] : _symbolsMap){
 			if(val->getType()==TYPE_VARIABLE){
@@ -112,9 +150,10 @@ void Scope::generateIR(std::ofstream &outFile){
 				if(var->_hasValue){
 					if(var->isArray(&len)){
 						//todo handle assignment of array
-						
+						/*
 						int len = -1;
 						var->isArray(&len);
+						*/
 						
 						tabs(outFile);
 						outFile << Stat::formatIR("assign", name, std::to_string(len)/*arraysize*/, std::to_string(var->_defaultValue));
@@ -234,3 +273,6 @@ std::map<std::string,std::vector<std::string>> Scope::nameMangling = {};
 
 
 Scope* Scope::topLevelScope = nullptr;
+
+
+std::vector<std::string> Scope::staticList = {};

@@ -254,6 +254,7 @@ public:
 	};
 	
 	void getFinalIR(std::ofstream &outFile){
+		lastFunction= this;
 		Scope::tabCounter++;
 		Scope::tabs(outFile);
 		outFile << "start_function " << _name << std::endl;

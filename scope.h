@@ -41,7 +41,8 @@ class Scope{
 	friend class Symbol;
 public:
 	std::string _programName;
-	static Scope* topLevelScope;
+	static Scope* topLevelScope;	
+	static std::vector<std::string> staticList; //list of static vars
 	
 private:
 	std::map<std::string, Symbol*> _symbolsMap;//list of symbols in scope

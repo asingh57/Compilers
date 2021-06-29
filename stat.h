@@ -7,6 +7,7 @@ class Stat{
 public:
 	static std::vector<std::string> endList;//list of end labels for various condition
 	static std::vector<Stat*> statStack;
+	
 protected:
 	StatType _type;
 	static int nameCounter;
