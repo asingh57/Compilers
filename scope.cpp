@@ -112,6 +112,13 @@ void Scope::generateIR(std::ofstream &outFile){
 				if(var->_hasValue){
 					if(var->isArray(&len)){
 						//todo handle assignment of array
+						
+						int len = -1;
+						var->isArray(&len);
+						
+						tabs(outFile);
+						outFile << Stat::formatIR("assign", name, std::to_string(len)/*arraysize*/, std::to_string(var->_defaultValue));
+						outFile << "\n";
 					}
 					else{
 						tabs(outFile);
