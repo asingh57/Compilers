@@ -1291,6 +1291,14 @@ void printSymbolTable(){
   	
   	
   }
+  
+  template<typename T>
+	void pop_front(std::vector<T>& vec)
+	{
+	    assert(!vec.empty());
+	    vec.front() = std::move(vec.back());
+	    vec.pop_back();
+	}
 
   virtual void exitPow_op_expr(TigerParser::Pow_op_exprContext * ctx) override { 
   	TigerParser::Pow_op_expr_extContext * powExt=ctx->pow_op_expr_ext();
@@ -1298,18 +1306,32 @@ void printSymbolTable(){
 	std::vector<ASTNode*> nodesReversed;//reverse ast nodes list
 
 	bool init = false;
+
+	
 	while(powExt && powExt->expr_no_op() ){
 		if(!init){
 			init= true;
 	   		auto v =  ASTNode::astStack.back();
 	   		ASTNode::astStack.pop_back();
 	   		nodesReversed.push_back(v); 
+   			//std::cout << "item:" <<v->_var << std::endl;
 		}
    		powExt= powExt->pow_op_expr_ext();
    		auto v =  ASTNode::astStack.back();
    		ASTNode::astStack.pop_back();
    		nodesReversed.push_back(v); 
+   		//std::cout << "item:" <<v->_var << std::endl;
 	}
+	//std::cout <<"reverse" << std::endl;
+	
+  	std::reverse(nodesReversed.begin(), nodesReversed.end());
+  	
+	/*
+	for(auto v : nodesReversed){
+   		std::cout << "item:" <<v->_var << std::endl;
+	
+	}*/
+	
    		
   	powExt=ctx->pow_op_expr_ext();
   
@@ -1325,6 +1347,7 @@ void printSymbolTable(){
    		 auto v2 =  nodesReversed.back();   
    		 nodesReversed.pop_back();
    		 
+   		 //std::cout << nd->_var  << " is " << v2->_var << "^" << v1->_var << std::endl;
    		 
    		 //assert v1 and v2 are not arrays
 		int lineNum = powExt->POW()->getSymbol()->getLine();
@@ -1350,12 +1373,13 @@ void printSymbolTable(){
    		 
 		});
    		 
-   		 nd->_left = v1;
-   		 nd->_right = v2;
+   		 nd->_left = v2;
+   		 nd->_right = v1;
    		 
    		 		 		
    		 powExt= powExt->pow_op_expr_ext();
    		 
+   		 //nodesReversed.insert(nodesReversed.begin(), nd);
    		 nodesReversed.push_back(nd);
    	}
    	

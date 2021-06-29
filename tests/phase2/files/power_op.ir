@@ -24,19 +24,19 @@ start_program power_op
                 call, printi, b_Scope2
                 assign, _t5_Scope2, 1, 
                 assign, _powStart, 1, 
-                assign, _powEnd, a_Scope2, 
+                assign, _powEnd, _t4_Scope2, 
                 _powForCondition1:
                 brgt, _powStart, _powEnd, _powForEnd1
-                mult, _t5_Scope2, _t3_Scope2, _t5_Scope2
+                mult, _t5_Scope2, a_Scope2, _t5_Scope2
                 add, _powStart, 1, _powStart
                 goto, _powForCondition1, , 
                 _powForEnd1:
                 assign, _t6_Scope2, 1, 
                 assign, _powStart, 1, 
-                assign, _powEnd, _t4_Scope2, 
+                assign, _powEnd, _t5_Scope2, 
                 _powForCondition2:
                 brgt, _powStart, _powEnd, _powForEnd2
-                mult, _t6_Scope2, _t5_Scope2, _t6_Scope2
+                mult, _t6_Scope2, _t3_Scope2, _t6_Scope2
                 add, _powStart, 1, _powStart
                 goto, _powForCondition2, , 
                 _powForEnd2:
