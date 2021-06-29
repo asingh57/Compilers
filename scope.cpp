@@ -68,6 +68,7 @@ void Scope::generateIR(std::ofstream &outFile){
 
 		staticList.push_back(Symbol::powStart);
 		staticList.push_back(Symbol::powEnd);
+		staticList.push_back(Symbol::arrayLoad);
 
 		for(auto const& [key, val] : _symbolsMap){
 			if(val->getType()==TYPE_VARIABLE){

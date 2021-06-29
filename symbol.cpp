@@ -21,3 +21,4 @@ SymbolFunc* SymbolFunc::lastFunction = nullptr;
 
 const std::string Symbol::powStart="_powStart";
 const std::string Symbol::powEnd="_powEnd";
+const std::string Symbol::arrayLoad="_arrayLoad";

@@ -53,6 +53,8 @@ public:
 			//std::cout << "printing assign _assignedExpr "<<_assignedExpr->_var<<std::endl;
 			_assignedExpr->printIR(outFile);
 		}
+		
+		std::reverse(_lvalues.begin(),_lvalues.end()); 
 
 		for(int i=_lvalues.size()-1; i>=0 ; i--){
 			
@@ -60,15 +62,56 @@ public:
 				//TODO resolve second
 			if(i==_lvalues.size()-1){
 				//std::cout <<"----- " << _name <<std::endl; 
-				Scope::tabs(outFile);
-				outFile << formatIR("assign", _lvalues[i].first, _assignedExpr->_var);
-				outFile<<"\n";
+				
+				if(!_lvalues[i].second){
+					Scope::tabs(outFile);
+					outFile << formatIR("assign", _lvalues[i].first, _assignedExpr->_var);
+					outFile<<"\n";
+				}
+				else{
+					_lvalues[i].second->printIR(outFile);
+					//array assign
+					Scope::tabs(outFile);
+					outFile << formatIR("array_store", _lvalues[i].first, _lvalues[i].second->_var , _assignedExpr->_var);
+					outFile<<"\n";
+					
+				}
 			}
 			else{
 				//std::cout <<"222" << _name <<std::endl; 
-				Scope::tabs(outFile);
-				outFile << formatIR("assign", _lvalues[i].first,_lvalues[i+1].first);
-				outFile<<"\n";
+				
+				//load symbol
+				std::string loadFrom;
+				if(!_lvalues[i+1].second){
+					loadFrom= _lvalues[i+1].first;
+				}
+				else{
+					
+					_lvalues[i+1].second->printIR(outFile);
+					Scope::tabs(outFile);
+					outFile << formatIR("array_load", Symbol::arrayLoad, _lvalues[i+1].first , _lvalues[i+1].second->_var);
+					outFile<<"\n";				
+					loadFrom= Symbol::arrayLoad;
+				}
+				
+				if(!_lvalues[i].second){
+									
+				
+					Scope::tabs(outFile);
+					outFile << formatIR("assign", _lvalues[i].first,loadFrom);
+					outFile<<"\n";
+					
+				}
+				else{	
+				
+					_lvalues[i].second->printIR(outFile);
+					//array assign
+					Scope::tabs(outFile);
+					outFile << formatIR("array_store", _lvalues[i].first, _lvalues[i].second->_var , loadFrom);
+					outFile<<"\n";
+				}
+				
+				
 			}
 		}
 	}

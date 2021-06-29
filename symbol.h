@@ -12,6 +12,7 @@ Type _type;
 public:
 static const std::string powStart;
 static const std::string powEnd;
+static const std::string arrayLoad;
 std::string _name;
 static int counter;
 	Symbol(std::string name, Type type);
