@@ -3,20 +3,23 @@ start_program basic_array
 
         start_function main
         int main()
-        int-list: _t0_Scope2, _t1_Scope2, _t2_Scope2, _t3_Scope2, _t4_Scope1, a_Scope2[3], c_Scope2, d_Scope2
+        int-list: _t0_Scope2, _t10_Scope2, _t11_Scope2, _t12_Scope1, _t1_Scope2, _t2_Scope2, _t3_Scope2, _t4_Scope2, _t5_Scope2, _t6_Scope2, _t7_Scope2, _t8_Scope2, _t9_Scope2, a_Scope2[3]
         main:
             assign, _t0_Scope2, 0, 
-            assign, _t1_Scope2, 1, 
-            assign, _t2_Scope2, 10, 
-            assign, _t3_Scope2, 2, 
-            assign, _t4_Scope1, 0, 
-                assign, c_Scope2, _t2_Scope2, 
-                array_store, a_Scope2, _t1_Scope2, c_Scope2
-                array_load, _arrayLoad, a_Scope2, _t1_Scope2
-                assign, d_Scope2, _arrayLoad, 
-                array_store, a_Scope2, _t0_Scope2, d_Scope2
-                #call, printi, a_Scope2
-            return, _t4_Scope1, , 
+            assign, _t10_Scope2, 2, 
+            assign, _t12_Scope1, 0, 
+            assign, _t1_Scope2, 10, 
+            assign, _t2_Scope2, 1, 
+            assign, _t3_Scope2, 20, 
+            assign, _t4_Scope2, 2, 
+            assign, _t5_Scope2, 3, 
+            assign, _t7_Scope2, 1, 
+                array_store, a_Scope2, _t0_Scope2, _t1_Scope2
+                array_store, a_Scope2, _t2_Scope2, _t3_Scope2
+                add, _t6_Scope2, _t8_Scope2, _t9_Scope2
+                array_store, a_Scope2, _t4_Scope2, _t9_Scope2
+                call, printi, _t11_Scope2
+            return, _t12_Scope1, , 
         end_function main
 
 end_program basic_array

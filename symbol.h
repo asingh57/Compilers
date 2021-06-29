@@ -28,6 +28,10 @@ static int counter;
 	}
 	virtual void printSymbol(){};
 	
+	virtual bool isArray(int *len=nullptr){
+		return false;
+	}
+	
 };
 
 
@@ -82,7 +86,7 @@ public:
 	};
 	
 	
-	bool isArray(int *len=nullptr){
+	bool isArray(int *len=nullptr) override{
 		if(_isArray){
 			if(len!=nullptr){
 				*len=_arrayLen;		

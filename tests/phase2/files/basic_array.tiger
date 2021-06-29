@@ -9,9 +9,11 @@ begin
         let
             type intArray = array[3] of int;
             var a : intArray;
-            var c, d : int;
         begin
-            c := a[0] := d := a[1] := 10;
+            a[0] := 10;
+            a[1] := 20;
+            a[2] := a[3] + a[1];
+
             printi(a[2]);
         end
         return 0;

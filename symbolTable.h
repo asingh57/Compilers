@@ -1436,13 +1436,24 @@ void printSymbolTable(){
 		});
 		
 		
+		//this has an array indice
 		if(ctxNew->lvalue_tail() && ctxNew->lvalue_tail()->expr()){  		
 			nd->_hasIndex= true;		
 			nd->_index = ASTNode::astStack.back();
 			nd->_isLeaf = true;
 			ASTNode::astStack.pop_back();
-		}
-		
+			
+			//create new var and assign that to nd, 
+			auto v= new SymbolVariable(TYPE_INT,"",STORAGE_VAR,false,-1);
+			auto newName = v->_name;
+			
+			
+			//move nd's existing var to arrayvar
+			nd->_arrayVar = nd->_var;
+			nd->_var = newName;
+			
+			
+		}		
 
 
 		ASTNode::astStack.push_back(nd);

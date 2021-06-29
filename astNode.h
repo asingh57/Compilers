@@ -23,6 +23,7 @@ class ASTNode{
 		static std::vector<ASTNode*> astStack;
 		
 		std::string _var; //(output) variable of ast node
+		std::string _arrayVar; //array variable (if it is an array)
 		bool _hasIndex; 
 		ASTNode* _index;//index of var determined by an expression
 		bool _isLeaf; //is this a leaf node?
@@ -233,6 +234,9 @@ class ASTNode{
 			if(_var.size()){
 				_var=Scope::getMangledName(_var);			
 			}
+			if(_arrayVar.size()){
+				_arrayVar= Scope::getMangledName(_arrayVar);
+			}
 			//std::cout <<"left "<<_var << std::endl;
 			if(_left){
 				_left->mangle();
@@ -251,7 +255,7 @@ class ASTNode{
 			//std::cout <<"done "<<_var << std::endl;
 		}
 		
-		ASTNode(ASTNode* parent=NULL): _var("") ,_parent(parent), _index(NULL), _hasIndex(false), _left(NULL), _right(NULL), _isLeaf(false), _scope(Scope::scopeStack.back()){
+		ASTNode(ASTNode* parent=NULL):_arrayVar("") ,_var("") ,_parent(parent), _index(NULL), _hasIndex(false), _left(NULL), _right(NULL), _isLeaf(false), _scope(Scope::scopeStack.back()){
 		
 		}
 		
@@ -264,7 +268,19 @@ class ASTNode{
 			std::string scopeName;
 
 
-			if(dynamic_cast<SymbolVariable*>(_scope->getSymbol(_var,scopeName))->isArray(arraySz)){
+			if(_arrayVar.size() && _scope->getSymbol(_arrayVar,scopeName)->isArray(arraySz)){
+				if(_hasIndex){
+				
+					//std::cout << _var << "has index" << std::endl;
+					res = true;
+				}
+				else{
+					//std::cout << _var << "has no index" << std::endl;
+
+					res = false;				
+				}
+			}
+			else if(_scope->getSymbol(_var,scopeName)->isArray(arraySz)){
 				if(_hasIndex){
 				
 					//std::cout << _var << "has index" << std::endl;
