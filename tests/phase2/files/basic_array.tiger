@@ -12,7 +12,7 @@ begin
         begin
             a[0] := 10;
             a[1] := 20;
-            a[2] := a[3] + a[1];
+            a[2] := a[0] + a[1];
 
             printi(a[2]);
         end

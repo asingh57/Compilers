@@ -72,7 +72,17 @@ class ASTNode{
 			//todo handle _index
 			
 			//std::cout <<"_var "<<_var<<std::endl;
-		
+			if(_hasIndex){
+				_index->printIR(outFile);
+				std::string indexVar = _index->_var;
+				
+				//load _var = _arrayVar[indexVar]
+				
+				
+				Scope::tabs(outFile);
+				outFile << formatIR("array_load", _var, _arrayVar , indexVar);
+				outFile<<"\n";	
+			}
 		
 			if(!_isLeaf && _left && _right){
 				_left->printIR(outFile);
