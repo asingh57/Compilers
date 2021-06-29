@@ -1,5 +1,6 @@
 #include "symbol.h"
 #include "stat.h"
+#include "astNode.h"
 Scope::Scope(std::string name, Scope* parentScope, Stat* associatedStat) : _programName(""), _symbolsMap(), _childrenScope(), _parentScope(parentScope), _name(name), _stats(), _associatedStat(associatedStat){
 		logger("created scope");
 		logger(name);
@@ -64,6 +65,9 @@ void Scope::generateIR(std::ofstream &outFile){
 		outFile << "static-int-list: "	;
 		//print all var names
 		std::vector<std::string> staticList; //pair of name and optionally an array length
+
+		staticList.push_back(Symbol::powStart);
+		staticList.push_back(Symbol::powEnd);
 
 		for(auto const& [key, val] : _symbolsMap){
 			if(val->getType()==TYPE_VARIABLE){

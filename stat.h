@@ -50,6 +50,7 @@ public:
 		//std::cout <<"printing assignment " << _name << " _lvalues.size() "<<_lvalues.size()<<std::endl; 
 
 		if(_assignedExpr){
+			//std::cout << "printing assign _assignedExpr "<<_assignedExpr->_var<<std::endl;
 			_assignedExpr->printIR(outFile);
 		}
 

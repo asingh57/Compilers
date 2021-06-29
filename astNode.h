@@ -159,9 +159,67 @@ class ASTNode{
 						break;
 					};
 					
+					
+					case OPERATOR_POW:
+					{
+					
+						//powStart;
+						auto powStart = Symbol::powStart;
+						auto powEnd = Symbol::powEnd;
+					
+						std::string powid = std::to_string(branchCounter++);
+						std::string forStart = "_powForCondition"+powid;
+						std::string forEnd = "_powForEnd"+powid;
+						
+						
+						//output value initialise
+						Scope::tabs(outFile);
+						outFile << formatIR("assign",_var, "1") << "\n";//start with a one
+						
+						//powstart is loop counter
+						Scope::tabs(outFile);
+						outFile << formatIR("assign",powStart, "1") << "\n";//start with a one
+						
+						//powend is the power we raise to
+						Scope::tabs(outFile);
+						outFile << formatIR("assign",powEnd, _right->_var) << "\n";//start with a one
+						
+						//now we act like a normal for loop, add start label
+						Scope::tabs(outFile);
+						outFile << forStart <<":\n";	//start of for loop
+						
+						
+						Scope::tabs(outFile);
+						outFile<< formatIR("brgt",powStart,powEnd,forEnd) <<"\n";
+						
+						//now we are inside for loop, multiply _var by left value
+						
+						Scope::tabs(outFile);
+						outFile << formatIR("mult",_var, _left->_var, _var) << "\n";
+						
+						//post condition, increment counter						
+						Scope::tabs(outFile);
+						outFile << formatIR("add",powStart, "1", powStart) << "\n";
+						
+						
+						//jump to start
+						Scope::tabs(outFile);
+						outFile<< formatIR("goto",forStart) <<"\n";
+						
+						// end label	
+						Scope::tabs(outFile);
+						outFile << forEnd <<":\n";
+						
+						
+						
+						break;
+					};
+					
 				};
 			}
 			else{	
+			
+			
 			//std::cout <<"is leaf" <<std::endl;
 			
 			}

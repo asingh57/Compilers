@@ -17,3 +17,7 @@ Symbol::Symbol(Type type){
 
 
 SymbolFunc* SymbolFunc::lastFunction = nullptr;
+
+
+const std::string Symbol::powStart="_powStart";
+const std::string Symbol::powEnd="_powEnd";

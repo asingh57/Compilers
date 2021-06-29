@@ -10,6 +10,8 @@ protected:
 Scope* _scope;
 Type _type;
 public:
+static const std::string powStart;
+static const std::string powEnd;
 std::string _name;
 static int counter;
 	Symbol(std::string name, Type type);
