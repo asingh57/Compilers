@@ -27,35 +27,35 @@ start_program basic_conditionals
                 brleq, a_Scope2, _t0_Scope2, _after0
 assign, _t1_Scope2, 1, 
                 _after0:
-                breq, _t1_Scope2, 1, _Scope3ifFailed
+                brneq, _t1_Scope2, 1, _Scope3ifFailed
                     call, printi, _t2_Scope3
             _Scope3ifFailed:
                 assign, _t4_Scope2, 0, 
                 brgeq, a_Scope2, _t3_Scope2, _after1
 assign, _t4_Scope2, 1, 
                 _after1:
-                breq, _t4_Scope2, 1, _Scope4ifFailed
+                brneq, _t4_Scope2, 1, _Scope4ifFailed
                     call, printi, _t5_Scope4
             _Scope4ifFailed:
                 assign, _t7_Scope2, 0, 
                 brneq, b_Scope2, _t6_Scope2, _after2
 assign, _t7_Scope2, 1, 
                 _after2:
-                breq, _t7_Scope2, 1, _Scope5ifFailed
+                brneq, _t7_Scope2, 1, _Scope5ifFailed
                     call, printi, _t8_Scope5
             _Scope5ifFailed:
                 assign, _t10_Scope2, 0, 
                 breq, b_Scope2, _t9_Scope2, _after3
 assign, _t10_Scope2, 1, 
                 _after3:
-                breq, _t10_Scope2, 1, _Scope6ifFailed
+                brneq, _t10_Scope2, 1, _Scope6ifFailed
                     call, printi, _t11_Scope6
             _Scope6ifFailed:
                 assign, _t13_Scope2, 0, 
                 brlt, c_Scope2, _t12_Scope2, _after4
 assign, _t13_Scope2, 1, 
                 _after4:
-                breq, _t13_Scope2, 1, _Scope7iffailed
+                brneq, _t13_Scope2, 1, _Scope7iffailed
                     call, printi, _t14_Scope7
 goto, _Scope7ifend, , 
             _Scope7iffailed:
@@ -65,7 +65,7 @@ _Scope7ifend:
                 brgt, c_Scope2, _t16_Scope2, _after5
 assign, _t17_Scope2, 1, 
                 _after5:
-                breq, _t17_Scope2, 1, _Scope9iffailed
+                brneq, _t17_Scope2, 1, _Scope9iffailed
                     call, printi, _t18_Scope9
 goto, _Scope9ifend, , 
             _Scope9iffailed:

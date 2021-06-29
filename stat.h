@@ -177,7 +177,7 @@ public:
 		_condition->printIR(outFile);
 		Scope::tabs(outFile);
 		auto elseLabel = _ifScope->getName()+"ifFailed";
-		outFile<< formatIR("breq",_condition->_var,"1",elseLabel);
+		outFile<< formatIR("brneq",_condition->_var,"1",elseLabel);
 		outFile<<"\n";
 		_ifScope->generateIR(outFile);
 		Scope::tabCounter--;
@@ -230,7 +230,7 @@ public:
 
 		auto elseLabel = _ifScope->getName()+"iffailed";
 		auto end = _ifScope->getName()+"ifend";
-		outFile<< formatIR("breq",_condition->_var,"1",elseLabel);
+		outFile<< formatIR("brneq",_condition->_var,"1",elseLabel);
 		outFile<<"\n";
 		_ifScope->generateIR(outFile);
 		outFile<< formatIR("goto",end);
@@ -305,7 +305,7 @@ public:
 		_condition->printIR(outFile);
 		
 		Scope::tabs(outFile);
-		outFile<< formatIR("breq",_condition->_var,"1",whileEnd) <<"\n";
+		outFile<< formatIR("brneq",_condition->_var,"1",whileEnd) <<"\n";
 		
 		//push end
 		endList.push_back(whileEnd);
