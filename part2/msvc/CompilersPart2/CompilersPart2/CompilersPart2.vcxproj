@@ -139,11 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\BlockReader.cpp" />
+    <ClCompile Include="..\..\..\src\Function.cpp" />
+    <ClCompile Include="..\..\..\src\FunctionReader.cpp" />
+    <ClCompile Include="..\..\..\src\Instruction.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\BlockReader.h" />
+    <ClInclude Include="..\..\..\src\Function.h" />
+    <ClInclude Include="..\..\..\src\FunctionReader.h" />
+    <ClInclude Include="..\..\..\src\Instruction.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
