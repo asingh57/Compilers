@@ -1,0 +1,60 @@
+start_program selection_sort
+static-int-list:
+
+start_function main
+  int main()
+  int-list: cats[8], index, lowestIndex, subIndex, temp, size, x, smallest, first, _t1, _t2, _t3, _t4, _t5, _t6, _t7, _t8, _t9, _t10
+    main:
+        array_store, cats, 0, 7
+        array_store, cats, 1, 2
+        array_store, cats, 2, 10
+        array_store, cats, 3, 20
+        array_store, cats, 4, 5
+        array_store, cats, 5, 6
+        array_store, cats, 6, 44
+        array_store, cats, 7, 33
+        assign, size, 8,
+        assign, index, 0,
+    _loop_label_0:
+        sub, size, 1, _t1
+        brgt, index, _t1, _loop_label_1
+        assign, lowestIndex, index,
+        add, index, 1, _t2
+        assign, subIndex, _t2,
+    _loop_label_2:
+        sub, size, 1, _t3
+        brgt, subIndex, _t3, _loop_label_3
+        array_load, _t5, cats, subIndex
+        array_load, _t6, cats, lowestIndex
+        assign, _t4, 0,
+        brgeq, _t5, _t6, _if_label_5
+        assign, _t4, 1,
+    _if_label_5:
+        brneq, _t4, 1, _if_label_4
+        assign, lowestIndex, subIndex,
+    _if_label_4:
+        add, subIndex, 1, subIndex
+        goto, _loop_label_2, ,
+    _loop_label_3:
+        array_load, _t7, cats, index
+        assign, first, _t7,
+        array_load, _t8, cats, lowestIndex
+        assign, smallest, _t8,
+        array_store, cats, index, smallest
+        array_store, cats, lowestIndex, first
+        add, index, 1, index
+        goto, _loop_label_0, ,
+    _loop_label_1:
+        assign, index, 0,
+    _loop_label_6:
+        sub, size, 1, _t9
+        brgt, index, _t9, _loop_label_7
+        array_load, _t10, cats, index
+        call, printi, _t10
+        add, index, 1, index
+        goto, _loop_label_6, ,
+    _loop_label_7:
+        return, 0, ,
+end_function main
+
+end_program selection_sort

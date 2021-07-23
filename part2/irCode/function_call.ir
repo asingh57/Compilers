@@ -1,0 +1,22 @@
+start_program function_call
+static-int-list:
+
+start_function square
+int square(int _2_x)
+int-list: _2_x, _t1
+    square:
+        mult, _2_x, _2_x, _t1
+        return, _t1, , 
+end_function square
+
+start_function main
+int main()
+int-list: _t0, result
+    main:
+        callr, _t0, square, 5
+        assign, result, _t0, 
+        call, printi, result
+        return, 0, ,
+end_function main
+
+end_program function_call

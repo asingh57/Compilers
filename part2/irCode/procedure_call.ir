@@ -1,0 +1,23 @@
+start_program procedure_call
+static-int-list:
+
+start_function printSquare
+void printSquare(int _2_x)
+int-list: _2_x, _t0
+    printSquare:
+        mult, _2_x, _2_x, _t0
+        call, printi, _t0
+        return, , ,
+end_function printSquare
+
+start_function main
+int main()
+int-list:
+    main:
+        call, printSquare, 10
+        return, 0, ,
+end_function main
+
+end_program procedure_call
+
+

@@ -1,0 +1,29 @@
+start_program factorial
+static-int-list:
+
+start_function factorial
+int factorial(int _2_n)
+int-list: _2_n, _3_tmp, _t1, _t2, _t3
+    factorial:
+        brneq, _2_n, 0, Label_2
+    Label_0:
+        return, 1, , 
+    Label_2:
+        sub, _2_n, 1, _t1
+        callr, _t2, factorial, _t1
+        assign, _3_tmp, _t2, 
+        mult, _2_n, _3_tmp, _t3
+        return, _t3, ,
+end_function factorial
+
+start_function main
+int main()
+int-list: _t0, result
+    main:
+        callr, _t0, factorial, 7
+        assign, result, _t0, 
+        call, printi, result
+        return, 0, ,
+end_function main
+
+end_program factorial

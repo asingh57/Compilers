@@ -1,21 +1,21 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <list>
+#include <algorithm>
 #include "Instruction.h"
+#include "Function.h"
 class FunctionReader
 {
 private:
 
+	std::list<Function*> _functions;
 
-	std::vector<Instruction> _instructions;
 
-	std::vector<Instruction> _registerAllocatedInstructions;
+	// helpers
+	std::list<std::string> readFile(std::string filePath);
 
 public:
-	FunctionReader(std::string filePath) : _instructions(){
-		//reads ir line by line and stores tokenized instructions
-
-	};
+	FunctionReader(std::string filePath);
 
 
 	void doNaiveRegisterAllocation();

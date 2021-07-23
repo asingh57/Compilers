@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME ".ir"
+#define IRFILENAME "basic_arithmetic.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";
@@ -15,7 +15,7 @@
 int main()
 {
     path += IRFILENAME;
-
+    auto fnr = FunctionReader(path);
 
 
 

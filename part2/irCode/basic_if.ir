@@ -1,0 +1,17 @@
+start_program basic_if
+static-int-list:
+
+start_function main
+int main()
+int-list:
+    main:
+        brleq, 1, 0, Label_2
+    Label_0:
+        call, printi, 1
+    Label_2:
+        call, printi, 0
+        return, 0, ,
+end_function main
+
+end_program basic_if
+

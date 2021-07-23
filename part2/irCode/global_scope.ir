@@ -1,0 +1,25 @@
+start_program global_scope
+static-int-list: sum
+
+start_function addToSum
+void addToSum(int _2_x)
+int-list: _2_x, _t0
+    addToSum:
+        add, sum, _2_x, _t0
+        assign, sum, _t0, 
+        return, , ,
+end_function addToSum
+
+start_function main
+int main()
+int-list:
+    main:
+        assign, sum, 5, 
+        call, addToSum, 10
+        call, addToSum, 20
+        call, printi, sum
+        return, 0, ,
+end_function main
+
+end_program global_scope
+

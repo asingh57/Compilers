@@ -1,0 +1,12 @@
+start_program lib_call
+static-int-list:
+
+start_function main
+int main()
+int-list:
+    main:
+        call, printi, 1
+        return, 0, ,
+end_function main
+
+end_program lib_call

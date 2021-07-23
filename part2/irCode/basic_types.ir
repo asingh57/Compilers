@@ -1,0 +1,16 @@
+start_program basic_types
+static-int-list:
+
+start_function main
+int main()
+int-list: _t0, a, b
+    main:
+        assign, a, 5, 
+        assign, b, 10, 
+        add, a, b, _t0
+        assign, b, _t0, 
+        call, printi, b
+        return, 0, ,
+end_function main
+
+end_program basic_types
