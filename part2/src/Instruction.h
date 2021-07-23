@@ -511,6 +511,8 @@ class BrgeqInstruction : public Instruction
 public:
 	BrgeqInstruction(std::vector<std::string> vars) : Instruction(vars) {
 
+		//we will need an extra register
+		_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
 	}
 	std::string getMIPSInstruction() override {
 
@@ -619,7 +621,7 @@ public:
 		}
 		else {
 			//load args into arg registers// Should I handle args more than 4?
-			for (int i = 0; i < _vars.size()-1; i++) {
+			for (unsigned int i = 0; i < _vars.size()-1; i++) {
 				if (isInteger(_vars[i+1]) ){
 					stringStream << "li " << "$a" << i << "," << _vars[i + 1] << std::endl;
 				}
@@ -652,7 +654,7 @@ public:
 
 		std::ostringstream stringStream;
 
-		for (int i = 2; i < _vars.size(); i++) {
+		for (unsigned int i = 2; i < _vars.size(); i++) {
 			if (isInteger(_vars[i])) {
 				stringStream << "li " << "$a" << i << "," << _vars[i] << std::endl;
 			}
@@ -676,7 +678,51 @@ class CallStoreArrayInstruction : public Instruction
 {
 public:
 	CallStoreArrayInstruction(std::vector<std::string> vars) : Instruction(vars) {
+		if (!isInteger(_vars[1])) {
+			//we will need an extra register
+			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		}
+		if (isInteger(_vars[2])) {
+			//we will need an extra register
+			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		}
+	}
 
+	std::string getMIPSInstruction() override {
+
+		std::ostringstream stringStream;
+		auto varName = _varRegMap[_vars[0]];
+		auto posRaw = _vars[1];
+		std::string pos;
+		std::string val;
+		int tempPos = 3;
+
+		if (isInteger(_vars[2])) {
+			stringStream << "li " << _varRegMap[_vars[tempPos]]<<","<< _vars[2] << std::endl;
+			val = _varRegMap[_vars[tempPos]];
+			tempPos++;
+		}
+		else {
+			val = _varRegMap[_vars[2]];
+		}
+
+
+		if (isInteger(posRaw)) {
+			pos = std::to_string(4 * std::stoi(posRaw))+"("+ varName +")";
+		}
+		else {
+			stringStream << "move "<< _varRegMap[_vars[tempPos]] <<"," << _varRegMap[posRaw] << std::endl;
+			//multiply by 4 in place
+			stringStream << "sll " << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
+			//now add base address
+			stringStream << "add " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[_vars[tempPos]] << "," << varName << std::endl;
+
+			pos = "0(" + _varRegMap[_vars[tempPos]] +")";
+		}
+
+		stringStream << "sw " << val <<"," << pos;
+
+		return stringStream.str();
 	}
 
 };
@@ -685,7 +731,42 @@ class CallLoadArrayInstructionInstruction : public Instruction
 {
 public:
 	CallLoadArrayInstructionInstruction(std::vector<std::string> vars) : Instruction(vars) {
+		if (!isInteger(_vars[2])) {
+			//we will need an extra register
+			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		}
+	}
 
+
+	std::string getMIPSInstruction() override {
+
+		std::ostringstream stringStream;
+		auto varName = _varRegMap[_vars[1]];
+		auto posRaw = _vars[2];
+		std::string pos;
+		std::string val;
+		int tempPos = 3;
+
+
+		val = _varRegMap[_vars[0]];
+
+
+		if (isInteger(posRaw)) {
+			pos = std::to_string(4 * std::stoi(posRaw)) + "(" + varName + ")";
+		}
+		else {
+			stringStream << "move " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[posRaw] << std::endl;
+			//multiply by 4 in place
+			stringStream << "sll " << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
+			//now add base address
+			stringStream << "add " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[_vars[tempPos]] << "," << varName << std::endl;
+
+			pos = "0(" + _varRegMap[_vars[tempPos]] + ")";
+		}
+
+		stringStream << "lw " << val << "," << pos;
+
+		return stringStream.str();
 	}
 
 };

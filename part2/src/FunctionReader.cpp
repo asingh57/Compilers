@@ -74,14 +74,19 @@ FunctionReader::FunctionReader(std::string filePath) : _functions() {
 
 	//now split into functions (this is ideal since we need to manage stack pointers)
 
+	IntList globalIntList;
+
 	while (lineList.size()) {
 		std::string line;
 		line = lineList.front();
 		lineList.pop_front();
 
 		if (line.rfind("start_program", 0) == 0) {
-			//check for static vars
-			//TODO
+
+			line = lineList.front();
+			lineList.pop_front();
+			globalIntList = IntList(line);
+
 		}
 		else if (line.rfind("start_function", 0) == 0) {
 			auto functionDef = lineList.front();
@@ -91,7 +96,7 @@ FunctionReader::FunctionReader(std::string filePath) : _functions() {
 			auto intlist = lineList.front();
 			lineList.pop_front();
 
-			auto function = new Function(functionDef, intlist);
+			auto function = new Function(functionDef, IntList(intlist));
 			_functions.push_back(function);
 			//now parse instructions until we find end of function
 
