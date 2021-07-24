@@ -3,7 +3,7 @@
 #include <list>
 
 template <class T, class T2>
-inline bool contains(std::map<T, T2> mp, T key) {
+inline bool contains(std::map<T, T2> &mp, T key) {
 	if (mp.find(key) == mp.end()) {
 		return false;
 	}
@@ -14,11 +14,11 @@ class IntList {
 
 	std::vector<std::string> _vars; //vars to be initialised in function scope
 	bool _isStatic;
-	std::vector<std::string> _varNames;
+	std::vector<std::string> _varNames;//names, without array symbols
 	std::map<std::string, int> _stackOffsets;//stack offsets for each var declared in scope relative to $sp
 public:
 	static IntList* globalIntList;
-	IntList() {
+	IntList() : _stackOffsets(){
 		return;
 	}
 	IntList(std::string intList) : _vars(), _isStatic(false), _stackOffsets(), _varNames(){
@@ -39,6 +39,10 @@ public:
 	}
 
 	std::string getLoadInstruction(std::string var, std::string correspondingReg,int index=0) {
+		if (var.rfind("__compilerGeneratedTemp", 0) == 0) { // pos=0 limits the search to the prefix
+		// s starts with prefix
+			return "";
+		}
 		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
 			return "";
 		}
@@ -62,6 +66,10 @@ public:
 	}
 
 	std::string getStoreInstruction(std::string var, std::string correspondingReg, int index=0) {
+		if (var.rfind("__compilerGeneratedTemp", 0) == 0) { // pos=0 limits the search to the prefix
+		// s starts with prefix
+			return "";
+		}
 		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
 			return "";
 		}
