@@ -359,7 +359,7 @@ public:
 class GotoInstruction : public Instruction
 {
 public:
-	GotoInstruction(std::vector<std::string> vars) : Instruction(GotoInst) {
+	GotoInstruction(std::vector<std::string> vars) : Instruction(GotoInst, vars) {
 
 	}
 
@@ -396,13 +396,13 @@ public:
 			}
 		}
 		else if (isInteger(_vars[0])) {
-			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[0];
+			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[0] << std::endl;
 
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _vars[2];
 		}
 		else if (isInteger(_vars[1])) {
 
-			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[1];
+			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[1] << std::endl;
 
 			stringStream << "beq " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[3]] << "," << _vars[2];
 		}
@@ -437,15 +437,15 @@ public:
 			}
 		}
 		else if (isInteger(_vars[0])) {
-			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[0];
+			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[0] << std::endl;
 
 			stringStream << "bne " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _vars[2];
 		}
 		else if (isInteger(_vars[1])) {
 
-			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[1];
+			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[1] << std::endl;
 
-			stringStream << "bne " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[3]] << "," << _vars[2];
+			stringStream << "bne " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[3]] << "," << _vars[2] ;
 		}
 		else {
 			stringStream << "bne " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[1]] << "," << _vars[2];

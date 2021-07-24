@@ -1,0 +1,152 @@
+main:
+
+sub $sp, $sp, 12
+
+lw $s7,0($sp)
+li $s7,1
+
+sw $s7,0($sp)
+lw $s7,4($sp)
+li $s7,2
+
+sw $s7,4($sp)
+lw $s7,8($sp)
+li $s7,3
+
+sw $s7,8($sp)
+lw $s7,0($sp)
+
+slti$s6,$s7,0
+bne $s6,$zero,Label_2
+
+sw $s7,0($sp)
+
+Label_0:
+
+li $v0, 1
+li $a0, 1
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_2:
+
+lw $s7,0($sp)
+
+slti$s6,$s7,2
+beq $s6,$zero,Label_5
+
+sw $s7,0($sp)
+
+Label_3:
+
+li $v0, 1
+li $a0, 2
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_5:
+
+lw $s7,4($sp)
+
+li $s6,2
+bne $s7,$s6,Label_8
+
+sw $s7,4($sp)
+
+Label_6:
+
+li $v0, 1
+li $a0, 3
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_8:
+
+lw $s7,4($sp)
+
+li $s6,4
+beq $s7,$s6,Label_11
+
+sw $s7,4($sp)
+
+Label_9:
+
+li $v0, 1
+li $a0, 4
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_11:
+
+lw $s7,8($sp)
+
+slti$s6,$s7,0
+bne $s6,$zero,Label_13
+
+sw $s7,8($sp)
+
+Label_12:
+
+li $v0, 1
+li $a0, 5
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+
+j Label_14
+
+
+Label_13:
+
+li $v0, 1
+li $a0, 6
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_14:
+
+lw $s7,8($sp)
+
+slti$s6,$s7,0
+beq $s6,$zero,Label_16
+
+sw $s7,8($sp)
+
+Label_15:
+
+li $v0, 1
+li $a0, 7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+
+j Label_17
+
+
+Label_16:
+
+li $v0, 1
+li $a0, 8
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+Label_17:
+
+add $sp, $sp, 12
+
