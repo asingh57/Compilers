@@ -1,32 +1,5 @@
 #include "Instruction.h"
 #include <vector>
-std::vector<std::string> split(const char* str, char c = ',')
-{
-    std::vector<std::string> result;
-    do
-    {
-        const char* begin = str;
-
-        while (*str != c && *str)
-            str++;
-
-        result.push_back(std::string(begin, str));
-        if (result.back().length() == 0) {
-            result.pop_back();
-        }
-    } while (0 != *str++);
-
-    return result;
-}
-
-constexpr uint32_t hash_cstr(const char* data, size_t const size) noexcept {
-    uint32_t hash = 5381;
-
-    for (const char* c = data; c < data + size; ++c)
-        hash = ((hash << 5) + hash) + (unsigned char)*c;
-
-    return hash;
-}
 
 
 Instruction* Instruction::parse(std::string instStr)
@@ -108,11 +81,11 @@ Instruction* Instruction::parse(std::string instStr)
         }
         else if (op == "return") {
             if (remain.size()==0) {
-                //return nothing
+                //returns nothing
                 return new ReturnProcedureInstruction();
             }
             else {
-                //return something
+                //returns something
                 return new ReturnFunctionInstruction(remain);
             }
         }

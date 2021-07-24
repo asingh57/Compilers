@@ -4,6 +4,25 @@
 #include <map>
 #include <sstream>
 
+inline std::vector<std::string> split(const char* str, char c = ',')
+{
+	std::vector<std::string> result;
+	do
+	{
+		const char* begin = str;
+
+		while (*str != c && *str)
+			str++;
+
+		result.push_back(std::string(begin, str));
+		if (result.back().length() == 0) {
+			result.pop_back();
+		}
+	} while (0 != *str++);
+
+	return result;
+}
+
 inline bool isInteger(const std::string& s)
 {
 	if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
@@ -20,10 +39,15 @@ protected:
 	static int extraCounter;
 	std::vector<std::string> _vars;
 	std::map<std::string, std::string> _varRegMap;
-	Instruction(std::vector<std::string> vars = {}) : _vars(vars){
-	
+	std::string _genericInstruction;
+	Instruction(std::vector<std::string> vars = {}) : _vars(vars), _varRegMap() {
+		_genericInstruction = "";
 	};
 public:
+	Instruction(std::string genericInstruction, std::vector<std::string> vars = {}) : _vars(vars), _varRegMap(), _genericInstruction(_genericInstruction) {
+
+	};
+
 	//instruction factory
 	static Instruction* parse(std::string instStr);
 
@@ -32,7 +56,7 @@ public:
 	}
 
 	virtual std::string getMIPSInstruction() {
-		return "";
+		return _genericInstruction;
 	}
 
 	std::vector<std::string> getUsedVars() {
@@ -40,8 +64,9 @@ public:
 		return _vars;
 	}
 
-	void setVarRegisterMap(std::map<std::string, std::string> varRegMap) {
-		_varRegMap = varRegMap;
+
+	void addToVarRegisterMap(std::string var, std::string reg) {
+		_varRegMap[var] = reg;
 	}
 
 };
@@ -85,7 +110,7 @@ class AssignArrayInstruction : public Instruction
 public:
 	AssignArrayInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		//we need an extra register so we can store values in arrays
-		_vars.push_back("__arrayAssignTemp"+std::to_string(extraCounter++));
+		_vars.push_back("__compilerGeneratedTemp"+std::to_string(extraCounter++));
 	}
 
 	std::string getMIPSInstruction() override {
@@ -134,7 +159,7 @@ public:
 	SubInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -166,7 +191,7 @@ public:
 	MultInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -204,7 +229,7 @@ public:
 
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -312,7 +337,7 @@ public:
 
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -352,7 +377,7 @@ public:
 	BrneqInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -392,7 +417,7 @@ class BrgtInstruction : public Instruction
 public:
 	BrgtInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		//we will need an extra register
-		_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 	}
 
 	//https://www2.engr.arizona.edu/~ece369/Resources/spim/QtSPIM_examples.pdf
@@ -431,7 +456,7 @@ class BrltInstruction : public Instruction
 public:
 	BrltInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		//we will need an extra register
-		_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 	}
 	std::string getMIPSInstruction() override {
 
@@ -471,7 +496,7 @@ class BrleqInstruction : public Instruction
 public:
 	BrleqInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		//we will need an extra register
-		_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 
 	}
 	std::string getMIPSInstruction() override {
@@ -512,7 +537,7 @@ public:
 	BrgeqInstruction(std::vector<std::string> vars) : Instruction(vars) {
 
 		//we will need an extra register
-		_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 	}
 	std::string getMIPSInstruction() override {
 
@@ -680,11 +705,11 @@ public:
 	CallStoreArrayInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		if (!isInteger(_vars[1])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 		if (isInteger(_vars[2])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 
@@ -733,7 +758,7 @@ public:
 	CallLoadArrayInstructionInstruction(std::vector<std::string> vars) : Instruction(vars) {
 		if (!isInteger(_vars[2])) {
 			//we will need an extra register
-			_vars.push_back("__arrayAssignTemp" + std::to_string(extraCounter++));
+			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 		}
 	}
 

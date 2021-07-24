@@ -143,11 +143,15 @@
     <ClCompile Include="..\..\..\src\FunctionReader.cpp" />
     <ClCompile Include="..\..\..\src\Instruction.cpp" />
     <ClCompile Include="..\..\..\src\main.cpp" />
+    <ClCompile Include="..\..\..\src\NaiveAllocator.cpp" />
+    <ClCompile Include="..\..\..\src\RegisterAllocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\Function.h" />
     <ClInclude Include="..\..\..\src\FunctionReader.h" />
     <ClInclude Include="..\..\..\src\Instruction.h" />
+    <ClInclude Include="..\..\..\src\NaiveAllocator.h" />
+    <ClInclude Include="..\..\..\src\RegisterAllocator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

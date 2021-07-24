@@ -1,6 +1,8 @@
 #include "FunctionReader.h"
+#include "NaiveAllocator.h"
 #include <fstream>
 #include <iostream>
+
 
 //following 2 functions taken from https://stackoverflow.com/questions/1798112/removing-leading-and-trailing-spaces-from-a-string/25829233
 std::string trim(const std::string& str,
@@ -68,13 +70,12 @@ std::list<std::string> FunctionReader::readFile(std::string filePath)
 	return lines;
 }
 
-FunctionReader::FunctionReader(std::string filePath) : _functions() {
+FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntList(){
 	//read ir line by line and store as list
 	auto lineList = readFile(filePath);
 
 	//now split into functions (this is ideal since we need to manage stack pointers)
 
-	IntList globalIntList;
 
 	while (lineList.size()) {
 		std::string line;
@@ -84,16 +85,19 @@ FunctionReader::FunctionReader(std::string filePath) : _functions() {
 		if (line.rfind("start_program", 0) == 0) {
 
 			line = lineList.front();
+			line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
 			lineList.pop_front();
-			globalIntList = IntList(line);
+			_globalIntList = IntList(line);
 
 		}
 		else if (line.rfind("start_function", 0) == 0) {
 			auto functionDef = lineList.front();
+			functionDef.erase(remove_if(functionDef.begin(), functionDef.end(), isspace), functionDef.end());
 			lineList.pop_front();
 
 			//now intlist
 			auto intlist = lineList.front();
+			intlist.erase(remove_if(intlist.begin(), intlist.end(), isspace), intlist.end());
 			lineList.pop_front();
 
 			auto function = new Function(functionDef, IntList(intlist));
@@ -115,8 +119,7 @@ FunctionReader::FunctionReader(std::string filePath) : _functions() {
 
 
 
+
+
 };
 
-void FunctionReader::doNaiveRegisterAllocation()
-{
-}

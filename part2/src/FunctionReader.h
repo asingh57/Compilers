@@ -9,7 +9,7 @@ class FunctionReader
 private:
 
 	std::list<Function*> _functions;
-
+	IntList _globalIntList;
 
 	// helpers
 	std::list<std::string> readFile(std::string filePath);
@@ -18,11 +18,6 @@ public:
 	FunctionReader(std::string filePath);
 
 
-	void doNaiveRegisterAllocation();
-
-	void doIntraBlockRegisterAllocation() {}
-
-	void doBriggsAllocation() {}
 
 };
 
