@@ -2,6 +2,14 @@
 #include "Instruction.h"
 #include <list>
 
+template <class T, class T2>
+inline bool contains(std::map<T, T2> mp, T key) {
+	if (mp.find(key) == mp.end()) {
+		return false;
+	}
+	return true;
+}
+
 class IntList {
 
 	std::vector<std::string> _vars; //vars to be initialised in function scope
@@ -10,24 +18,34 @@ class IntList {
 	std::map<std::string, int> _stackOffsets;//stack offsets for each var declared in scope relative to $sp
 public:
 	static IntList* globalIntList;
-	IntList() {}
+	IntList() {
+		return;
+	}
 	IntList(std::string intList) : _vars(), _isStatic(false), _stackOffsets(), _varNames(){
 		auto ls = split(intList.c_str(), ':');
 		_isStatic = (ls[0] == "static-int-list");
-
+		if (_isStatic) {
+			globalIntList = this;
+		}
 		if (ls.size()>1) {
 			auto varString = ls[1];
 			_vars = split(varString.c_str());
 		}
 
-		globalIntList = this;
 	}
 
 	std::vector<std::string> getVarNames(){
 		return _varNames;
 	}
 
-	std::string getLoadInstruction(std::string var, std::string correspondingReg,int index) {
+	std::string getLoadInstruction(std::string var, std::string correspondingReg,int index=0) {
+		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
+			return "";
+		}
+		/*if (_stackOffsets.count(var)==0 && globalIntList->_stackOffsets.count(var)==0) {
+			return "";
+		}*/
+		
 		std::ostringstream loadInst;
 
 		if (_stackOffsets.count(var)) { //contained in function scope
@@ -43,7 +61,11 @@ public:
 		return loadInst.str();
 	}
 
-	std::string getStoreInstruction(std::string var, std::string correspondingReg, int index) {
+	std::string getStoreInstruction(std::string var, std::string correspondingReg, int index=0) {
+		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
+			return "";
+		}
+		
 		std::ostringstream storeInst;
 
 		if (_stackOffsets.count(var)) { //contained in function scope
@@ -61,6 +83,10 @@ public:
 	}
 
 	std::string getLoadInstruction(std::string var, std::string correspondingReg, std::string spareRegister, std::string indexReg) {
+		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
+			return "";
+		}
+		
 		std::ostringstream loadInst;
 
 		loadInst << "mov " << spareRegister << "," << indexReg <<std::endl;
@@ -88,6 +114,10 @@ public:
 	}
 
 	std::string getStoreInstruction(std::string var, std::string correspondingReg, std::string spareRegister, std::string indexReg) {
+		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
+			return "";
+		}
+		
 		std::ostringstream storeInst;
 
 		storeInst << "mov " << spareRegister << "," << indexReg << std::endl;
@@ -152,16 +182,34 @@ public:
 			preInstStr << "mov $v1, $sp";
 
 		}
+		auto label = _instructions.front();
+		_instructions.pop_front();
+
 		auto preInst = new Instruction(preInstStr.str());
 		_instructions.push_front(preInst);
+		_instructions.push_front(label);//label should come first
 
 
 		std::ostringstream postInstStr;
 
-		//post-instructions (decrement stack)
+		//post-instructions (decrement stack when returning, or end of function)
 		postInstStr << "add $sp, $sp, "<< stackIncrementSz;
 		auto postInst = new Instruction(postInstStr.str());
-		_instructions.push_back(postInst);
+
+		//detect jump return and place this instruction there
+		for (auto itr = _instructions.begin(); itr != _instructions.end(); itr++) {
+			if ((*itr)->getInstructionType()==InstructionType::ReturnFunctionInst || (*itr)->getInstructionType() == InstructionType::ReturnProcedureInst) {
+				_instructions.insert(itr,postInst);
+				itr++;
+
+				if (itr == _instructions.end()) {
+					break;
+				}
+			}
+		}
+		//put one at the end just for verification sake??
+		//_instructions.push_back( postInst);
+
 
 	}
 };
@@ -194,8 +242,13 @@ public:
 		}
 	}
 
+
 	void addInstruction(Instruction* inst) {
 		_instructions.push_back(inst);
+		for (auto const& [key, val] : _argRegMap)
+		{
+			inst->addToVarRegisterMap(key, val);
+		}
 	}
 
 	void processVarDeclarationInstructions() {

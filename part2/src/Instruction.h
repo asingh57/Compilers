@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <unordered_set>
 
 inline std::vector<std::string> split(const char* str, char c = ',')
 {
@@ -33,6 +34,33 @@ inline bool isInteger(const std::string& s)
 	return (*p == 0);
 }
 
+
+enum InstructionType {
+	GenericInst,
+	LabelInst,
+	AssignInst,
+	AssignArrayInst,
+	AddInst,
+	SubInst,
+	MultInst,
+	DivInst,
+	AndInst,
+	OrInst,
+	GotoInst,
+	BreqInst,
+	BrneqInst,
+	BrgtInst,
+	BrltInst,
+	BrleqInst,
+	BrgeqInst,
+	ReturnProcedureInst,
+	ReturnFunctionInst,
+	CallProcedureInst,
+	CallFunctionInst,
+	CallStoreArrayInst,
+	CallLoadArrayInst
+
+};
 class Instruction
 {
 protected:
@@ -40,13 +68,18 @@ protected:
 	std::vector<std::string> _vars;
 	std::map<std::string, std::string> _varRegMap;
 	std::string _genericInstruction;
-	Instruction(std::vector<std::string> vars = {}) : _vars(vars), _varRegMap() {
+	std::unordered_set<int> _excludeIndices;
+	InstructionType _instructionType;
+	Instruction(InstructionType instType, std::vector<std::string> vars = {}) : _instructionType(instType) ,_vars(vars), _varRegMap(), _excludeIndices() {
 		_genericInstruction = "";
 	};
 public:
-	Instruction(std::string genericInstruction, std::vector<std::string> vars = {}) : _vars(vars), _varRegMap(), _genericInstruction(_genericInstruction) {
-
+	Instruction(std::string genericInstruction, std::vector<std::string> vars = {}) :_instructionType(GenericInst), _vars(vars), _varRegMap(), _genericInstruction(genericInstruction) {
 	};
+
+	InstructionType getInstructionType() {
+		return _instructionType;
+	}
 
 	//instruction factory
 	static Instruction* parse(std::string instStr);
@@ -56,13 +89,14 @@ public:
 	}
 
 	virtual std::string getMIPSInstruction() {
-		return _genericInstruction;
+		return _genericInstruction+ "\n";
 	}
 
 	std::vector<std::string> getUsedVars() {
 		std::vector<std::string> vars;
-		for (auto v: _vars) {
-			if (!isInteger(v)) {
+		for (unsigned int i = 0; i < _vars.size();i++) {
+			auto v = _vars[i];
+			if (!isInteger(v) && _excludeIndices.find(i) == _excludeIndices.end()) {
 				vars.push_back(v);
 			}
 		}
@@ -74,24 +108,28 @@ public:
 		_varRegMap[var] = reg;
 	}
 
+	std::string getRegFromVar(std::string var) {
+		return _varRegMap[var];
+	}
+
 };
 
 class LabelInstruction : public Instruction {
 	std::string _name;
 public:
-	LabelInstruction(std::string name) : _name(name), Instruction() {
+	LabelInstruction(std::string name) : _name(name), Instruction(LabelInst) {
 
 	}
 
 	std::string getMIPSInstruction() override {
-		return _name+":";
+		return _name+":"+"\n";
 	}
 };
 
 class AssignInstruction : public Instruction
 {
 public:
-	AssignInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	AssignInstruction(std::vector<std::string> vars) : Instruction(AssignInst,vars) {
 
 	}
 
@@ -105,7 +143,7 @@ public:
 
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -113,7 +151,7 @@ public:
 class AssignArrayInstruction : public Instruction
 {
 public:
-	AssignArrayInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	AssignArrayInstruction(std::vector<std::string> vars) : Instruction(AssignArrayInst,vars) {
 		//we need an extra register so we can store values in arrays
 		_vars.push_back("__compilerGeneratedTemp"+std::to_string(extraCounter++));
 	}
@@ -126,7 +164,7 @@ public:
 			stringStream << "sw " << _varRegMap[_vars[3]] << ", " << offset << "(" << _varRegMap[_vars[0]] << ")" <<std::endl;
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -134,7 +172,7 @@ public:
 class AddInstruction : public Instruction
 {
 public:
-	AddInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	AddInstruction(std::vector<std::string> vars) : Instruction(AddInst, vars) {
 
 	}
 
@@ -153,7 +191,7 @@ public:
 			stringStream << "add " << _varRegMap[_vars[2]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -161,7 +199,7 @@ public:
 class SubInstruction : public Instruction
 {
 public:
-	SubInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	SubInstruction(std::vector<std::string> vars) : Instruction(SubInst, vars) {
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
 			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -185,7 +223,7 @@ public:
 			stringStream << "sub " << _varRegMap[_vars[2]] << "," << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[1]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -193,7 +231,7 @@ public:
 class MultInstruction : public Instruction
 {
 public:
-	MultInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	MultInstruction(std::vector<std::string> vars) : Instruction(MultInst, vars) {
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
 			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -221,7 +259,7 @@ public:
 			stringStream << "mflo " << _varRegMap[_vars[2]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -230,7 +268,7 @@ public:
 class DivInstruction : public Instruction
 {
 public:
-	DivInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	DivInstruction(std::vector<std::string> vars) : Instruction(DivInst, vars) {
 
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
@@ -259,7 +297,7 @@ public:
 			stringStream << "mflo " << _varRegMap[_vars[2]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -267,7 +305,7 @@ public:
 class AndInstruction : public Instruction
 {
 public:
-	AndInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	AndInstruction(std::vector<std::string> vars) : Instruction(AndInst, vars) {
 
 	}
 
@@ -286,14 +324,14 @@ public:
 			stringStream << "and " << _varRegMap[_vars[2]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 };
 
 class OrInstruction : public Instruction
 {
 public:
-	OrInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	OrInstruction(std::vector<std::string> vars) : Instruction(OrInst, vars) {
 
 	}
 
@@ -312,7 +350,7 @@ public:
 			stringStream << "or " << _varRegMap[_vars[2]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -321,7 +359,7 @@ public:
 class GotoInstruction : public Instruction
 {
 public:
-	GotoInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	GotoInstruction(std::vector<std::string> vars) : Instruction(GotoInst) {
 
 	}
 
@@ -329,7 +367,7 @@ public:
 		std::ostringstream stringStream;
 		stringStream << "j " << _vars[0];
 		
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -338,7 +376,9 @@ public:
 class BreqInstruction : public Instruction
 {
 public:
-	BreqInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BreqInstruction(std::vector<std::string> vars) : Instruction(BreqInst, vars) {
+
+		_excludeIndices.insert(vars.size() - 1);
 
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
@@ -370,7 +410,7 @@ public:
 			stringStream << "beq " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[1]] << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -379,7 +419,8 @@ public:
 class BrneqInstruction : public Instruction
 {
 public:
-	BrneqInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BrneqInstruction(std::vector<std::string> vars) : Instruction(BrneqInst, vars) {
+		_excludeIndices.insert(vars.size() - 1);
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
 			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -410,7 +451,7 @@ public:
 			stringStream << "bne " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[1]] << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	
 	}
 
@@ -420,7 +461,8 @@ public:
 class BrgtInstruction : public Instruction
 {
 public:
-	BrgtInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BrgtInstruction(std::vector<std::string> vars) : Instruction(BrgtInst, vars) {
+		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 	}
@@ -450,7 +492,7 @@ public:
 			stringStream << "bne " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -459,7 +501,8 @@ public:
 class BrltInstruction : public Instruction
 {
 public:
-	BrltInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BrltInstruction(std::vector<std::string> vars) : Instruction(BrltInst, vars) {
+		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 	}
@@ -489,7 +532,7 @@ public:
 			stringStream << "bne " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 
 	}
 };
@@ -499,7 +542,8 @@ public:
 class BrleqInstruction : public Instruction
 {
 public:
-	BrleqInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BrleqInstruction(std::vector<std::string> vars) : Instruction(BrleqInst, vars) {
+		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
 
@@ -529,7 +573,7 @@ public:
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 
 	}
 
@@ -539,7 +583,8 @@ public:
 class BrgeqInstruction : public Instruction
 {
 public:
-	BrgeqInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	BrgeqInstruction(std::vector<std::string> vars) : Instruction(BrgeqInst, vars) {
+		_excludeIndices.insert(vars.size() - 1);
 
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -569,7 +614,7 @@ public:
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 
 	}
 
@@ -578,7 +623,7 @@ public:
 class ReturnProcedureInstruction : public Instruction
 {
 public:
-	ReturnProcedureInstruction() : Instruction() {
+	ReturnProcedureInstruction() : Instruction(ReturnProcedureInst) {
 	}
 
 	std::string getMIPSInstruction() override {
@@ -586,7 +631,7 @@ public:
 		std::ostringstream stringStream;
 		//jump to return address
 		stringStream << "jr $ra";
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 };
 
@@ -594,7 +639,7 @@ public:
 class ReturnFunctionInstruction : public Instruction
 {
 public:
-	ReturnFunctionInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	ReturnFunctionInstruction(std::vector<std::string> vars) : Instruction(ReturnFunctionInst, vars) {
 		
 	}
 
@@ -612,7 +657,7 @@ public:
 
 		//jump to return address
 		stringStream << "jr $ra";
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -621,7 +666,8 @@ public:
 class CallProcedureInstruction : public Instruction
 {
 public:
-	CallProcedureInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	CallProcedureInstruction(std::vector<std::string> vars) : Instruction(CallProcedureInst, vars) {
+		_excludeIndices.insert(0);
 		/* do we need this optimisation?
 		if (_vars[1] == "printi") {
 			_vars.push_back("$v0");//any vars with $ signs in them are hard coded and must be allocated as such
@@ -665,7 +711,7 @@ public:
 
 		}
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -674,7 +720,8 @@ public:
 class CallFunctionInstruction : public Instruction
 {
 public:
-	CallFunctionInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	CallFunctionInstruction(std::vector<std::string> vars) : Instruction(CallFunctionInst, vars) {
+		_excludeIndices.insert(1);
 	}
 
 
@@ -699,7 +746,7 @@ public:
 
 		stringStream << "move " << _varRegMap[_vars[0]] << ",$v0";
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 };
 
@@ -707,7 +754,7 @@ public:
 class CallStoreArrayInstruction : public Instruction
 {
 public:
-	CallStoreArrayInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	CallStoreArrayInstruction(std::vector<std::string> vars) : Instruction(CallStoreArrayInst, vars) {
 		if (!isInteger(_vars[1])) {
 			//we will need an extra register
 			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -752,7 +799,7 @@ public:
 
 		stringStream << "sw " << val <<"," << pos;
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };
@@ -760,7 +807,7 @@ public:
 class CallLoadArrayInstructionInstruction : public Instruction
 {
 public:
-	CallLoadArrayInstructionInstruction(std::vector<std::string> vars) : Instruction(vars) {
+	CallLoadArrayInstructionInstruction(std::vector<std::string> vars) : Instruction(CallLoadArrayInst, vars) {
 		if (!isInteger(_vars[2])) {
 			//we will need an extra register
 			_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -796,7 +843,7 @@ public:
 
 		stringStream << "lw " << val << "," << pos;
 
-		return stringStream.str();
+		return stringStream.str() + "\n";
 	}
 
 };

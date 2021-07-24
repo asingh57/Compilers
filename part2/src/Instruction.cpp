@@ -105,6 +105,9 @@ Instruction* Instruction::parse(std::string instStr)
 
             return new CallLoadArrayInstructionInstruction(remain);
         }
+        else {
+            throw "no proper instruction";
+        }
 
     }
 

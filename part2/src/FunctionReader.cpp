@@ -2,6 +2,7 @@
 #include "NaiveAllocator.h"
 #include <fstream>
 #include <iostream>
+#include <fstream>
 
 
 //following 2 functions taken from https://stackoverflow.com/questions/1798112/removing-leading-and-trailing-spaces-from-a-string/25829233
@@ -49,6 +50,7 @@ std::list<std::string> FunctionReader::readFile(std::string filePath)
 	// Create and open a text file
 	std::ifstream readF(filePath);
 
+	std::cout << "reading file " << filePath << std::endl;
 	if (!readF) {
 		std::cerr << "file path invalid" << std::endl;
 		throw -1;
@@ -106,14 +108,16 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 			_functions.push_back(function);
 			//now parse instructions until we find end of function
 
+			line = lineList.front();
+			lineList.pop_front();
 			while (!(line.rfind("end_function", 0) == 0)) {
-				line = lineList.front();
-				lineList.pop_front();
 				//parse this instruction
 				auto instruction = Instruction::parse(line);
 				function->addInstruction(instruction);
-				function->processVarDeclarationInstructions();
+				line = lineList.front();
+				lineList.pop_front();
 			}
+			function->processVarDeclarationInstructions();
 
 
 		}
@@ -122,8 +126,10 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 
 	auto naiveAlloc = NaiveAllocator(_functions);
 
+	auto naiveStr = naiveAlloc.getFinalOpList();
 
 
+	std::cout << naiveStr << std::endl;
 
 
 };

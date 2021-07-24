@@ -3,6 +3,7 @@
 #include "Function.h"
 #include <list>
 #include <string>
+#include <iostream>
 class NaiveAllocator : public RegisterAllocator
 {
 
@@ -16,33 +17,44 @@ public:
 	virtual std::string getFinalOpList() override {
 		std::ostringstream out;
 
-		std::map<std::string,std::string> currentlyUsedRegs = {};
-		std::map<std::string, std::string> currentlyAssignedVars = {};
 		std::vector<std::string> currentlyAvailableRegs = {};
+		std::vector<std::string> currentlyUsedRegs = {};
 		for (auto v : usableRegisters) {
 			currentlyAvailableRegs.push_back(v);
-			currentlyUsedRegs[v] = "";
-		}
-		for (auto var : IntList::globalIntList->getVarNames()) {
-			currentlyAssignedVars[var] = "";
 		}
 
 		for (auto fn : _functions) {
 			auto insts = fn->getInstructions();
 			auto intlsts = fn->getIntList();
-			for (auto var : intlsts.getVarNames()) {
-				currentlyAssignedVars[var] = "";
-			}
 
 			for (auto inst : insts) {
 				auto varsUsedByInst = inst->getUsedVars();
 				//load vars into regs
-				
+				for (auto v: varsUsedByInst) {
+					auto reg = currentlyAvailableRegs.back();
+					currentlyUsedRegs.push_back(reg);
+					currentlyAvailableRegs.pop_back();
+					std::cout << "v=" << v << std::endl;
+					out << intlsts.getLoadInstruction(v, reg) << std::endl;
+					inst->addToVarRegisterMap(v, reg);
+				}
 
 				//instruction
-				// 
-				// 
-				//store vars into regs
+				out << inst->getMIPSInstruction() << std::endl;
+				
+				//store vars into mem
+
+				for (auto v : varsUsedByInst) {
+					auto reg = inst->getRegFromVar(v);
+					out << intlsts.getStoreInstruction(v, reg) << std::endl;
+					inst->addToVarRegisterMap(v, reg);
+				}
+
+				//make regs available again
+				while (currentlyUsedRegs.size()) {
+					currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
+					currentlyUsedRegs.pop_back();
+				}
 			}
 
 
