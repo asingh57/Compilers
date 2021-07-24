@@ -15,7 +15,7 @@ private:
 	std::list<std::string> readFile(std::string filePath);
 
 public:
-	FunctionReader(std::string filePath);
+	FunctionReader(std::string filePath, std::string outFilePath);
 
 
 

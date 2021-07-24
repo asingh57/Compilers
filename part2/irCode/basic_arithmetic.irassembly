@@ -1,0 +1,284 @@
+main:
+
+sub $sp, $sp, 60
+
+lw $s7,48($sp)
+li $s7,5
+
+sw $s7,48($sp)
+lw $s7,52($sp)
+li $s7,5
+
+sw $s7,52($sp)
+lw $s7,0($sp)
+li $s7,300
+
+sw $s7,0($sp)
+lw $s7,56($sp)
+lw $s6,0($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,0($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,4($sp)
+addi $s6,$s7,50
+
+sw $s7,48($sp)
+sw $s6,4($sp)
+lw $s7,56($sp)
+lw $s6,4($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,4($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,52($sp)
+lw $s5,16($sp)
+add $s5,$s6,$s7
+
+sw $s7,48($sp)
+sw $s6,52($sp)
+sw $s5,16($sp)
+lw $s7,56($sp)
+lw $s6,16($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,16($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,20($sp)
+
+li $s7,100
+
+sw $s7,20($sp)
+
+lw $s7,56($sp)
+lw $s6,20($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,20($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,24($sp)
+
+addi $s6,$s7,-50
+
+sw $s7,48($sp)
+sw $s6,24($sp)
+
+lw $s7,56($sp)
+lw $s6,24($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,24($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,52($sp)
+lw $s5,28($sp)
+sub $s5,$s7,$s6
+
+sw $s7,48($sp)
+sw $s6,52($sp)
+sw $s5,28($sp)
+lw $s7,56($sp)
+lw $s6,28($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,28($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,32($sp)
+
+li $s7,20000
+
+sw $s7,32($sp)
+
+lw $s7,56($sp)
+lw $s6,32($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,32($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,36($sp)
+
+li $s5,50
+mult $s5,$s7
+mflo $s6
+
+sw $s7,48($sp)
+sw $s6,36($sp)
+
+lw $s7,56($sp)
+lw $s6,36($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,36($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,52($sp)
+lw $s5,40($sp)
+mult $s7,$s6
+mflo $s5
+
+sw $s7,48($sp)
+sw $s6,52($sp)
+sw $s5,40($sp)
+lw $s7,56($sp)
+lw $s6,40($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,40($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,44($sp)
+
+li $s7,2
+
+sw $s7,44($sp)
+
+lw $s7,56($sp)
+lw $s6,44($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,44($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,8($sp)
+
+li $s5,1
+div $s7,$s5
+mflo $s6
+
+sw $s7,48($sp)
+sw $s6,8($sp)
+
+lw $s7,56($sp)
+lw $s6,8($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,8($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+lw $s7,48($sp)
+lw $s6,52($sp)
+lw $s5,12($sp)
+div $s7,$s6
+mflo $s5
+
+sw $s7,48($sp)
+sw $s6,52($sp)
+sw $s5,12($sp)
+lw $s7,56($sp)
+lw $s6,12($sp)
+move $s7,$s6
+
+sw $s7,56($sp)
+sw $s6,12($sp)
+lw $s7,56($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,56($sp)
+add $sp, $sp, 60
+

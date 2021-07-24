@@ -263,7 +263,15 @@ public:
 		_intlist.processVarDeclarationInstructions(_instructions);
 
 		if (_name=="main") {
+
+			//now filter out the return call for main
+			_instructions.remove_if([](Instruction *inst) {
+				return inst->getInstructionType() == InstructionType::ReturnFunctionInst || inst->getInstructionType() == InstructionType::ReturnProcedureInst;
+				});
+
+
 			IntList::globalIntList->processVarDeclarationInstructions(_instructions);
+
 		}
 	}
 

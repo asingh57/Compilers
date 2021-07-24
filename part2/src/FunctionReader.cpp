@@ -72,9 +72,9 @@ std::list<std::string> FunctionReader::readFile(std::string filePath)
 	return lines;
 }
 
-FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntList(){
+FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath) : _functions(), _globalIntList(){
 	//read ir line by line and store as list
-	auto lineList = readFile(filePath);
+	auto lineList = readFile(irFilePath);
 
 	//now split into functions (this is ideal since we need to manage stack pointers)
 
@@ -131,6 +131,9 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 
 	std::cout << naiveStr << std::endl;
 
+	std::ofstream out(outFilePath);
+	out << naiveStr;
+	out.close();
 
 };
 

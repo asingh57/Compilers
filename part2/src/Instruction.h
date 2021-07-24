@@ -279,7 +279,7 @@ public:
 	std::string getMIPSInstruction() override {
 		std::ostringstream stringStream;
 		if (isInteger(_vars[0]) && isInteger(_vars[1])) {
-			stringStream << "li " << _varRegMap[_vars[2]] << "," << (std::stoi(_vars[0]) * std::stoi(_vars[1]));
+			stringStream << "li " << _varRegMap[_vars[2]] << "," << (std::stoi(_vars[0]) / std::stoi(_vars[1]));
 		}
 		else if (isInteger(_vars[0])) {
 			stringStream << "li " << _varRegMap[_vars[3]] << "," << (std::stoi(_vars[0])) << std::endl;
@@ -289,7 +289,7 @@ public:
 
 		else if (isInteger(_vars[1])) {
 			stringStream << "li " << _varRegMap[_vars[3]] << "," << (std::stoi(_vars[1])) << std::endl;
-			stringStream << "div " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << std::endl;
+			stringStream << "div " << _varRegMap[_vars[0]] << "," << _varRegMap[_vars[3]] << std::endl;
 			stringStream << "mflo " << _varRegMap[_vars[2]];
 		}
 		else {
@@ -694,6 +694,9 @@ public:
 			stringStream << "move $a0, "<< _varRegMap[_vars[1]] << std::endl;
 			}
 			stringStream << "syscall";
+
+
+			stringStream << "\naddi $a0, $0, 0xA \n" << "addi $v0, $0, 0xB\n" << "syscall";
 		}
 		else {
 			//load args into arg registers// Should I handle args more than 4?
@@ -710,6 +713,7 @@ public:
 			stringStream << "jal " << _vars[0];
 
 		}
+
 
 		return stringStream.str() + "\n";
 	}
