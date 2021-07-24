@@ -60,8 +60,13 @@ public:
 	}
 
 	std::vector<std::string> getUsedVars() {
-
-		return _vars;
+		std::vector<std::string> vars;
+		for (auto v: _vars) {
+			if (!isInteger(v)) {
+				vars.push_back(v);
+			}
+		}
+		return vars;
 	}
 
 

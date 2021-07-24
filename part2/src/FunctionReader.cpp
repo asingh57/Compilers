@@ -91,6 +91,8 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 
 		}
 		else if (line.rfind("start_function", 0) == 0) {
+			auto name = split(line.c_str(), ' ')[1];
+			name = split(name.c_str(), '(')[0];
 			auto functionDef = lineList.front();
 			functionDef.erase(remove_if(functionDef.begin(), functionDef.end(), isspace), functionDef.end());
 			lineList.pop_front();
@@ -100,7 +102,7 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 			intlist.erase(remove_if(intlist.begin(), intlist.end(), isspace), intlist.end());
 			lineList.pop_front();
 
-			auto function = new Function(functionDef, IntList(intlist));
+			auto function = new Function(name, functionDef, IntList(intlist));
 			_functions.push_back(function);
 			//now parse instructions until we find end of function
 
@@ -110,12 +112,15 @@ FunctionReader::FunctionReader(std::string filePath) : _functions(), _globalIntL
 				//parse this instruction
 				auto instruction = Instruction::parse(line);
 				function->addInstruction(instruction);
+				function->processVarDeclarationInstructions();
 			}
 
 
 		}
 
 	}
+
+	auto naiveAlloc = NaiveAllocator(_functions);
 
 
 

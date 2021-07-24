@@ -3,10 +3,12 @@
 #include <string>
 class RegisterAllocator
 {
+protected:
+	static std::vector<std::string> usableRegisters;
 public:
 	RegisterAllocator() {};
-	virtual std::vector<std::string> getFinalOpList() {
-		return {};
+	virtual std::string getFinalOpList() {
+		return "";
 	}
 };
 
