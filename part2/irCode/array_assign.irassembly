@@ -54,7 +54,15 @@ syscall
 sw $s7,4($sp)
 la $s7,40($sp)
 la $s6,28($sp)
-move $s7,$s6
+
+lw $s5,0($s6)
+sw $s5,0($s7)
+lw $s5,4($s6)
+sw $s5,4($s7)
+lw $s5,8($s6)
+sw $s5,8($s7)
+
+
 
 
 

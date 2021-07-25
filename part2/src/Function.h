@@ -17,7 +17,7 @@ class IntList {
 	bool _isStatic;
 	std::vector<std::string> _varNames;//names, without array symbols
 	std::map<std::string, int> _stackOffsets;//stack offsets for each var declared in scope relative to $sp
-	std::unordered_set<std::string> _arrayVars;
+	std::map<std::string, int> _arrayVars;
 public:
 	static IntList* globalIntList;
 	IntList() : _stackOffsets(){
@@ -188,7 +188,7 @@ public:
 				_stackOffsets[name] = stackIncrementSz;
 				_varNames.push_back(name);
 				stackIncrementSz += 4 * sz;
-				_arrayVars.insert(name);
+				_arrayVars.insert(std::make_pair(name,sz));
 			}
 			else {
 				_stackOffsets[var] = stackIncrementSz;
@@ -231,6 +231,22 @@ public:
 		}
 		//put one at the end just for verification sake??
 		//_instructions.push_back( postInst);
+
+
+		//now lets try to detect array assignments and replace them with their proper vars
+		AssignArrayToArrayInstruction** ass = new AssignArrayToArrayInstruction*;
+		std::replace_if(_instructions.begin(), _instructions.end(), [this,&ass](Instruction* inst) {
+
+			if (inst->getInstructionType()==InstructionType::AssignInst) {
+				//check if var is array
+				if (_arrayVars.count(inst->getAllVars()[0])) {
+					*ass = new AssignArrayToArrayInstruction(inst,_arrayVars);
+					return true;
+				}
+			}
+			return false;
+			}, *ass);
+
 
 
 	}

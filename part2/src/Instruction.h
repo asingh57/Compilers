@@ -39,7 +39,8 @@ enum InstructionType {
 	GenericInst,
 	LabelInst,
 	AssignInst,
-	AssignArrayInst,
+	AssignArrayToArrayInst,
+	InitialiseArrayConstInst,
 	AddInst,
 	SubInst,
 	MultInst,
@@ -90,6 +91,10 @@ public:
 
 	virtual std::string getMIPSInstruction() {
 		return _genericInstruction+ "\n";
+	}
+
+	std::vector<std::string> getAllVars() {
+		return _vars;
 	}
 
 	std::vector<std::string> getUsedVars() {
@@ -148,10 +153,43 @@ public:
 
 };
 
-class AssignArrayInstruction : public Instruction
+class AssignArrayToArrayInstruction : public Instruction
+{
+	std::map<std::string, int> _arrayVars;
+	Instruction* _inst;
+public:
+	AssignArrayToArrayInstruction(Instruction* inst, std::map<std::string, int> arrayVars) : Instruction(AssignArrayToArrayInst, inst->getAllVars()), _arrayVars(arrayVars), _inst(inst){
+		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
+	}
+
+	std::string getMIPSInstruction() override {
+		std::ostringstream stringStream;
+
+		int arrSz = _arrayVars[_vars[0]];
+		
+		if (isInteger(_vars[1])) {
+			stringStream << "li " << _varRegMap[_vars[2]] << "," << _vars[1] << "\n";
+			for (int i = 0; i < arrSz; i++) {
+				stringStream << "sw " << _varRegMap[_vars[2]] << "," << 4*i << "(" <<_varRegMap[_vars[0]] << ")\n";
+			}
+		}
+		else {
+			for (int i = 0; i < arrSz; i++) {
+				stringStream << "lw " << _varRegMap[_vars[2]] << "," << 4 * i << "(" << _varRegMap[_vars[1]] << ")\n";
+				stringStream << "sw " << _varRegMap[_vars[2]] << "," << 4 * i << "(" << _varRegMap[_vars[0]] << ")\n";
+			}
+		}
+
+
+		return stringStream.str() + "\n";
+	}
+};
+
+
+class InitialiseArrayConstInstruction : public Instruction
 {
 public:
-	AssignArrayInstruction(std::vector<std::string> vars) : Instruction(AssignArrayInst,vars) {
+	InitialiseArrayConstInstruction(std::vector<std::string> vars) : Instruction(InitialiseArrayConstInst,vars) {
 		//we need an extra register so we can store values in arrays
 		_vars.push_back("__compilerGeneratedTemp"+std::to_string(extraCounter++));
 	}

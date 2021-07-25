@@ -24,7 +24,7 @@ Instruction* Instruction::parse(std::string instStr)
             }
             else {
                 //int array
-                return new AssignArrayInstruction(remain);
+                return new InitialiseArrayConstInstruction(remain);
             }
         }
         else if (op == "add") {
