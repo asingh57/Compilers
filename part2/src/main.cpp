@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME "basic_conditionals.ir"
+#define IRFILENAME "basic_for_loop.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";

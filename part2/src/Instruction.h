@@ -559,17 +559,18 @@ public:
 			}
 		}
 		else if (isInteger(_vars[0])) {
-			stringStream << "slti" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _vars[0] << std::endl;
+			stringStream << "slti " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _vars[0] << std::endl;
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 
 		}
-		else if (isInteger(_vars[1])) {
+		else if (isInteger(_vars[1])) {;
+			std::string ltCompare = std::to_string(std::stoi(_vars[1]) + 1);
 			//brgt of inverse
-			stringStream << "slti" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << "," << _vars[1] << std::endl;
+			stringStream << "slti " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << "," << ltCompare << std::endl;
 			stringStream << "bne " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 		else {
-			stringStream << "slt" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]] << std::endl;
+			stringStream << "slt " << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]] << std::endl;
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 
