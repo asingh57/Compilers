@@ -36,7 +36,7 @@ main: dirs
 	
 
 backend: instruction allocators function functionReader main
-	$(CC) $(LDARGS) $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/RegisterAllocator.o $(OUTPUT)/NaiveAllocator.o $(OUTPUT)/Instruction.o $(OUTPUT)/Function.o $(OUTPUT)/FunctionReader.o $(OUTPUT)/main.o -o $(BIN)/tigerc
+	$(OUTPUT)/RegisterAllocator.o $(OUTPUT)/NaiveAllocator.o $(OUTPUT)/Instruction.o $(OUTPUT)/Function.o $(OUTPUT)/FunctionReader.o $(OUTPUT)/main.o -o $(BIN)/tigerc
 
 
 listener:
