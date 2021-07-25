@@ -529,8 +529,12 @@ public:
 		}
 		else if (isInteger(_vars[1])) {
 
-			stringStream << "slti" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << "," << _vars[1] << std::endl;
+			/*stringStream << "slti" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << "," << _vars[1] << std::endl;
 			stringStream << "beq " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
+			*/
+			stringStream << "li " << _varRegMap[_vars[3]] << "," << _vars[1] << std::endl;
+			stringStream << "slt" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[0]] << std::endl;
+			stringStream << "bne " << _varRegMap[_vars[3]] << "," << "$zero" << "," << _vars[2];
 		}
 		else {
 			stringStream << "slt" << _varRegMap[_vars[3]] << "," << _varRegMap[_vars[1]] << "," << _varRegMap[_vars[0]] << std::endl;

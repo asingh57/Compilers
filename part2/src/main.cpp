@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME "function_call2.ir"
+#define IRFILENAME "recursive_fib.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";
