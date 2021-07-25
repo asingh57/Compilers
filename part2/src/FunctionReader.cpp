@@ -89,7 +89,7 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath) 
 			line = lineList.front();
 			line.erase(remove_if(line.begin(), line.end(), isspace), line.end());
 			lineList.pop_front();
-			_globalIntList = IntList(line);
+			_globalIntList = new IntList(line);
 
 		}
 		else if (line.rfind("start_function", 0) == 0) {
@@ -104,7 +104,7 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath) 
 			intlist.erase(remove_if(intlist.begin(), intlist.end(), isspace), intlist.end());
 			lineList.pop_front();
 
-			auto function = new Function(name, functionDef, IntList(intlist));
+			auto function = new Function(name, functionDef, new IntList(intlist));
 			_functions.push_back(function);
 			//now parse instructions until we find end of function
 

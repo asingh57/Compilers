@@ -1,0 +1,84 @@
+main:
+
+sub $sp, $sp, 24
+
+lw $s7,12($sp)
+li $s7,3
+
+sw $s7,12($sp)
+lw $s7,16($sp)
+li $s7,4
+
+sw $s7,16($sp)
+lw $s7,20($sp)
+li $s7,4
+
+sw $s7,20($sp)
+lw $s7,0($sp)
+li $s7,1
+
+sw $s7,0($sp)
+lw $s7,8($sp)
+li $s7,2
+
+sw $s7,8($sp)
+lw $s7,4($sp)
+li $s7,2
+
+sw $s7,4($sp)
+lw $s7,0($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,0($sp)
+lw $s7,4($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,4($sp)
+lw $s7,8($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,8($sp)
+lw $s7,12($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,12($sp)
+lw $s7,16($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,16($sp)
+lw $s7,20($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,20($sp)
+add $sp, $sp, 24
+

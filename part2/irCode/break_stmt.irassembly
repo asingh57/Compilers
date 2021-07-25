@@ -1,0 +1,44 @@
+main:
+
+sub $sp, $sp, 4
+
+lw $s7,0($sp)
+li $s7,1
+
+sw $s7,0($sp)
+j Label_1
+
+Label_0:
+
+lw $s7,0($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,0($sp)
+j Label_2
+
+Label_3:
+
+lw $s7,0($sp)
+lw $s6,0($sp)
+addi $s6,$s6,1
+
+sw $s6,0($sp)
+sw $s6,0($sp)
+Label_1:
+
+lw $s7,0($sp)
+
+slti $s6,$s7,11
+bne $s6,$zero,Label_0
+
+sw $s7,0($sp)
+
+Label_2:
+
+add $sp, $sp, 4
+

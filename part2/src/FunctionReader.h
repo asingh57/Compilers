@@ -9,7 +9,7 @@ class FunctionReader
 private:
 
 	std::list<Function*> _functions;
-	IntList _globalIntList;
+	IntList* _globalIntList;
 
 	// helpers
 	std::list<std::string> readFile(std::string filePath);

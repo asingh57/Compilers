@@ -1,0 +1,37 @@
+main:
+
+sub $sp, $sp, 12
+
+lw $s7,4($sp)
+li $s7,5
+
+sw $s7,4($sp)
+lw $s7,8($sp)
+li $s7,10
+
+sw $s7,8($sp)
+lw $s7,4($sp)
+lw $s6,8($sp)
+lw $s5,0($sp)
+add $s5,$s6,$s7
+
+sw $s7,4($sp)
+sw $s6,8($sp)
+sw $s5,0($sp)
+lw $s7,8($sp)
+lw $s6,0($sp)
+move $s7,$s6
+
+sw $s7,8($sp)
+sw $s6,0($sp)
+lw $s7,8($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,8($sp)
+add $sp, $sp, 12
+

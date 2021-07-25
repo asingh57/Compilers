@@ -35,7 +35,7 @@ public:
 					currentlyUsedRegs.push_back(reg);
 					currentlyAvailableRegs.pop_back();
 					std::cout << "v=" << v << std::endl;
-					out << intlsts.getLoadInstruction(v, reg) << std::endl;
+					out << intlsts->getLoadInstruction(v, reg) << std::endl;
 					inst->addToVarRegisterMap(v, reg);
 				}
 
@@ -46,7 +46,7 @@ public:
 
 				for (auto v : varsUsedByInst) {
 					auto reg = inst->getRegFromVar(v);
-					out << intlsts.getStoreInstruction(v, reg) << std::endl;
+					out << intlsts->getStoreInstruction(v, reg) << std::endl;
 					inst->addToVarRegisterMap(v, reg);
 				}
 

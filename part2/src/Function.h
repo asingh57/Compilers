@@ -1,10 +1,11 @@
 #pragma once
 #include "Instruction.h"
 #include <list>
+#include <algorithm> 
 
 template <class T, class T2>
 inline bool contains(std::map<T, T2> &mp, T key) {
-	if (mp.find(key) == mp.end()) {
+	if (mp.count(key) == 0) {
 		return false;
 	}
 	return true;
@@ -16,12 +17,13 @@ class IntList {
 	bool _isStatic;
 	std::vector<std::string> _varNames;//names, without array symbols
 	std::map<std::string, int> _stackOffsets;//stack offsets for each var declared in scope relative to $sp
+	std::unordered_set<std::string> _arrayVars;
 public:
 	static IntList* globalIntList;
 	IntList() : _stackOffsets(){
 		return;
 	}
-	IntList(std::string intList) : _vars(), _isStatic(false), _stackOffsets(), _varNames(){
+	IntList(std::string intList) : _vars(), _isStatic(false), _stackOffsets(), _varNames(), _arrayVars(){
 		auto ls = split(intList.c_str(), ':');
 		_isStatic = (ls[0] == "static-int-list");
 		if (_isStatic) {
@@ -52,14 +54,20 @@ public:
 		
 		std::ostringstream loadInst;
 
+		std::string command = "lw ";
+
+		if (_arrayVars.count(var)!=0) {
+			command = "la ";//load address instead of word if it is an array
+		}
+
 		if (_stackOffsets.count(var)) { //contained in function scope
 			int toLoad = _stackOffsets[var] + 4 * index;
-			loadInst << "lw " << correspondingReg << "," << toLoad << "($sp)";
+			loadInst << command << correspondingReg << "," << toLoad << "($sp)";
 		}
 		else {
 			//contained in global scope
 			int toLoad = globalIntList->_stackOffsets[var] + 4 * index;
-			loadInst << "lw " << correspondingReg << "," << toLoad << "($v1)";
+			loadInst << command << correspondingReg << "," << toLoad << "($v1)";
 		}
 
 		return loadInst.str();
@@ -76,20 +84,25 @@ public:
 		
 		std::ostringstream storeInst;
 
+		std::string command = "sw ";
+
+		if (_arrayVars.count(var) != 0) {
+			return "";//no need for store on array
+		}
 		if (_stackOffsets.count(var)) { //contained in function scope
 			int toStore = _stackOffsets[var] + 4 * index;
-			storeInst << "sw " << correspondingReg << "," << toStore << "($sp)";
+			storeInst << command << correspondingReg << "," << toStore << "($sp)";
 		}
 		else {
 			//contained in global scope
 			int toStore = globalIntList->_stackOffsets[var] + 4 * index;
-			storeInst << "sw " << correspondingReg << "," << toStore << "($v1)";
+			storeInst << command << correspondingReg << "," << toStore << "($v1)";
 		}
 
 		return storeInst.str();
 
 	}
-
+	/*
 	std::string getLoadInstruction(std::string var, std::string correspondingReg, std::string spareRegister, std::string indexReg) {
 		if (!contains(_stackOffsets, var) && !contains(globalIntList->_stackOffsets, var)) {
 			return "";
@@ -151,7 +164,7 @@ public:
 
 		return storeInst.str();
 
-	}
+	}*/
 
 	//prepends and appends instructions to the list passed here
 	void processVarDeclarationInstructions(std::list<Instruction*> &_instructions) {
@@ -175,6 +188,7 @@ public:
 				_stackOffsets[name] = stackIncrementSz;
 				_varNames.push_back(name);
 				stackIncrementSz += 4 * sz;
+				_arrayVars.insert(name);
 			}
 			else {
 				_stackOffsets[var] = stackIncrementSz;
@@ -187,7 +201,7 @@ public:
 			//save the static stack pointer somewhere
 			//lets use v1 for it since we dont use it anywhere else
 			preInstStr << std::endl;
-			preInstStr << "mov $v1, $sp";
+			preInstStr << "move $v1, $sp";
 
 		}
 		auto label = _instructions.front();
@@ -225,11 +239,11 @@ public:
 class Function
 {
 	std::list<Instruction*> _instructions;
-	IntList _intlist;
+	IntList* _intlist;
 	std::map<std::string, std::string> _argRegMap;
 	std::string _name;
 public:
-	Function(std::string name, std::string functionDefinition, IntList intlist) : _name(name), _instructions(), _intlist(intlist), _argRegMap(){
+	Function(std::string name, std::string functionDefinition, IntList* intlist) : _name(name), _instructions(), _intlist(intlist), _argRegMap(){
 		//todo parse definition
 		//this will be useful to indicate which vars are function params and therefore dont need special register allocations
 		
@@ -260,16 +274,20 @@ public:
 	}
 
 	void processVarDeclarationInstructions() {
-		_intlist.processVarDeclarationInstructions(_instructions);
+		_intlist->processVarDeclarationInstructions(_instructions);
 
 		if (_name=="main") {
 
-			//now filter out the return call for main
-			_instructions.remove_if([](Instruction *inst) {
+			//now filter out the return calls for main
+			//_instructions.remove_if();
+
+			std::string exitStr = "li $v0, 10\n syscall";
+
+			Instruction* exitInst = new Instruction(exitStr);
+
+			std::replace_if(_instructions.begin(), _instructions.end(), [](Instruction* inst) {
 				return inst->getInstructionType() == InstructionType::ReturnFunctionInst || inst->getInstructionType() == InstructionType::ReturnProcedureInst;
-				});
-
-
+				}, exitInst);
 			IntList::globalIntList->processVarDeclarationInstructions(_instructions);
 
 		}
@@ -279,7 +297,7 @@ public:
 		return _instructions;
 	}
 
-	IntList getIntList() {
+	IntList* getIntList() {
 		return _intlist;
 	}
 };

@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME "basic_if_else.ir"
+#define IRFILENAME "slope.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";
