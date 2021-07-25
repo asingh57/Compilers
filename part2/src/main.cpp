@@ -3,20 +3,60 @@
 
 #include "FunctionReader.h"
 #include <iostream>
+#include <cstring>
 #define IRFILENAME "prng.ir"
 
 #ifdef _WIN32
-    std::string path = "../../../irCode/";
+    std::string inPath = "../../../irCode/";
 #else
-    std::string path = "~/Desktop/CompilersShared/Compilers/part2/irCode/";    
+    std::string inPath = "~/Desktop/CompilersShared/Compilers/part2/irCode/";
 #endif
 
 
-int main()
+int main(int argc, char* argv[])
 {
-    std::string outpath = path + IRFILENAME + "assembly";
-    path += IRFILENAME;
-    auto fnr = FunctionReader(path, outpath);
+    std::string outpath;
+    inPath += IRFILENAME;
+
+    bool naive = false;
+    bool outputMIPS = false;
+    if (argc==1) {
+        naive = true;
+        outputMIPS = true;
+    }
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (strcmp(argv[i], "--mips") == 0) {
+            outputMIPS = true;
+        }
+        else if (arg == "-n") {
+            naive = true;
+        }
+        else if (arg == "-i") {
+            if (++i >= argc) {
+                return -1;
+            }
+        }
+        else if (arg == "-r") {
+            if (++i >= argc) {
+                return -1;
+            }
+            inPath= argv[i];
+        }
+
+    }
+
+
+    if (outputMIPS) {
+        outpath = inPath;
+        outpath = outpath.substr(0, outpath.find_last_of('.')) + ".s";
+
+    }
+
+
+
+
+    auto fnr = FunctionReader(inPath, outpath);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
