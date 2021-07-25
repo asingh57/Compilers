@@ -15,7 +15,7 @@ private:
 	std::list<std::string> readFile(std::string filePath);
 
 public:
-	FunctionReader(std::string filePath, std::string outFilePath);
+	FunctionReader(std::string filePath, std::string outFilePath, bool outputMIPS, bool useNaive, bool useBlock, bool useBriggs, bool cfg, bool liveness);
 
 
 

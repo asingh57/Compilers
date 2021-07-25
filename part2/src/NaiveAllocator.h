@@ -38,7 +38,7 @@ public:
 					auto reg = currentlyAvailableRegs.back();
 					currentlyUsedRegs.push_back(reg);
 					currentlyAvailableRegs.pop_back();
-					std::cout << "v=" << v << std::endl;
+					//std::cout << "v=" << v << std::endl;
 					out << intlsts->getLoadInstruction(v, reg) << std::endl;
 					inst->addToVarRegisterMap(v, reg);
 				}

@@ -19,6 +19,10 @@ int main(int argc, char* argv[])
     inPath += IRFILENAME;
 
     bool naive = false;
+    bool block = false;
+    bool briggs = false;
+    bool cfg = false;
+    bool liveness = false;
     bool outputMIPS = false;
     if (argc==1) {
         naive = true;
@@ -29,8 +33,20 @@ int main(int argc, char* argv[])
         if (strcmp(argv[i], "--mips") == 0) {
             outputMIPS = true;
         }
+        else if (strcmp(argv[i], "--cfg") == 0) {
+            cfg = true;
+        }
+        else if (strcmp(argv[i], "--liveness") == 0) {
+            liveness = true;
+        }
         else if (arg == "-n") {
             naive = true;
+        }
+        else if (arg == "-b") {
+            block = true;
+        }
+        else if (arg == "-g") {
+            briggs = true;
         }
         else if (arg == "-i") {
             if (++i >= argc) {
@@ -46,6 +62,9 @@ int main(int argc, char* argv[])
 
     }
 
+    if (!naive && !block && !briggs) {
+        naive = true;
+    }
 
     if (outputMIPS) {
         outpath = inPath;
@@ -56,7 +75,7 @@ int main(int argc, char* argv[])
 
 
 
-    auto fnr = FunctionReader(inPath, outpath);
+    auto fnr = FunctionReader(inPath, outpath, outputMIPS, naive, block, briggs, cfg, liveness);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -50,7 +50,7 @@ std::list<std::string> FunctionReader::readFile(std::string filePath)
 	// Create and open a text file
 	std::ifstream readF(filePath);
 
-	std::cout << "reading file " << filePath << std::endl;
+	//std::cout << "reading file " << filePath << std::endl;
 	if (!readF) {
 		std::cerr << "file path invalid" << std::endl;
 		throw -1;
@@ -72,7 +72,7 @@ std::list<std::string> FunctionReader::readFile(std::string filePath)
 	return lines;
 }
 
-FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath) : _functions(), _globalIntList(){
+FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, bool outputMIPS, bool useNaive, bool useBlock, bool useBriggs, bool cfg, bool liveness) : _functions(), _globalIntList(){
 	//read ir line by line and store as list
 	auto lineList = readFile(irFilePath);
 
@@ -124,16 +124,20 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath) 
 
 	}
 
-	auto naiveAlloc = NaiveAllocator(_functions);
+	std::string output = "";
 
-	auto naiveStr = naiveAlloc.getFinalOpList();
+	if (useNaive) {
+		auto naiveAlloc = NaiveAllocator(_functions);
+		output = naiveAlloc.getFinalOpList();
+	}
 
 
-	std::cout << naiveStr << std::endl;
+	//std::cout << naiveStr << std::endl;
 
-	std::ofstream out(outFilePath);
-	out << naiveStr;
-	out.close();
-
+	if(outputMIPS){
+		std::ofstream out(outFilePath);
+		out << output;
+		out.close();
+	}
 };
 
