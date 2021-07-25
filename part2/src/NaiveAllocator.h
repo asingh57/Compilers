@@ -43,8 +43,14 @@ public:
 					inst->addToVarRegisterMap(v, reg);
 				}
 
-				//instruction
-				out << inst->getMIPSInstruction() << std::endl;
+				bool isReturnFunction = inst->getInstructionType() == InstructionType::ReturnFunctionInst;
+
+
+				if (!isReturnFunction) {
+					//instruction
+					out << inst->getMIPSInstruction() << std::endl;					
+				}
+
 				
 				//store vars into mem
 
@@ -53,7 +59,13 @@ public:
 						continue;
 					}
 					auto reg = inst->getRegFromVar(v);
-					out << intlsts->getStoreInstruction(v, reg) << std::endl;
+					if (!isReturnFunction) {
+						out << intlsts->getStoreInstruction(v, reg) << std::endl;
+					}
+					else {
+						(dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(intlsts->getStoreInstruction(v, reg) + "\n");
+						out << inst->getMIPSInstruction() << std::endl;
+					}
 					inst->addToVarRegisterMap(v, reg);
 				}
 

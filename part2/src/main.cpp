@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME "procedure_call.ir"
+#define IRFILENAME "function_call.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";

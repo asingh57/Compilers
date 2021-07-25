@@ -684,9 +684,14 @@ public:
 
 class ReturnFunctionInstruction : public Instruction
 {
+	std::string _preReturnInstruction;
 public:
 	ReturnFunctionInstruction(std::vector<std::string> vars) : Instruction(ReturnFunctionInst, vars) {
-		
+		_preReturnInstruction = "";
+	}
+
+	void setPreReturnInstruction(std::string preReturnInstruction) {
+		_preReturnInstruction = preReturnInstruction+ _preReturnInstruction;
 	}
 
 	std::string getMIPSInstruction() override {
@@ -700,6 +705,7 @@ public:
 		else {
 			stringStream << "move, $v0, " << _varRegMap[_vars[0]] << std::endl;
 		}
+		stringStream << _preReturnInstruction;
 
 		//jump to return address
 		stringStream << "jr $ra";
@@ -783,10 +789,10 @@ public:
 
 		for (unsigned int i = 2; i < _vars.size(); i++) {
 			if (isInteger(_vars[i])) {
-				stringStream << "li " << "$a" << i << "," << _vars[i] << std::endl;
+				stringStream << "li " << "$a" << i-2 << "," << _vars[i] << std::endl;
 			}
 			else {
-				stringStream << "move " << "$a" << i << "," << _varRegMap[_vars[i]] << std::endl;
+				stringStream << "move " << "$a" << i-2 << "," << _varRegMap[_vars[i]] << std::endl;
 
 			}
 		}

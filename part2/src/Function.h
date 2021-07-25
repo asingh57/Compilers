@@ -220,13 +220,16 @@ public:
 
 		//detect jump return and place this instruction there
 		for (auto itr = _instructions.begin(); itr != _instructions.end(); itr++) {
-			if ((*itr)->getInstructionType()==InstructionType::ReturnFunctionInst || (*itr)->getInstructionType() == InstructionType::ReturnProcedureInst) {
+			if ((*itr)->getInstructionType() == InstructionType::ReturnProcedureInst) {
 				_instructions.insert(itr,postInst);
 				itr++;
 
 				if (itr == _instructions.end()) {
 					break;
 				}
+			}
+			else if ((*itr)->getInstructionType() == InstructionType::ReturnFunctionInst) {
+				dynamic_cast<ReturnFunctionInstruction*>((*itr))->setPreReturnInstruction(postInstStr.str()+"\n");
 			}
 		}
 		//put one at the end just for verification sake??
