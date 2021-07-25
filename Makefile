@@ -7,11 +7,11 @@ BIN = cs8803_bin
 
 # here is where you plug in the runtime for your OS
 LOCAL=/usr/local/
-CC=g++ -std=c++17 -g
+CC=g++ -std=c++17 
 CCARGS=-c -I $(LOCAL)/include/antlr4-runtime/ -I $(GENERATED)	
 LDARGS=-g
 LIBS=$(LOCAL)/lib/libantlr4-runtime.a
-
+CCARGS2=-c
 
 BACKENDSRC=part2/src/
 
@@ -19,24 +19,32 @@ BACKENDSRC=part2/src/
 all: backend
 
 instruction: dirs
-	$(CC) $(CCARGS) $(BACKENDSRC)/Instruction.cpp -o $(OUTPUT)/Instruction.o
+	$(CC) $(CCARGS2) $(BACKENDSRC)/Instruction.cpp -o $(OUTPUT)/Instruction.o
 	
 allocators: dirs
-	$(CC) $(CCARGS) $(BACKENDSRC)/RegisterAllocator.cpp -o $(OUTPUT)/RegisterAllocator.o
-	$(CC) $(CCARGS) $(BACKENDSRC)/NaiveAllocator.cpp -o $(OUTPUT)/NaiveAllocator.o
+	$(CC) $(CCARGS2) $(BACKENDSRC)/RegisterAllocator.cpp -o $(OUTPUT)/RegisterAllocator.o
+
+naiveAllocator:
+	$(CC) $(CCARGS2) $(BACKENDSRC)/NaiveAllocator.cpp -o $(OUTPUT)/NaiveAllocator.o
+
+blockAllocator:
+	$(CC) $(CCARGS2) $(BACKENDSRC)/BlockAllocator.cpp -o $(OUTPUT)/BlockAllocator.o
 	
+briggsAllocator:
+	$(CC) $(CCARGS2) $(BACKENDSRC)/BriggsAllocator.cpp -o $(OUTPUT)/BriggsAllocator.o
+
 function: dirs
-	$(CC) $(CCARGS) $(BACKENDSRC)/Function.cpp -o $(OUTPUT)/Function.o
+	$(CC) $(CCARGS2) $(BACKENDSRC)/Function.cpp -o $(OUTPUT)/Function.o
 	
 functionReader: dirs
-	$(CC) $(CCARGS) $(BACKENDSRC)/FunctionReader.cpp -o $(OUTPUT)/FunctionReader.o
+	$(CC) $(CCARGS2) $(BACKENDSRC)/FunctionReader.cpp -o $(OUTPUT)/FunctionReader.o
 
 main: dirs
-	$(CC) $(CCARGS) $(BACKENDSRC)/main.cpp -o $(OUTPUT)/main.o
+	$(CC) $(CCARGS2) $(BACKENDSRC)/main.cpp -o $(OUTPUT)/main.o
 	
 
-backend: instruction allocators function functionReader main
-	$(CC) $(LDARGS) $(OUTPUT)/RegisterAllocator.o $(OUTPUT)/NaiveAllocator.o $(OUTPUT)/Instruction.o $(OUTPUT)/Function.o $(OUTPUT)/FunctionReader.o $(OUTPUT)/main.o -o $(BIN)/tigerc
+backend: instruction allocators naiveAllocator blockAllocator briggsAllocator function functionReader main
+	$(CC) $(OUTPUT)/RegisterAllocator.o $(OUTPUT)/NaiveAllocator.o $(OUTPUT)/BlockAllocator.o $(OUTPUT)/BriggsAllocator.o $(OUTPUT)/Instruction.o $(OUTPUT)/Function.o $(OUTPUT)/FunctionReader.o $(OUTPUT)/main.o -o $(BIN)/tigerc
 
 
 listener:

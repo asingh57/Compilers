@@ -143,6 +143,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\src\BlockAllocator.cpp" />
+    <ClCompile Include="..\..\..\src\BriggsAllocator.cpp" />
     <ClCompile Include="..\..\..\src\Function.cpp" />
     <ClCompile Include="..\..\..\src\FunctionReader.cpp" />
     <ClCompile Include="..\..\..\src\Instruction.cpp" />
@@ -151,6 +153,8 @@
     <ClCompile Include="..\..\..\src\RegisterAllocator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\BlockAllocator.h" />
+    <ClInclude Include="..\..\..\src\BriggsAllocator.h" />
     <ClInclude Include="..\..\..\src\Function.h" />
     <ClInclude Include="..\..\..\src\FunctionReader.h" />
     <ClInclude Include="..\..\..\src\Instruction.h" />

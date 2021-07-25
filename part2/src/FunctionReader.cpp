@@ -1,5 +1,7 @@
 #include "FunctionReader.h"
 #include "NaiveAllocator.h"
+#include "BlockAllocator.h"
+#include "BriggsAllocator.h"
 #include <fstream>
 #include <iostream>
 #include <fstream>
