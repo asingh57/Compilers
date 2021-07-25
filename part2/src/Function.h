@@ -308,7 +308,7 @@ public:
 
 			//now filter out the return calls for main
 			//_instructions.remove_if();
-
+			/*
 			std::string exitStr = "li $v0, 10\n syscall";
 
 			Instruction* exitInst = new Instruction(exitStr);
@@ -316,6 +316,8 @@ public:
 			std::replace_if(_instructions.begin(), _instructions.end(), [](Instruction* inst) {
 				return inst->getInstructionType() == InstructionType::ReturnFunctionInst || inst->getInstructionType() == InstructionType::ReturnProcedureInst;
 				}, exitInst);
+
+			*/
 			IntList::globalIntList->processVarDeclarationInstructions(_instructions);
 
 		}

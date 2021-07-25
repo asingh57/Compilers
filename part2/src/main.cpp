@@ -17,8 +17,6 @@ int main()
     std::string outpath = path + IRFILENAME + "assembly";
     path += IRFILENAME;
     auto fnr = FunctionReader(path, outpath);
-
-    std::cout << "Hello World!\n";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
