@@ -3,7 +3,7 @@
 
 #include "FunctionReader.h"
 #include <iostream>
-#define IRFILENAME "recursive_fib.ir"
+#define IRFILENAME "prng.ir"
 
 #ifdef _WIN32
     std::string path = "../../../irCode/";

@@ -15,7 +15,7 @@ end_function modulo
 start_function gen_random
 void gen_random(int _4_seed, int _4_mod, int _4_mult, int _4_inc)
 int-list: _4_inc, _4_mod, _4_mult, _4_seed, _5_cur, _5_i, _5_prev, _t3, _t4, _t5
-    prng:
+    gen_random:
         assign, _5_prev, _4_seed, 
         assign, _5_i, 1, 
         goto, Label_2, , 

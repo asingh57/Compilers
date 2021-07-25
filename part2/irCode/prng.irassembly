@@ -32,7 +32,7 @@ sw $s7,8($sp)
 add $sp, $sp, 24
 jr $ra
 
-prng:
+gen_random:
 
 sub $sp, $sp, 40
 
