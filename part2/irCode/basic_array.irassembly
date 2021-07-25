@@ -1,0 +1,64 @@
+main:
+
+sub $sp, $sp, 28
+
+la $s7,16($sp)
+
+li $s6,10
+sw $s6,0($s7)
+
+
+
+la $s7,16($sp)
+
+li $s6,20
+sw $s6,4($s7)
+
+
+
+lw $s7,0($sp)
+la $s6,16($sp)
+lw $s7,0($s6)
+
+sw $s7,0($sp)
+
+lw $s7,4($sp)
+la $s6,16($sp)
+lw $s7,4($s6)
+
+sw $s7,4($sp)
+
+lw $s7,0($sp)
+lw $s6,4($sp)
+lw $s5,8($sp)
+add $s5,$s6,$s7
+
+sw $s7,0($sp)
+sw $s6,4($sp)
+sw $s5,8($sp)
+la $s7,16($sp)
+lw $s6,8($sp)
+sw $s6,8($s7)
+
+
+sw $s6,8($sp)
+lw $s7,12($sp)
+la $s6,16($sp)
+lw $s7,8($s6)
+
+sw $s7,12($sp)
+
+lw $s7,12($sp)
+li $v0, 1
+move $a0, $s7
+syscall
+addi $a0, $0, 0xA 
+addi $v0, $0, 0xB
+syscall
+
+sw $s7,12($sp)
+add $sp, $sp, 28
+
+li $v0, 10
+ syscall
+
