@@ -715,7 +715,23 @@ public:
 };
 
 
-class CallProcedureInstruction : public Instruction
+class ProcOrFnCall {
+protected:
+	std::string _preCall;
+	std::string _postCall;
+public:
+	ProcOrFnCall() { _preCall = ""; };
+	virtual void setPreCall(std::string preCall) {
+		_preCall += "\n"+ preCall;
+	}
+	virtual void setPostCall(std::string postCall) {
+		_postCall = "\n" + postCall + _postCall;
+	}
+
+};
+
+
+class CallProcedureInstruction : public Instruction, public ProcOrFnCall
 {
 public:
 	CallProcedureInstruction(std::vector<std::string> vars) : Instruction(CallProcedureInst, vars) {
@@ -735,6 +751,7 @@ public:
 	std::string getMIPSInstruction() override {
 
 		std::ostringstream stringStream;
+		stringStream << _preCall << std::endl;
 		if (_vars[0] == "printi") {
 
 			stringStream << "li $v0, 1" << std::endl;
@@ -766,14 +783,14 @@ public:
 
 		}
 
+		stringStream << _postCall << std::endl;
 
 		return stringStream.str() + "\n";
 	}
 
 };
 
-
-class CallFunctionInstruction : public Instruction
+class CallFunctionInstruction : public Instruction, public ProcOrFnCall
 {
 public:
 	CallFunctionInstruction(std::vector<std::string> vars) : Instruction(CallFunctionInst, vars) {
@@ -786,6 +803,8 @@ public:
 	std::string getMIPSInstruction() override {
 
 		std::ostringstream stringStream;
+
+		stringStream << _preCall << std::endl;
 
 		for (unsigned int i = 2; i < _vars.size(); i++) {
 			if (isInteger(_vars[i])) {
@@ -801,6 +820,8 @@ public:
 		//load v0 into return variable
 
 		stringStream << "move " << _varRegMap[_vars[0]] << ",$v0";
+
+		stringStream << _postCall << std::endl;
 
 		return stringStream.str() + "\n";
 	}

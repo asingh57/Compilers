@@ -64,9 +64,13 @@ public:
 					}
 					else {
 						(dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(intlsts->getStoreInstruction(v, reg) + "\n");
-						out << inst->getMIPSInstruction() << std::endl;
 					}
 					inst->addToVarRegisterMap(v, reg);
+				}
+
+
+				if (isReturnFunction) {
+					out << inst->getMIPSInstruction() << std::endl;
 				}
 
 				//make regs available again

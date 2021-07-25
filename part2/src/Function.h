@@ -259,11 +259,14 @@ class Function
 	IntList* _intlist;
 	std::map<std::string, std::string> _argRegMap;
 	std::string _name;
+	int _backArgVarCount;
 public:
 	Function(std::string name, std::string functionDefinition, IntList* intlist) : _name(name), _instructions(), _intlist(intlist), _argRegMap(){
 		//todo parse definition
 		//this will be useful to indicate which vars are function params and therefore dont need special register allocations
 		
+		_backArgVarCount = 1;//minimum we back up $ra
+
 		auto sp = split(functionDefinition.c_str(), '(');
 		auto varString = sp[1];
 		auto spl = split(varString.c_str(), ')');
@@ -279,6 +282,7 @@ public:
 				else {
 					varNames.push_back(varName);
 				}
+				_backArgVarCount++;//increment num arg vars we must back up before calling another function
 				//varNames.push_back(split(v.c_str())[1]);
 			}
 			//for each relevant instruction, add to its mapping of vars->registers, the special registers
@@ -314,6 +318,37 @@ public:
 				}, exitInst);
 			IntList::globalIntList->processVarDeclarationInstructions(_instructions);
 
+		}
+
+
+
+		//for each function call, we must load and store $v0, $a0..$a3 on stack
+		for (auto* inst : _instructions) {
+			if (inst->getInstructionType() == InstructionType::CallFunctionInst || inst->getInstructionType() == InstructionType::CallProcedureInst) {
+				auto castInst = dynamic_cast<ProcOrFnCall*>(inst);
+				std::vector<std::string> varList{ "$ra" , "$a0", "$a1", "$a2" , "$a3" };
+
+				std::string preCall = "";
+				std::string postCall = "";
+				int stackIncrementSz = 0;
+				std::map<std::string, int> varOffsetMap;
+				preCall += "sub $sp, $sp, " + std::to_string(_backArgVarCount * 4) + "\n";
+				for (int i = 0; i < _backArgVarCount; i++) {
+					varOffsetMap.insert(std::make_pair(varList[i], stackIncrementSz));
+					stackIncrementSz += 4;
+				}
+
+				for (auto [var, off] : varOffsetMap) {
+					preCall += "sw " + var + "," + std::to_string(off) + "($sp)" + "\n";
+					postCall += "lw " + var + "," + std::to_string(off) + "($sp)" + "\n";
+				}
+
+
+				castInst->setPreCall(preCall);
+				postCall += "add $sp, $sp, " + std::to_string(_backArgVarCount * 4) + "\n";
+				castInst->setPostCall(postCall);
+
+			}
 		}
 	}
 
