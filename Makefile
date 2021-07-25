@@ -13,9 +13,31 @@ LDARGS=-g
 LIBS=$(LOCAL)/lib/libantlr4-runtime.a
 
 
+BACKENDSRC=part2/src/
 
 
-all: tiger
+all: backend
+
+instruction:
+	$(CC) $(CCARGS) $(BACKENDSRC)/Instruction.cpp -o $(OUTPUT)/Instruction.o
+	
+allocators:
+	$(CC) $(CCARGS) $(BACKENDSRC)/RegisterAllocator.cpp -o $(OUTPUT)/RegisterAllocator.o
+	$(CC) $(CCARGS) $(BACKENDSRC)/NaiveAllocator.cpp -o $(OUTPUT)/NaiveAllocator.o
+	
+function:
+	$(CC) $(CCARGS) $(BACKENDSRC)/Function.cpp -o $(OUTPUT)/Function.o
+	
+functionReader:
+	$(CC) $(CCARGS) $(BACKENDSRC)/FunctionReader.cpp -o $(OUTPUT)/FunctionReader.o
+
+main:
+	$(CC) $(CCARGS) $(BACKENDSRC)/main.cpp -o $(OUTPUT)/main.o
+	
+
+backend: instruction allocators function functionReader main
+	$(CC) $(LDARGS) $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/RegisterAllocator.o $(OUTPUT)/NaiveAllocator.o $(OUTPUT)/Instruction.o $(OUTPUT)/Function.o $(OUTPUT)/FunctionReader.o $(OUTPUT)/main.o -o $(BIN)/tigercFrontEnd
+
 
 listener:
 	$(CC) $(CCARGS) $(GENERATED)/TigerBaseListener.cpp -o $(OUTPUT)/TigerBaseListener.o 
@@ -33,7 +55,7 @@ tiger: dirs antlr4 main.cpp symbolstat lexparse listener
 	$(CC) $(CCARGS) main.cpp  -o $(OUTPUT)/tiger.o 
 	$(CC) $(CCARGS) symbolTable.cpp -o $(OUTPUT)/symbolTable.o
 	$(CC) $(CCARGS) scope.cpp -o $(OUTPUT)/scope.o
-	$(CC) $(LDARGS) $(OUTPUT)/scope.o $(OUTPUT)/symbolTable.o $(OUTPUT)/symbol.o $(OUTPUT)/stat.o $(OUTPUT)/tiger.o $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/TigerLexer.o $(OUTPUT)/TigerListener.o $(OUTPUT)/TigerParser.o $(LIBS) -o $(BIN)/tigerc
+	$(CC) $(LDARGS) $(OUTPUT)/scope.o $(OUTPUT)/symbolTable.o $(OUTPUT)/symbol.o $(OUTPUT)/stat.o $(OUTPUT)/tiger.o $(OUTPUT)/TigerBaseListener.o $(OUTPUT)/TigerLexer.o $(OUTPUT)/TigerListener.o $(OUTPUT)/TigerParser.o $(LIBS) -o $(BIN)/tigercFrontEnd
 
 antlr4: $(GRAMMAR)
 	antlr -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

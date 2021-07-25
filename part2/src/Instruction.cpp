@@ -1,11 +1,12 @@
 #include "Instruction.h"
+#include <algorithm>
 #include <vector>
 
 
 Instruction* Instruction::parse(std::string instStr)
 {
     //remove all whitespaces
-    instStr.erase(remove_if(instStr.begin(), instStr.end(), isspace), instStr.end());
+    instStr.erase(std::remove_if(instStr.begin(), instStr.end(), isspace), instStr.end());
 
     if (instStr.back()==':') {//this is a label
         return new LabelInstruction(instStr.substr(0, instStr.length()-1));
