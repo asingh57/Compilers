@@ -361,6 +361,7 @@ class GotoInstruction : public Instruction
 public:
 	GotoInstruction(std::vector<std::string> vars) : Instruction(GotoInst, vars) {
 
+		_excludeIndices.insert(vars.size() - 1);
 	}
 
 	std::string getMIPSInstruction() override {
