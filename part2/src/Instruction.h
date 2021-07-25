@@ -846,7 +846,7 @@ public:
 		else {
 			stringStream << "move "<< _varRegMap[_vars[tempPos]] <<"," << _varRegMap[posRaw] << std::endl;
 			//multiply by 4 in place
-			stringStream << "sll " << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
+			stringStream << "sll " << _varRegMap[_vars[tempPos]] <<"," << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
 			//now add base address
 			stringStream << "add " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[_vars[tempPos]] << "," << varName << std::endl;
 
@@ -890,7 +890,7 @@ public:
 		else {
 			stringStream << "move " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[posRaw] << std::endl;
 			//multiply by 4 in place
-			stringStream << "sll " << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
+			stringStream << "sll " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[_vars[tempPos]] << "," << 2 << std::endl;
 			//now add base address
 			stringStream << "add " << _varRegMap[_vars[tempPos]] << "," << _varRegMap[_vars[tempPos]] << "," << varName << std::endl;
 
