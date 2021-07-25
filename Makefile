@@ -18,20 +18,20 @@ BACKENDSRC=part2/src/
 
 all: backend
 
-instruction:
+instruction: dirs
 	$(CC) $(CCARGS) $(BACKENDSRC)/Instruction.cpp -o $(OUTPUT)/Instruction.o
 	
-allocators:
+allocators: dirs
 	$(CC) $(CCARGS) $(BACKENDSRC)/RegisterAllocator.cpp -o $(OUTPUT)/RegisterAllocator.o
 	$(CC) $(CCARGS) $(BACKENDSRC)/NaiveAllocator.cpp -o $(OUTPUT)/NaiveAllocator.o
 	
-function:
+function: dirs
 	$(CC) $(CCARGS) $(BACKENDSRC)/Function.cpp -o $(OUTPUT)/Function.o
 	
-functionReader:
+functionReader: dirs
 	$(CC) $(CCARGS) $(BACKENDSRC)/FunctionReader.cpp -o $(OUTPUT)/FunctionReader.o
 
-main:
+main: dirs
 	$(CC) $(CCARGS) $(BACKENDSRC)/main.cpp -o $(OUTPUT)/main.o
 	
 
