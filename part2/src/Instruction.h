@@ -108,6 +108,12 @@ public:
 		return vars;
 	}
 
+	bool varRegMapContainsVar(std::string var) {
+		if (_varRegMap.count(var) && _varRegMap[var].at(1)=='a') {
+			return true;
+		}
+		return false;
+	}
 
 	void addToVarRegisterMap(std::string var, std::string reg) {
 		_varRegMap[var] = reg;

@@ -31,6 +31,10 @@ public:
 				auto varsUsedByInst = inst->getUsedVars();
 				//load vars into regs
 				for (auto v: varsUsedByInst) {
+					if (inst->varRegMapContainsVar(v)) {
+						continue;
+					}
+
 					auto reg = currentlyAvailableRegs.back();
 					currentlyUsedRegs.push_back(reg);
 					currentlyAvailableRegs.pop_back();
@@ -45,6 +49,9 @@ public:
 				//store vars into mem
 
 				for (auto v : varsUsedByInst) {
+					if (inst->varRegMapContainsVar(v)) {
+						continue;
+					}
 					auto reg = inst->getRegFromVar(v);
 					out << intlsts->getStoreInstruction(v, reg) << std::endl;
 					inst->addToVarRegisterMap(v, reg);

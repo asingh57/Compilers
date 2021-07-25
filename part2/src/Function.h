@@ -247,8 +247,6 @@ public:
 			return false;
 			}, *ass);
 
-
-
 	}
 };
 
@@ -271,7 +269,14 @@ public:
 			auto vars = split(varString.c_str());
 			std::vector<std::string>varNames;
 			for (auto v : vars) {
-				varNames.push_back(split(v.c_str())[1]);
+				std::string varName = v.substr(3);
+				if (varName.at(varName.size() - 1) == ']') {
+					varNames.push_back(split(varName.c_str(),'[')[0]);
+				}
+				else {
+					varNames.push_back(varName);
+				}
+				//varNames.push_back(split(v.c_str())[1]);
 			}
 			//for each relevant instruction, add to its mapping of vars->registers, the special registers
 			for (int i = 0; i < varNames.size(); i++) {
