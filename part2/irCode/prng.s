@@ -2,7 +2,6 @@
 
 
 
-
 ############
 modulo:
 
@@ -128,11 +127,6 @@ move $s7,$s4
 
 move $s5,$s7
 
-sw $s7,16($sp)
-sw $s6,20($sp)
-sw $s5,24($sp)
-sw $s4,36($sp)
-
 addi $s6,$s6,1
 
 sw $s7,16($sp)
@@ -158,6 +152,7 @@ Label_3:
 
 
 add $sp, $sp, 40
+
 
 jr $ra
 

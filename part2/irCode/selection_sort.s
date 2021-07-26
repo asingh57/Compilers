@@ -2,7 +2,6 @@
 
 
 
-
 ############
 main:
 
@@ -45,18 +44,6 @@ sw $t7,28($s7)
 
 li $t5,8
 
-
-
-
-
-
-
-
-
-
-sw $t6,32($sp)
-sw $t5,48($sp)
-
 li $t6,0
 
 
@@ -98,11 +85,6 @@ lw $s4,40($sp)
 move $s5,$s6
 
 addi $s7,$s6,1
-
-sw $s7,68($sp)
-sw $s6,32($sp)
-sw $s5,36($sp)
-sw $s4,40($sp)
 
 move $s4,$s7
 
@@ -167,8 +149,6 @@ beq $s2,$zero,_if_label_5
 
 ############
 lw $s7,76($sp)
-sw $s7,76($sp)
-
 li $s7,1
 
 sw $s7,76($sp)
@@ -187,9 +167,6 @@ bne $s6,$s7,_if_label_4
 ############
 lw $s7,36($sp)
 lw $s6,40($sp)
-sw $s7,36($sp)
-sw $s6,40($sp)
-
 move $s7,$s6
 
 sw $s7,36($sp)
@@ -263,8 +240,6 @@ j _loop_label_0
 _loop_label_1:
 
 lw $s7,32($sp)
-sw $s7,32($sp)
-
 li $s7,0
 
 sw $s7,32($sp)
