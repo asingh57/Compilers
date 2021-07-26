@@ -25,8 +25,10 @@ int main(int argc, char* argv[])
     bool liveness = false;
     bool outputMIPS = false;
     if (argc==1) {
-        naive = true;
-        outputMIPS = true;
+        //naive = true;
+        //outputMIPS = true;
+        block = true;
+        cfg = true;
     }
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];

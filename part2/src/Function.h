@@ -292,6 +292,9 @@ public:
 		}
 	}
 
+	std::string getName() {
+		return _name;
+	}
 
 	void addInstruction(Instruction* inst) {
 		_instructions.push_back(inst);

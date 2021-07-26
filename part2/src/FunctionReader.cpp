@@ -116,6 +116,7 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, 
 				//parse this instruction
 				auto instruction = Instruction::parse(line);
 				function->addInstruction(instruction);
+				instruction->setDebug(line);
 				line = lineList.front();
 				lineList.pop_front();
 			}
@@ -131,6 +132,10 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, 
 	if (useNaive) {
 		auto naiveAlloc = NaiveAllocator(_functions);
 		output = naiveAlloc.getFinalOpList();
+	}
+	else if (useBlock){
+		auto blockAlloc = BlockAllocator(_functions, cfg);
+		output = blockAlloc.getFinalOpList();
 	}
 
 

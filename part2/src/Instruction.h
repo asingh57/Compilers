@@ -71,12 +71,31 @@ protected:
 	std::string _genericInstruction;
 	std::unordered_set<int> _excludeIndices;
 	InstructionType _instructionType;
-	Instruction(InstructionType instType, std::vector<std::string> vars = {}) : _instructionType(instType) ,_vars(vars), _varRegMap(), _excludeIndices() {
-		_genericInstruction = "";
+	std::string _debug;
+
+	bool _isEndOfBlock;
+	std::vector<std::string> _listOfOtherBlocksThisPointsTo;
+
+	Instruction(InstructionType instType, std::vector<std::string> vars = {}) : _instructionType(instType) ,_vars(vars), _varRegMap(), _excludeIndices() 
+	, _isEndOfBlock(false), _listOfOtherBlocksThisPointsTo(), _genericInstruction(""), _debug("")
+	{
+
 	};
 public:
-	Instruction(std::string genericInstruction, std::vector<std::string> vars = {}) :_instructionType(GenericInst), _vars(vars), _varRegMap(), _genericInstruction(genericInstruction) {
+	Instruction(std::string genericInstruction, std::vector<std::string> vars = {}, std::string debug = "") :_instructionType(GenericInst), _vars(vars), _varRegMap(), _excludeIndices(), _genericInstruction(genericInstruction)
+		, _isEndOfBlock(false), _listOfOtherBlocksThisPointsTo(), _debug(debug)
+	{
 	};
+
+	void addBlockThisPointsTo(std::string blockLabel) {
+		_isEndOfBlock = true;
+		_listOfOtherBlocksThisPointsTo.push_back(blockLabel);
+	}
+
+	std::vector<std::string> getListOfBlocksThisPointsTo() {
+		return _listOfOtherBlocksThisPointsTo;
+	}
+
 
 	InstructionType getInstructionType() {
 		return _instructionType;
@@ -85,8 +104,12 @@ public:
 	//instruction factory
 	static Instruction* parse(std::string instStr);
 
+	void setDebug(std::string dbg) {
+		_debug = dbg;
+	}
+
 	virtual std::string debug(){
-		return "";
+		return _debug;
 	}
 
 	virtual std::string getMIPSInstruction() {
@@ -130,6 +153,9 @@ class LabelInstruction : public Instruction {
 public:
 	LabelInstruction(std::string name) : _name(name), Instruction(LabelInst) {
 
+	}
+	std::string getLabelName() {
+		return _name;
 	}
 
 	std::string getMIPSInstruction() override {
@@ -405,6 +431,7 @@ class GotoInstruction : public Instruction
 public:
 	GotoInstruction(std::vector<std::string> vars) : Instruction(GotoInst, vars) {
 
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 	}
 
@@ -423,6 +450,7 @@ class BreqInstruction : public Instruction
 public:
 	BreqInstruction(std::vector<std::string> vars) : Instruction(BreqInst, vars) {
 
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
@@ -465,6 +493,7 @@ class BrneqInstruction : public Instruction
 {
 public:
 	BrneqInstruction(std::vector<std::string> vars) : Instruction(BrneqInst, vars) {
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 		if (isInteger(_vars[0]) || isInteger(_vars[1])) {
 			//we will need an extra register
@@ -507,6 +536,7 @@ class BrgtInstruction : public Instruction
 {
 public:
 	BrgtInstruction(std::vector<std::string> vars) : Instruction(BrgtInst, vars) {
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -551,6 +581,7 @@ class BrltInstruction : public Instruction
 {
 public:
 	BrltInstruction(std::vector<std::string> vars) : Instruction(BrltInst, vars) {
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -592,6 +623,7 @@ class BrleqInstruction : public Instruction
 {
 public:
 	BrleqInstruction(std::vector<std::string> vars) : Instruction(BrleqInst, vars) {
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 		//we will need an extra register
 		_vars.push_back("__compilerGeneratedTemp" + std::to_string(extraCounter++));
@@ -634,6 +666,7 @@ class BrgeqInstruction : public Instruction
 {
 public:
 	BrgeqInstruction(std::vector<std::string> vars) : Instruction(BrgeqInst, vars) {
+		addBlockThisPointsTo(vars[vars.size() - 1]);
 		_excludeIndices.insert(vars.size() - 1);
 
 		//we will need an extra register
@@ -724,12 +757,15 @@ protected:
 	std::string _preCall;
 	std::string _postCall;
 public:
-	ProcOrFnCall() { _preCall = ""; };
+	ProcOrFnCall() {
+		_preCall = ""; 
+		_postCall= "";
+	};
 	virtual void setPreCall(std::string preCall) {
 		_preCall += "\n"+ preCall;
 	}
 	virtual void setPostCall(std::string postCall) {
-		_postCall = "\n" + postCall + _postCall;
+		_postCall = "\n"+  postCall+ "\n" + _postCall;
 	}
 
 };
@@ -739,6 +775,7 @@ class CallProcedureInstruction : public Instruction, public ProcOrFnCall
 {
 public:
 	CallProcedureInstruction(std::vector<std::string> vars) : Instruction(CallProcedureInst, vars) {
+		addBlockThisPointsTo(vars[0]);
 		_excludeIndices.insert(0);
 		/* do we need this optimisation?
 		if (_vars[1] == "printi") {
@@ -798,6 +835,7 @@ class CallFunctionInstruction : public Instruction, public ProcOrFnCall
 {
 public:
 	CallFunctionInstruction(std::vector<std::string> vars) : Instruction(CallFunctionInst, vars) {
+		addBlockThisPointsTo(vars[1]);
 		_excludeIndices.insert(1);
 	}
 
