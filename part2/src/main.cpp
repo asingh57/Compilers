@@ -4,7 +4,7 @@
 #include "FunctionReader.h"
 #include <iostream>
 #include <cstring>
-#define IRFILENAME "prng.ir"
+#define IRFILENAME "selection_sort.ir"
 
 #ifdef _WIN32
     std::string inPath = "../../../irCode/";
