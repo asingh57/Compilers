@@ -1,6 +1,8 @@
 ############
 
 
+
+
 ############
 main:
 
@@ -54,7 +56,20 @@ li $t5,8
 
 sw $t6,32($sp)
 sw $t5,48($sp)
+
 li $t6,0
+
+
+
+
+
+
+
+
+
+
+sw $t6,32($sp)
+sw $t5,48($sp)
 
 ############
 _loop_label_0:
@@ -66,11 +81,12 @@ lw $s4,32($sp)
 lw $s3,48($sp)
 addi $s7,$s3,-1
 
-
-
 sw $s7,64($sp)
+
+
 sw $s4,32($sp)
 sw $s3,48($sp)
+
 slt$s5,$s7,$s4
 bne $s5,$zero,_loop_label_1
 
@@ -87,7 +103,13 @@ sw $s7,68($sp)
 sw $s6,32($sp)
 sw $s5,36($sp)
 sw $s4,40($sp)
+
 move $s4,$s7
+
+sw $s7,68($sp)
+sw $s6,32($sp)
+sw $s5,36($sp)
+sw $s4,40($sp)
 
 ############
 _loop_label_2:
@@ -99,11 +121,12 @@ lw $s4,48($sp)
 lw $s3,40($sp)
 addi $s7,$s4,-1
 
-
-
 sw $s7,72($sp)
+
+
 sw $s4,48($sp)
 sw $s3,40($sp)
+
 slt$s5,$s7,$s3
 bne $s5,$zero,_loop_label_3
 
@@ -129,22 +152,26 @@ lw $s6,0($s3)
 
 li $s1,0
 
+sw $s7,80($sp)
+sw $s6,84($sp)
+
 
 
 
 sw $s1,76($sp)
-sw $s7,80($sp)
-sw $s6,84($sp)
-
 sw $s0,36($sp)
 sw $t7,40($sp)
+
 slt$s2,$s7,$s6
 beq $s2,$zero,_if_label_5
 
 ############
 lw $s7,76($sp)
 sw $s7,76($sp)
+
 li $s7,1
+
+sw $s7,76($sp)
 
 ############
 _if_label_5:
@@ -153,6 +180,7 @@ _if_label_5:
 lw $s6,76($sp)
 
 sw $s6,76($sp)
+
 li $s7,1
 bne $s6,$s7,_if_label_4
 
@@ -161,7 +189,11 @@ lw $s7,36($sp)
 lw $s6,40($sp)
 sw $s7,36($sp)
 sw $s6,40($sp)
+
 move $s7,$s6
+
+sw $s7,36($sp)
+sw $s6,40($sp)
 
 ############
 _if_label_4:
@@ -170,6 +202,7 @@ lw $s7,40($sp)
 addi $s7,$s7,1
 
 sw $s7,40($sp)
+
 j _loop_label_2
 
 ############
@@ -213,16 +246,17 @@ sw $s3,0($t5)
 addi $s6,$s6,1
 
 
-
-
-
+sw $s6,32($sp)
 sw $s5,88($sp)
 sw $s4,92($sp)
-
 sw $s3,60($sp)
-sw $s6,32($sp)
 sw $s2,36($sp)
 sw $s1,56($sp)
+
+
+
+
+
 j _loop_label_0
 
 ############
@@ -230,7 +264,10 @@ _loop_label_1:
 
 lw $s7,32($sp)
 sw $s7,32($sp)
+
 li $s7,0
+
+sw $s7,32($sp)
 
 ############
 _loop_label_6:
@@ -242,11 +279,12 @@ lw $s4,32($sp)
 lw $s3,48($sp)
 addi $s7,$s3,-1
 
-
-
 sw $s7,96($sp)
+
+
 sw $s4,32($sp)
 sw $s3,48($sp)
+
 slt$s5,$s7,$s4
 bne $s5,$zero,_loop_label_7
 
@@ -260,10 +298,11 @@ sll $s6,$s6,2
 add $s6,$s6,$s5
 lw $s7,0($s6)
 
-
 sw $s7,100($sp)
 
+
 sw $s4,32($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -285,12 +324,14 @@ lw $s7,32($sp)
 addi $s7,$s7,1
 
 sw $s7,32($sp)
+
 j _loop_label_6
 
 ############
 _loop_label_7:
 
 li, $v0, 0
+
 add $sp, $sp, 104
 jr $ra
 
