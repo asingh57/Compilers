@@ -1,6 +1,7 @@
 ############
 
 
+
 ############
 square:
 
@@ -12,6 +13,7 @@ mflo $s7
 
 move, $v0, $s7
 sw $s7,4($sp)
+
 add $sp, $sp, 8
 jr $ra
 
@@ -29,9 +31,10 @@ mflo $s7
 
 move $a0,$s7
 
-
 sw $s7,4($sp)
+
 sw $s5,8($sp)
+
 
 sub $sp, $sp, 8
 sw $a0,4($sp)
@@ -47,13 +50,17 @@ add $sp, $sp, 8
 
 
 
+sw $s7,4($sp)
+
 sw $s5,8($sp)
+
 ############
 lw $s7,8($sp)
 move $a0,$s7
 
 move, $v0, $a0
 sw $s7,8($sp)
+
 add $sp, $sp, 12
 jr $ra
 
@@ -64,6 +71,7 @@ sub $sp, $sp, 8
 
 lw $s7,0($sp)
 sw $s7,0($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -78,13 +86,15 @@ add $sp, $sp, 4
 
 
 sw $s7,0($sp)
+
 ############
 lw $s7,4($sp)
 lw $s6,0($sp)
 move $s7,$s6
 
-sw $s6,0($sp)
 sw $s7,4($sp)
+sw $s6,0($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -103,6 +113,7 @@ add $sp, $sp, 4
 
 ############
 li, $v0, 0
+
 add $sp, $sp, 8
 jr $ra
 

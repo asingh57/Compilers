@@ -4,7 +4,7 @@
 #include "FunctionReader.h"
 #include <iostream>
 #include <cstring> 
-#define IRFILENAME "combo_arithmetic.ir"
+#define IRFILENAME "manyJumpsSmallBlocks.ir"
 
 #ifdef _WIN32
     std::string inPath = "../../../irCode/";
@@ -25,13 +25,13 @@ int main(int argc, char* argv[])
     bool liveness = false;
     bool outputMIPS = false;
     if (argc==1) {
-        //naive = true;
+        naive = true;
         //outputMIPS = true;
-        block = true;
-        cfg = true;
+        //block = true;
+        //cfg = true;
 
         //briggs = true;
-        liveness = true;
+        //liveness = true;
         outputMIPS = true;
     }
     for (int i = 1; i < argc; i++) {

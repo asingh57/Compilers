@@ -1,0 +1,24 @@
+start_program oneGiantBlock
+static-int-list:
+
+start_function main
+int main()
+int-list: a, b, c, d, e, f, g, h
+    main:
+        assign, a, 10
+        assign, b, 25
+        add, a, b, g
+        add, a, g, g
+        add, a, g, g
+        assign, c, 30
+        assign, d, 45
+        add, c, d, h
+        assign, e, 60
+        assign, f, 69
+        add, a, b, g
+        add, c, d, h
+        add, c, c, h
+        return ,,,
+end_function main
+
+end_program oneGiantBlock

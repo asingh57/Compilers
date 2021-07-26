@@ -1,0 +1,30 @@
+start_program manyJumpsSmallBlocks
+static-int-list:
+
+start_function main
+int main()
+int-list: a, b, c
+    main:
+        assign, a, 10
+        assign, b, 20
+        add, a, b, c
+    _label1:
+        assign, b, 10
+        assign, a, 20
+        add, c, b, a
+        goto, _label4,,
+    _label2:
+        assign, b, 10
+        assign, a, 20
+        add, c, b, a
+        goto, _label1,,
+    _label3:
+        assign, b, 10
+        assign, a, 20
+        add, c, b, a
+        goto, _label2,,
+     _label4:
+        return ,,,
+end_function main
+
+end_program manyJumpsSmallBlocks
