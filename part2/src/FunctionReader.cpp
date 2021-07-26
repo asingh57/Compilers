@@ -142,6 +142,11 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, 
 		auto naiveAlloc = NaiveAllocator(_functions);
 		output = naiveAlloc.getFinalOpList();*/
 	}
+	else if (useBriggs) {
+
+		auto briggsAlloc = BriggsAllocator(_functions, liveness);
+		output = briggsAlloc.getFinalOpList();
+	}
 
 
 	//std::cout << naiveStr << std::endl;

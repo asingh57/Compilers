@@ -1,6 +1,7 @@
 ############
 
 
+
 ############
 main:
 
@@ -21,11 +22,12 @@ add $s6,$s4,$s7
 
 move $s3,$s6
 
-sw $s5,96($sp)
+sw $s7,0($sp)
 sw $s6,4($sp)
+sw $s5,96($sp)
 sw $s4,100($sp)
 sw $s3,104($sp)
-sw $s7,0($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -57,11 +59,12 @@ sub $s6,$s7,$s2
 move $s5,$s6
 
 sw $s7,48($sp)
-sw $s3,96($sp)
-
-sw $s2,100($sp)
 sw $s6,68($sp)
 sw $s5,104($sp)
+
+sw $s3,96($sp)
+sw $s2,100($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -94,12 +97,13 @@ mflo $s6
 
 move $s5,$s6
 
-sw $s3,96($sp)
 sw $s7,72($sp)
-
-sw $s2,100($sp)
 sw $s6,76($sp)
 sw $s5,104($sp)
+
+sw $s3,96($sp)
+sw $s2,100($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -132,12 +136,13 @@ mflo $s6
 
 move $s5,$s6
 
-sw $s3,96($sp)
 sw $s7,80($sp)
-
-sw $s2,100($sp)
 sw $s6,84($sp)
 sw $s5,104($sp)
+
+sw $s3,96($sp)
+sw $s2,100($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -165,10 +170,11 @@ addi $s6,$s7,25
 
 move $s5,$s6
 
-sw $s5,104($sp)
 sw $s7,88($sp)
-
 sw $s6,92($sp)
+sw $s5,104($sp)
+
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -199,11 +205,12 @@ mflo $s6
 
 move $s5,$s6
 
-
 sw $s7,8($sp)
-
 sw $s6,12($sp)
 sw $s5,104($sp)
+
+
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -247,14 +254,15 @@ sub $s0,$s2,$s1
 move $t7,$s0
 
 sw $s7,96($sp)
-sw $s5,16($sp)
 sw $s6,100($sp)
+sw $s5,16($sp)
 sw $s4,20($sp)
 sw $s3,24($sp)
 sw $s2,28($sp)
 sw $s1,32($sp)
 sw $s0,36($sp)
 sw $t7,104($sp)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -287,10 +295,11 @@ sub $s5,$s7,$s6
 move $s4,$s5
 
 sw $s7,40($sp)
-
-sw $s5,52($sp)
 sw $s6,44($sp)
+sw $s5,52($sp)
 sw $s4,104($sp)
+
+
 
 
 sub $sp, $sp, 4
@@ -326,12 +335,13 @@ addi $s5,$s6,7
 
 move $s4,$s5
 
-sw $s5,64($sp)
-sw $s1,100($sp)
-sw $s2,96($sp)
 sw $s7,56($sp)
-sw $s4,104($sp)
 sw $s6,60($sp)
+sw $s5,64($sp)
+sw $s4,104($sp)
+
+sw $s2,96($sp)
+sw $s1,100($sp)
 
 
 sub $sp, $sp, 4
@@ -351,6 +361,7 @@ add $sp, $sp, 4
 
 ############
 li, $v0, 0
+
 add $sp, $sp, 108
 jr $ra
 

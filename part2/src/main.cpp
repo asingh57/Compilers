@@ -4,7 +4,7 @@
 #include "FunctionReader.h"
 #include <iostream>
 #include <cstring> 
-#define IRFILENAME "selection_sort.ir"
+#define IRFILENAME "combo_arithmetic.ir"
 
 #ifdef _WIN32
     std::string inPath = "../../../irCode/";
@@ -29,6 +29,9 @@ int main(int argc, char* argv[])
         //outputMIPS = true;
         block = true;
         cfg = true;
+
+        //briggs = true;
+        liveness = true;
         outputMIPS = true;
     }
     for (int i = 1; i < argc; i++) {

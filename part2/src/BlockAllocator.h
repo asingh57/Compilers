@@ -80,6 +80,16 @@ struct Block {
     }
 
 
+    static void findLiveRanges() {
+        //create "is pointed to by" list
+
+    }
+
+    static void printLiveness() {
+
+
+    }
+
 };
 
 class BlockAllocator :
@@ -358,7 +368,7 @@ public:
                     instType == InstructionType::ReturnProcedureInst
                     );
 
-                bool mustSaveBefore = (inst == insts[insts.size() - 1] && lastGeneric==nullptr) || inst == lastGeneric;
+                bool mustSaveBefore = /*(inst == insts[insts.size() - 1] && lastGeneric==nullptr)*/l || isFunctionCall || inst == lastGeneric;
                 bool mustSaveAfter = isFunctionCall || (!l && inst == insts[insts.size()-1]);
 
 
@@ -414,223 +424,6 @@ public:
 
 
         }
-        //now go through each block and find most used variables, load store as appropriate
-       /* for (auto blk: Block::blockList) {
-
-            out << "############\n";
-
-            std::map<std::string, int>mostUsedVars;
-
-            for (auto inst : blk->_instructions) {
-                auto vars = inst->getUsedVars();
-                for (auto var : vars) {
-                    if (inst->varRegMapContainsVar(var)) {
-                        continue;
-                    }
-                    if (mostUsedVars.count(var) == 0) {
-                        mostUsedVars[var] = 1;
-                    }
-                    else {
-                        mostUsedVars[var]++;
-                    }
-                }
-            }
-            std::vector <std::pair<std::string, int>> usedVars;
-
-            //now we have all the var's reference count, convert to vector
-
-            for (auto pair : mostUsedVars) {
-                usedVars.push_back(pair);
-            }
-
-            //now sort 
-
-            sort(usedVars.begin(), usedVars.end(), cmp);
-
-
-            std::map<std::string, std::string> varToRegMapLocal;
-
-            int skipCount = 0;
-
-            if (blk->_instructions[0]->getInstructionType() == InstructionType::LabelInst) {
-                //print it immediately
-
-                out << blk->_instructions[0]->getMIPSInstruction() << std::endl;
-                skipCount++;
-            }
-
-            if (blk->_instructions.size()>=2 && blk->_instructions[1]->getInstructionType() == InstructionType::GenericInst) {
-
-                out << blk->_instructions[1]->getMIPSInstruction() << std::endl;
-                skipCount++;
-            }
-
-
-            //time to assign registers
-            for (auto [varName, val] : usedVars) {
-                varToRegMapLocal[varName] = "";
-                if (currentlyAvailableRegs.size()<=4) {
-                    break;//we're out of registers, lets hold onto a few temporaries
-                }
-                else {
-
-                    auto reg = currentlyAvailableRegs.back();
-                    currentlyUsedRegs.push_back(reg);
-                    currentlyAvailableRegs.pop_back();
-
-                    varToRegMapLocal[varName] = reg;
-                    out << blk->_intlists->getLoadInstruction(varName, reg) << std::endl;
-                    for (auto inst : blk->_instructions) {
-                        inst->addToVarRegisterMap(varName, reg);
-                    }
-                }
-            }
-            int ct = 0;
-            std::unordered_set <std::string>varsUsedByBlk;
-
-            Instruction* secondLastInst=nullptr;
-            for (auto inst : blk->_instructions) {
-                bool isLastInstruction = inst== blk->_instructions[blk->_instructions.size()-1];
-                bool isSecondLastInstruction = blk->_instructions.size()>=2 && inst == blk->_instructions[blk->_instructions.size() - 2] && blk->_instructions[blk->_instructions.size() - 2]->getInstructionType()==InstructionType::GenericInst;
-                if (ct++< skipCount) {
-                    continue;
-                }
-                if (isSecondLastInstruction && blk->_instructions[blk->_instructions.size() - 1]->getInstructionType()==InstructionType::ReturnFunctionInst) {
-                    secondLastInst = inst;
-                    continue;
-                }
-
-                auto varsUsedByInst = inst->getUsedVars();
-                //load vars into regs
-                for (auto v : varsUsedByInst) {
-                    varsUsedByBlk.insert(v);
-                    if (inst->varRegMapContainsVar(v)) {
-                        continue;
-                    }
-                    if (varToRegMapLocal[v] !="") {
-                        continue;
-                    }
-
-                    auto reg = currentlyAvailableRegs.back();
-                    currentlyUsedRegs.push_back(reg);
-                    currentlyAvailableRegs.pop_back();
-                    //std::cout << "v=" << v << std::endl;
-                    out << blk->_intlists->getLoadInstruction(v, reg) << std::endl;
-                    inst->addToVarRegisterMap(v, reg);
-                }
-                auto instType = inst->getInstructionType();
-                bool isReturnFunction = instType == InstructionType::ReturnFunctionInst;
-                
-                bool isJumper = false;
-
-                if (instType == InstructionType::BreqInst
-                    ||
-                    instType == InstructionType::BrgeqInst
-                    ||
-                    instType == InstructionType::BrgtInst
-                    ||
-                    instType == InstructionType::BrleqInst
-                    ||
-                    instType == InstructionType::BrltInst
-                    ||
-                    instType == InstructionType::BrneqInst
-                    ||
-                    instType == InstructionType::CallFunctionInst
-                    ||
-                    instType == InstructionType::CallProcedureInst
-                    ||
-                    instType == InstructionType::GotoInst
-                    ||
-                    instType == InstructionType::ReturnFunctionInst
-                    ||
-                    instType == InstructionType::ReturnProcedureInst
-                    ) {
-
-                    isJumper = true;
-                }
-
-                if (!isJumper) {
-                    //instruction
-                    out << inst->getMIPSInstruction() << std::endl;
-                }
-
-
-
-
-                //store vars into mem
-
-                if (isLastInstruction) {
-
-                    for (auto v : varsUsedByBlk) {
-                        if (inst->varRegMapContainsVar(v)) {
-                            continue;
-                        }
-                        auto reg = inst->getRegFromVar(v);
-
-
-                        if (inst->getInstructionType() == InstructionType::CallFunctionInst && v==inst->getAllVars()[0]) {
-                            auto fni = dynamic_cast<CallFunctionInstruction*>(inst);
-                            fni->setPostCall(blk->_intlists->getStoreInstruction(v, reg));
-                        }
-
-                        if (!isReturnFunction) {
-                            out << blk->_intlists->getStoreInstruction(v, reg) << std::endl;
-                        }
-                        else {
-                            (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(blk->_intlists->getStoreInstruction(v, reg) + "\n");
-                            
-                        }
-                        if (secondLastInst) {
-                            (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(secondLastInst->getDefaultInstruction() + "\n");
-                        }
-                        inst->addToVarRegisterMap(v, reg);
-                    }
-                }
-                else {
-                    for (auto v : varsUsedByInst) {
-
-                    
-                            if (inst->varRegMapContainsVar(v)) {
-                                continue;
-                            }
-                            if (varToRegMapLocal[v] != "") {
-                                continue;
-                            }
-                            auto reg = inst->getRegFromVar(v);
-
-
-
-                            varsUsedByBlk.erase(varsUsedByBlk.find(v));
-                            if (!isReturnFunction) {
-                                out << blk->_intlists->getStoreInstruction(v, reg) << std::endl;
-                            }
-                            else {
-                                (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(blk->_intlists->getStoreInstruction(v, reg) + "\n");
-                            }
-                            if (secondLastInst) {
-                                (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(secondLastInst->getDefaultInstruction() + "\n");
-                            }
-                            inst->addToVarRegisterMap(v, reg);
-                            currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
-                            currentlyUsedRegs.pop_back();
-                        }
-                }
-
-                if (isJumper) {
-                    out << inst->getMIPSInstruction() << std::endl;
-                }
-
-            }
-
-            //make regs available again
-            while (currentlyUsedRegs.size()) {
-                currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
-                currentlyUsedRegs.pop_back();
-            }
-
-
-        }
-        */
         return out.str();
     }
 };
