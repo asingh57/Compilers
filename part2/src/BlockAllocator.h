@@ -322,7 +322,6 @@ public:
                 if (inst == lastGeneric || (!lastGeneric && inst==insts[insts.size()-1])) {
                     for (auto [v, reg] : varToRegMapLocal) {
 
-                        auto reg = inst->getRegFromVar(v);
                         storeInst = intlsts->getStoreInstruction(v, reg) + "\n";
                         if (!isReturnFunction) {
                             out << intlsts->getStoreInstruction(v, reg) << std::endl;
