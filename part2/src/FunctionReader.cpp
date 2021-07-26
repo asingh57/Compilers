@@ -136,6 +136,11 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, 
 	else if (useBlock){
 		auto blockAlloc = BlockAllocator(_functions, cfg);
 		output = blockAlloc.getFinalOpList();
+
+
+		//TODO delet this
+		auto naiveAlloc = NaiveAllocator(_functions);
+		output = naiveAlloc.getFinalOpList();
 	}
 
 
