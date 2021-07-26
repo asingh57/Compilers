@@ -1,6 +1,8 @@
 ############
 
 
+
+
 ############
 modulo:
 
@@ -21,10 +23,11 @@ sub $s4,$a0,$s5
 move $s7,$s4
 
 move, $v0, $s7
-sw $s4,20($sp)
-sw $s5,16($sp)
-sw $s6,12($sp)
 sw $s7,8($sp)
+sw $s6,12($sp)
+sw $s5,16($sp)
+sw $s4,20($sp)
+
 add $sp, $sp, 24
 jr $ra
 
@@ -41,6 +44,7 @@ li $s7,1
 
 sw $s7,20($sp)
 sw $s6,24($sp)
+
 j Label_2
 
 ############
@@ -48,6 +52,7 @@ Label_1:
 
 lw $s7,24($sp)
 sw $s7,24($sp)
+
 
 sub $sp, $sp, 20
 sw $a0,4($sp)
@@ -82,10 +87,11 @@ mflo $s7
 
 add $s6,$a3,$s7
 
-sw $s5,24($sp)
 sw $s7,28($sp)
 sw $s6,32($sp)
+sw $s5,24($sp)
 sw $s4,36($sp)
+
 
 sub $sp, $sp, 20
 sw $a0,4($sp)
@@ -108,7 +114,11 @@ add $sp, $sp, 20
 
 
 
+sw $s7,28($sp)
+sw $s6,32($sp)
+sw $s5,24($sp)
 sw $s4,36($sp)
+
 ############
 lw $s7,16($sp)
 lw $s6,20($sp)
@@ -122,7 +132,13 @@ sw $s7,16($sp)
 sw $s6,20($sp)
 sw $s5,24($sp)
 sw $s4,36($sp)
+
 addi $s6,$s6,1
+
+sw $s7,16($sp)
+sw $s6,20($sp)
+sw $s5,24($sp)
+sw $s4,36($sp)
 
 ############
 Label_2:
@@ -133,11 +149,13 @@ lw $s5,0($v1)
 sw $s7,20($sp)
 
 sw $s5,0($v1)
+
 slt $s6,$s5,$s7
 beq $s6,$zero,Label_1
 
 ############
 Label_3:
+
 
 add $sp, $sp, 40
 
@@ -153,6 +171,7 @@ lw $s7,0($v1)
 li $s7,6
 
 sw $s7,0($v1)
+
 
 sub $sp, $sp, 4
 sw $ra,0($sp)
@@ -170,6 +189,7 @@ add $sp, $sp, 4
 
 ############
 li, $v0, 0
+
 add $sp, $sp, 4
 jr $ra
 

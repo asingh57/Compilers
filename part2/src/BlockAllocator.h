@@ -258,6 +258,7 @@ public:
 
             std::map<std::string, std::string> varToRegMapLocal;
             std::string initStr="";
+            std::string endStr = "";
             for (auto [varName, val] : usedVars) {
                 varToRegMapLocal[varName] = "";
                 if (currentlyAvailableRegs.size() <= 4) {
@@ -271,6 +272,7 @@ public:
 
                     varToRegMapLocal[varName] = reg;
                     initStr+= blk->_intlists->getLoadInstruction(varName, reg) + "\n";
+                    endStr+= blk->_intlists->getStoreInstruction(varName, reg) + "\n";
                     for (auto inst : blk->_instructions) {
                         inst->addToVarRegisterMap(varName, reg);
                     }
@@ -304,6 +306,23 @@ public:
                     out << intlsts->getLoadInstruction(v, reg) << std::endl;
                     inst->addToVarRegisterMap(v, reg);
                 }
+                for (auto v : varsUsedByInst) {
+                    if (inst->varRegMapContainsVar(v)) {
+                        continue;
+                    }
+                    if (varToRegMapLocal[v] != "") {
+                        continue;
+                    }
+                    currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
+                    currentlyUsedRegs.pop_back();
+                }
+                if(inst == insts[insts.size() - 1]){
+                    for (auto [varName, val] : varToRegMapLocal) {
+                        currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
+                        currentlyUsedRegs.pop_back();
+                    }
+                }
+
                 if (inst->getInstructionType()==InstructionType::LabelInst|| inst->getInstructionType() == InstructionType::GenericInst) {
                     
                 }
@@ -312,37 +331,38 @@ public:
                     blockInit = true;
                 }
 
-
-                bool isReturnFunction = inst->getInstructionType() == InstructionType::ReturnFunctionInst;
-                bool isFunctionCall = inst->getInstructionType() == InstructionType::CallFunctionInst;
+                auto instType = inst->getInstructionType();
+                bool isReturnFunction = instType == InstructionType::ReturnFunctionInst;
+                bool isFunctionCall = instType == InstructionType::CallFunctionInst;
 
                 //store vars into mem
 
-                std::string storeInst;
-                if (inst == lastGeneric || (!lastGeneric && inst==insts[insts.size()-1])) {
-                    for (auto [v, reg] : varToRegMapLocal) {
+                bool l = (instType == InstructionType::BreqInst
+                    ||
+                    instType == InstructionType::BrgeqInst
+                    ||
+                    instType == InstructionType::BrgtInst
+                    ||
+                    instType == InstructionType::BrleqInst
+                    ||
+                    instType == InstructionType::BrltInst
+                    ||
+                    instType == InstructionType::BrneqInst
+                    ||
+                    instType == InstructionType::CallProcedureInst
+                    ||
+                    instType == InstructionType::GotoInst
+                    ||
+                    instType == InstructionType::ReturnFunctionInst
+                    ||
+                    instType == InstructionType::ReturnProcedureInst
+                    );
 
-                        storeInst = intlsts->getStoreInstruction(v, reg) + "\n";
-                        if (!isReturnFunction) {
-                            out << intlsts->getStoreInstruction(v, reg) << std::endl;
-                        }
-                        else {
-                            (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(intlsts->getStoreInstruction(v, reg) + "\n");
-                        }
-                        inst->addToVarRegisterMap(v, reg);
-                        currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
-                        currentlyUsedRegs.pop_back();
-
-                    }
-                }
-
-                if (!isReturnFunction) {
-                    //instruction
-                    out << inst->getMIPSInstruction() << std::endl;
-                }
+                bool mustSaveBefore = (inst == insts[insts.size() - 1] && lastGeneric==nullptr) || inst == lastGeneric;
+                bool mustSaveAfter = isFunctionCall || (!l && inst == insts[insts.size()-1]);
 
 
-
+                //store per instruction allocated vars
                 for (auto v : varsUsedByInst) {
                     if (inst->varRegMapContainsVar(v)) {
                         continue;
@@ -350,7 +370,6 @@ public:
                     if (varToRegMapLocal[v] != "") {
                         continue;
                     }
-
                     auto reg = inst->getRegFromVar(v);
                     if (!isReturnFunction) {
                         out << intlsts->getStoreInstruction(v, reg) << std::endl;
@@ -359,18 +378,35 @@ public:
                         (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(intlsts->getStoreInstruction(v, reg) + "\n");
                     }
                     inst->addToVarRegisterMap(v, reg);
-                    currentlyAvailableRegs.push_back(currentlyUsedRegs.back());
-                    currentlyUsedRegs.pop_back();
+                }
+                if (mustSaveBefore) {
+                    if (!isReturnFunction) {
+                        out << endStr << std::endl;
+                    }
+                    else {
+                        (dynamic_cast<ReturnFunctionInstruction*>(inst))->setPreReturnInstruction(endStr + "\n");
+                    }
                 }
 
-
-                if (isReturnFunction) {
-                    out << inst->getMIPSInstruction() << std::endl;
-                }
+                out << inst->getMIPSInstruction() << std::endl;
 
 
-                if (isFunctionCall) {
-                    out << storeInst;
+                //pre allocated vars we must save afterwards
+                if (mustSaveAfter) {
+                    for (auto v : varsUsedByInst) {
+                        if (inst->varRegMapContainsVar(v)) {
+                            continue;
+                        }
+                        if (varToRegMapLocal[v] != "") {
+                            continue;
+                        }
+                        auto reg = inst->getRegFromVar(v);
+                        out << intlsts->getStoreInstruction(v, reg) << std::endl;
+                        inst->addToVarRegisterMap(v, reg);
+                    }
+                    //save our allocated vars
+                    out << endStr << std::endl;
+                    
                 }
 
             }
