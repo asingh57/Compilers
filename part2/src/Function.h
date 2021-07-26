@@ -20,7 +20,7 @@ class IntList {
 	std::map<std::string, int> _arrayVars;
 public:
 	static IntList* globalIntList;
-	IntList() : _stackOffsets(){
+	IntList() : _vars(), _isStatic(false), _stackOffsets(), _varNames(), _arrayVars() {
 		return;
 	}
 	IntList(std::string intList) : _vars(), _isStatic(false), _stackOffsets(), _varNames(), _arrayVars(){

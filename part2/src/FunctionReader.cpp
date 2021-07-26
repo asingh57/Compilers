@@ -137,10 +137,10 @@ FunctionReader::FunctionReader(std::string irFilePath, std::string outFilePath, 
 		auto blockAlloc = BlockAllocator(_functions, cfg);
 		output = blockAlloc.getFinalOpList();
 
-
+		/*
 		//TODO delet this
 		auto naiveAlloc = NaiveAllocator(_functions);
-		output = naiveAlloc.getFinalOpList();
+		output = naiveAlloc.getFinalOpList();*/
 	}
 
 

@@ -87,6 +87,10 @@ public:
 	{
 	};
 
+	std::string getDefaultInstruction() {
+		return _genericInstruction;
+	}
+
 	void addBlockThisPointsTo(std::string blockLabel) {
 		_isEndOfBlock = true;
 		_listOfOtherBlocksThisPointsTo.push_back(blockLabel);
@@ -742,6 +746,7 @@ public:
 		else {
 			stringStream << "move, $v0, " << _varRegMap[_vars[0]] << std::endl;
 		}
+
 		stringStream << _preReturnInstruction;
 
 		//jump to return address

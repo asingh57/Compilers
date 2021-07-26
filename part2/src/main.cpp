@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
         //outputMIPS = true;
         block = true;
         cfg = true;
+        outputMIPS = true;
     }
     for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
