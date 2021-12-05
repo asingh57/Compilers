@@ -1,4 +1,4 @@
-# Compilers
+# Compiler for the Tiger language
 OMSCS Compilers assignment
 
 
